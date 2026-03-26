@@ -7997,8 +7997,1562 @@ points.</p>
 <hr />
 </div>
 </div>
-<div id="session-info" class="section level1" number="9">
-<h1><span class="header-section-number">9</span> Session Info</h1>
+<div id="part-6-role-based-analysis" class="section level1" number="9">
+<h1><span class="header-section-number">9</span> Part 6: Role-Based
+Analysis</h1>
+<div id="rationale-and-coding-scheme" class="section level2" number="9.1">
+<h2><span class="header-section-number">9.1</span> 6.0 Rationale and
+Coding Scheme</h2>
+<blockquote>
+<p>Standard condition-level analyses (Parts 1–5) treat the six
+conditions as nominal categories. Role coding replaces this with a
+theoretically motivated taxonomy that directly operationalises the
+text-vs-purpose distinction.</p>
+<p><strong>The six mutually exclusive option roles:</strong></p>
+<table>
+<colgroup>
+<col width="20%" />
+<col width="20%" />
+<col width="20%" />
+<col width="20%" />
+<col width="20%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Role</th>
+<th>Option E?</th>
+<th>50-50?</th>
+<th>100-0?</th>
+<th>Conditions</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>Textual_Equal</code></td>
+<td>✓</td>
+<td>✓</td>
+<td></td>
+<td>Normal, Over</td>
+</tr>
+<tr class="even">
+<td><code>Textual_Pure</code></td>
+<td>✓</td>
+<td></td>
+<td></td>
+<td>Under, OverUnder</td>
+</tr>
+<tr class="odd">
+<td><code>Textual_Selfish</code></td>
+<td>✓</td>
+<td></td>
+<td>✓</td>
+<td>UnderSelfish, OverUnderSelfish</td>
+</tr>
+<tr class="even">
+<td><code>Equal_Only</code></td>
+<td></td>
+<td>✓</td>
+<td></td>
+<td>Over (C), OverUnder (C), OverUnderSelfish (C)</td>
+</tr>
+<tr class="odd">
+<td><code>Selfish_Only</code></td>
+<td></td>
+<td></td>
+<td>✓</td>
+<td>Normal–OverUnder (A)</td>
+</tr>
+<tr class="even">
+<td><code>Other</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>All (reference)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>For Exp1/Exp2 (binary choice):</strong> The role of option E
+in each participant’s condition — called <code>E_Role</code> — reduces
+six conditions to three levels (Textual_Equal, Textual_Pure,
+Textual_Selfish). This tests whether compliance tracks the theoretical
+category rather than the specific condition label.</p>
+<p><strong>For Exp3 (option ratings):</strong> Each option A–I within
+each condition is assigned a Role. A within-participant LMM —
+<code>Rating ~ Role + Condition + (1|participant)</code> — tests whether
+certain option properties (textual, purposive, selfish) systematically
+drive compliance judgments and punishment severity.</p>
+<p><strong>Key theoretical contrasts:</strong> -
+<code>Textual_Pure</code> vs. <code>Equal_Only</code>: does following
+the letter buy more leniency than achieving the purpose? (Within
+OverUnder: E=30-70 vs. C=50-50) - <code>Textual_Selfish</code>
+vs. <code>Selfish_Only</code>: does the textual label reduce punishment
+for the greedy option? (Cross-condition: UnderSelfish/OverUnderSelfish
+vs. Normal–OverUnder) - <code>Textual_Equal</code>
+vs. <code>Equal_Only</code>: does the textual label add leniency on top
+of purpose-achievement? (Within Over: E=50-50 vs. C=50-50)</p>
+</blockquote>
+<table>
+<caption>Role coding: non-Other options per condition (Other = all
+remaining options)</caption>
+<thead>
+<tr class="header">
+<th align="left">Condition</th>
+<th align="left">Option</th>
+<th align="left">Payoff</th>
+<th align="left">Role</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Normal</td>
+<td align="left">A</td>
+<td align="left">100-0</td>
+<td align="left">Selfish_Only</td>
+</tr>
+<tr class="even">
+<td align="left">Normal</td>
+<td align="left">E</td>
+<td align="left">50-50</td>
+<td align="left">Textual_Equal</td>
+</tr>
+<tr class="odd">
+<td align="left">Over</td>
+<td align="left">A</td>
+<td align="left">100-0</td>
+<td align="left">Selfish_Only</td>
+</tr>
+<tr class="even">
+<td align="left">Over</td>
+<td align="left">C</td>
+<td align="left">50-50</td>
+<td align="left">Equal_Only</td>
+</tr>
+<tr class="odd">
+<td align="left">Over</td>
+<td align="left">E</td>
+<td align="left">50-50</td>
+<td align="left">Textual_Equal</td>
+</tr>
+<tr class="even">
+<td align="left">Under</td>
+<td align="left">A</td>
+<td align="left">100-0</td>
+<td align="left">Selfish_Only</td>
+</tr>
+<tr class="odd">
+<td align="left">Under</td>
+<td align="left">E</td>
+<td align="left">30-70</td>
+<td align="left">Textual_Pure</td>
+</tr>
+<tr class="even">
+<td align="left">OverUnder</td>
+<td align="left">A</td>
+<td align="left">100-0</td>
+<td align="left">Selfish_Only</td>
+</tr>
+<tr class="odd">
+<td align="left">OverUnder</td>
+<td align="left">C</td>
+<td align="left">50-50</td>
+<td align="left">Equal_Only</td>
+</tr>
+<tr class="even">
+<td align="left">OverUnder</td>
+<td align="left">E</td>
+<td align="left">30-70</td>
+<td align="left">Textual_Pure</td>
+</tr>
+<tr class="odd">
+<td align="left">UnderSelfish</td>
+<td align="left">E</td>
+<td align="left">100-0</td>
+<td align="left">Textual_Selfish</td>
+</tr>
+<tr class="even">
+<td align="left">OverUnderSelfish</td>
+<td align="left">C</td>
+<td align="left">50-50</td>
+<td align="left">Equal_Only</td>
+</tr>
+<tr class="odd">
+<td align="left">OverUnderSelfish</td>
+<td align="left">E</td>
+<td align="left">100-0</td>
+<td align="left">Textual_Selfish</td>
+</tr>
+</tbody>
+</table>
+<hr />
+</div>
+<div id="exp1-adherence-by-e_role" class="section level2" number="9.2">
+<h2><span class="header-section-number">9.2</span> 6.1 Exp1 — Adherence
+by E_Role</h2>
+<blockquote>
+<p>Collapses Normal &amp; Over → Textual_Equal; Under &amp; OverUnder →
+Textual_Pure; UnderSelfish &amp; OverUnderSelfish → Textual_Selfish.
+Tests whether compliance is driven by the Role of E rather than specific
+conditions.</p>
+</blockquote>
+<table>
+<caption>Exp1: adherence by E_Role</caption>
+<thead>
+<tr class="header">
+<th align="left">E_Role</th>
+<th align="right">N</th>
+<th align="right">N_E</th>
+<th align="right">Pct</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Textual_Equal</td>
+<td align="right">193</td>
+<td align="right">168</td>
+<td align="right">87.0</td>
+</tr>
+<tr class="even">
+<td align="left">Textual_Pure</td>
+<td align="right">194</td>
+<td align="right">126</td>
+<td align="right">64.9</td>
+</tr>
+<tr class="odd">
+<td align="left">Textual_Selfish</td>
+<td align="right">193</td>
+<td align="right">158</td>
+<td align="right">81.9</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Exp1 E_Role GLMM — LRT</caption>
+<thead>
+<tr class="header">
+<th align="left">Term</th>
+<th align="right">Chi_sq</th>
+<th align="right">df</th>
+<th align="right">p</th>
+<th align="left">sig</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">E_Role</td>
+<td align="right">40.9867</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="left">***</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Exp1 E_Role GLMM — fixed effects (OR
+vs. Textual_Equal)</caption>
+<colgroup>
+<col width="6%" />
+<col width="21%" />
+<col width="12%" />
+<col width="12%" />
+<col width="9%" />
+<col width="7%" />
+<col width="10%" />
+<col width="12%" />
+<col width="3%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">effect</th>
+<th align="left">term</th>
+<th align="right">OR</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+<th align="right">2.5%</th>
+<th align="right">97.5%</th>
+<th align="left">sig</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">fixed</td>
+<td align="left">(Intercept)</td>
+<td align="right">32935051.060</td>
+<td align="right">6.514701e+07</td>
+<td align="right">8.751089</td>
+<td align="right">0.000</td>
+<td align="right">682249.689</td>
+<td align="right">1.589913e+09</td>
+<td align="left">***</td>
+</tr>
+<tr class="even">
+<td align="left">fixed</td>
+<td align="left">E_RoleTextual_Pure</td>
+<td align="right">0.000</td>
+<td align="right">2.252000e-04</td>
+<td align="right">-6.359209</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+<td align="right">2.000000e-03</td>
+<td align="left">***</td>
+</tr>
+<tr class="odd">
+<td align="left">fixed</td>
+<td align="left">E_RoleTextual_Selfish</td>
+<td align="right">0.135</td>
+<td align="right">1.366248e-01</td>
+<td align="right">-1.977330</td>
+<td align="right">0.048</td>
+<td align="right">0.018</td>
+<td align="right">9.830000e-01</td>
+<td align="left">*</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Exp1: estimated P(chose E) by E_Role</caption>
+<thead>
+<tr class="header">
+<th align="left">E_Role</th>
+<th align="right">prob</th>
+<th align="right">SE</th>
+<th align="right">df</th>
+<th align="right">asymp.LCL</th>
+<th align="right">asymp.UCL</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Textual_Equal</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">Inf</td>
+<td align="right">1.000</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">Textual_Pure</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">Inf</td>
+<td align="right">0.999</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Textual_Selfish</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">Inf</td>
+<td align="right">1.000</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+<hr />
+</div>
+<div id="exp2-dg-anticipated-punishment-by-e_role" class="section level2" number="9.3">
+<h2><span class="header-section-number">9.3</span> 6.2 Exp2 DG —
+Anticipated Punishment by E_Role</h2>
+<table>
+<caption>Exp2 DG: adherence by E_Role</caption>
+<thead>
+<tr class="header">
+<th align="left">E_Role</th>
+<th align="right">N</th>
+<th align="right">N_E</th>
+<th align="right">Pct</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Textual_Equal</td>
+<td align="right">202</td>
+<td align="right">193</td>
+<td align="right">95.5</td>
+</tr>
+<tr class="even">
+<td align="left">Textual_Pure</td>
+<td align="right">201</td>
+<td align="right">160</td>
+<td align="right">79.6</td>
+</tr>
+<tr class="odd">
+<td align="left">Textual_Selfish</td>
+<td align="right">201</td>
+<td align="right">171</td>
+<td align="right">85.1</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Exp2 DG E_Role GLMM — LRT</caption>
+<thead>
+<tr class="header">
+<th align="left">Term</th>
+<th align="right">Chi_sq</th>
+<th align="right">df</th>
+<th align="right">p</th>
+<th align="left">sig</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">E_Role</td>
+<td align="right">9.0147</td>
+<td align="right">2</td>
+<td align="right">0.011</td>
+<td align="left">*</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Exp2 DG E_Role GLMM — fixed effects (OR
+vs. Textual_Equal)</caption>
+<colgroup>
+<col width="7%" />
+<col width="23%" />
+<col width="10%" />
+<col width="13%" />
+<col width="11%" />
+<col width="8%" />
+<col width="8%" />
+<col width="11%" />
+<col width="4%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">effect</th>
+<th align="left">term</th>
+<th align="right">OR</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+<th align="right">2.5%</th>
+<th align="right">97.5%</th>
+<th align="left">sig</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">fixed</td>
+<td align="left">(Intercept)</td>
+<td align="right">10058.575</td>
+<td align="right">1.277747e+04</td>
+<td align="right">7.2550842</td>
+<td align="right">0.0000</td>
+<td align="right">834.160</td>
+<td align="right">121289.534</td>
+<td align="left">***</td>
+</tr>
+<tr class="even">
+<td align="left">fixed</td>
+<td align="left">E_RoleTextual_Pure</td>
+<td align="right">0.103</td>
+<td align="right">1.241746e-01</td>
+<td align="right">-1.8811732</td>
+<td align="right">0.0599</td>
+<td align="right">0.010</td>
+<td align="right">1.100</td>
+<td align="left">.</td>
+</tr>
+<tr class="odd">
+<td align="left">fixed</td>
+<td align="left">E_RoleTextual_Selfish</td>
+<td align="right">0.410</td>
+<td align="right">5.261638e-01</td>
+<td align="right">-0.6947087</td>
+<td align="right">0.4872</td>
+<td align="right">0.033</td>
+<td align="right">5.067</td>
+<td align="left"></td>
+</tr>
+</tbody>
+</table>
+<hr />
+</div>
+<div id="exp2-bt-normative-beliefs-by-e_role" class="section level2" number="9.4">
+<h2><span class="header-section-number">9.4</span> 6.3 Exp2 BT —
+Normative Beliefs by E_Role</h2>
+<table>
+<caption>Exp2 BT: beliefs by E_Role</caption>
+<thead>
+<tr class="header">
+<th align="left">E_Role</th>
+<th align="right">N</th>
+<th align="right">N_E</th>
+<th align="right">Pct</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Textual_Equal</td>
+<td align="right">200</td>
+<td align="right">179</td>
+<td align="right">89.5</td>
+</tr>
+<tr class="even">
+<td align="left">Textual_Pure</td>
+<td align="right">202</td>
+<td align="right">121</td>
+<td align="right">59.9</td>
+</tr>
+<tr class="odd">
+<td align="left">Textual_Selfish</td>
+<td align="right">202</td>
+<td align="right">139</td>
+<td align="right">68.8</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Exp2 BT E_Role GLMM — LRT</caption>
+<thead>
+<tr class="header">
+<th align="left">Term</th>
+<th align="right">Chi_sq</th>
+<th align="right">df</th>
+<th align="right">p</th>
+<th align="left">sig</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">E_Role</td>
+<td align="right">31.3328</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="left">***</td>
+</tr>
+</tbody>
+</table>
+<table style="width:100%;">
+<caption>Exp2 BT E_Role GLMM — fixed effects (OR
+vs. Textual_Equal)</caption>
+<colgroup>
+<col width="8%" />
+<col width="25%" />
+<col width="9%" />
+<col width="13%" />
+<col width="11%" />
+<col width="9%" />
+<col width="8%" />
+<col width="9%" />
+<col width="4%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">effect</th>
+<th align="left">term</th>
+<th align="right">OR</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+<th align="right">2.5%</th>
+<th align="right">97.5%</th>
+<th align="left">sig</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">fixed</td>
+<td align="left">(Intercept)</td>
+<td align="right">150.033</td>
+<td align="right">123.5353116</td>
+<td align="right">6.085651</td>
+<td align="right">0</td>
+<td align="right">29.876</td>
+<td align="right">753.452</td>
+<td align="left">***</td>
+</tr>
+<tr class="even">
+<td align="left">fixed</td>
+<td align="left">E_RoleTextual_Pure</td>
+<td align="right">0.028</td>
+<td align="right">0.0183299</td>
+<td align="right">-5.523871</td>
+<td align="right">0</td>
+<td align="right">0.008</td>
+<td align="right">0.101</td>
+<td align="left">***</td>
+</tr>
+<tr class="odd">
+<td align="left">fixed</td>
+<td align="left">E_RoleTextual_Selfish</td>
+<td align="right">0.073</td>
+<td align="right">0.0449428</td>
+<td align="right">-4.234810</td>
+<td align="right">0</td>
+<td align="right">0.022</td>
+<td align="right">0.244</td>
+<td align="left">***</td>
+</tr>
+</tbody>
+</table>
+<hr />
+</div>
+<div id="three-source-comparison-by-e_role" class="section level2" number="9.5">
+<h2><span class="header-section-number">9.5</span> 6.4 Three-Source
+Comparison by E_Role</h2>
+<blockquote>
+<p>Replaces the six-condition factor with E_Role (3 levels) in the
+three-source model. Tests whether the Source effect (Exp1 / BT / DG)
+interacts with the type of textual prescription.</p>
+</blockquote>
+<table>
+<caption>Three-source: % chose/believed E by E_Role × Source</caption>
+<thead>
+<tr class="header">
+<th align="left">E_Role</th>
+<th align="left">Source</th>
+<th align="right">N</th>
+<th align="right">Pct</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Textual_Equal</td>
+<td align="left">Exp1_Adherence</td>
+<td align="right">193</td>
+<td align="right">87.0</td>
+</tr>
+<tr class="even">
+<td align="left">Textual_Equal</td>
+<td align="left">Exp2_Belief</td>
+<td align="right">200</td>
+<td align="right">89.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Textual_Equal</td>
+<td align="left">Exp2_Punishment</td>
+<td align="right">202</td>
+<td align="right">95.5</td>
+</tr>
+<tr class="even">
+<td align="left">Textual_Pure</td>
+<td align="left">Exp1_Adherence</td>
+<td align="right">194</td>
+<td align="right">64.9</td>
+</tr>
+<tr class="odd">
+<td align="left">Textual_Pure</td>
+<td align="left">Exp2_Belief</td>
+<td align="right">202</td>
+<td align="right">59.9</td>
+</tr>
+<tr class="even">
+<td align="left">Textual_Pure</td>
+<td align="left">Exp2_Punishment</td>
+<td align="right">201</td>
+<td align="right">79.6</td>
+</tr>
+<tr class="odd">
+<td align="left">Textual_Selfish</td>
+<td align="left">Exp1_Adherence</td>
+<td align="right">193</td>
+<td align="right">81.9</td>
+</tr>
+<tr class="even">
+<td align="left">Textual_Selfish</td>
+<td align="left">Exp2_Belief</td>
+<td align="right">202</td>
+<td align="right">68.8</td>
+</tr>
+<tr class="odd">
+<td align="left">Textual_Selfish</td>
+<td align="left">Exp2_Punishment</td>
+<td align="right">201</td>
+<td align="right">85.1</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Three-source E_Role additive GLMM — LRT</caption>
+<thead>
+<tr class="header">
+<th align="left">Term</th>
+<th align="right">Chi_sq</th>
+<th align="right">df</th>
+<th align="right">p</th>
+<th align="left">sig</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">E_Role</td>
+<td align="right">81.1881</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="left">***</td>
+</tr>
+<tr class="even">
+<td align="left">Source</td>
+<td align="right">60.5191</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="left">***</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Three-source E_Role additive — fixed effects (OR)</caption>
+<colgroup>
+<col width="7%" />
+<col width="23%" />
+<col width="10%" />
+<col width="13%" />
+<col width="10%" />
+<col width="8%" />
+<col width="9%" />
+<col width="10%" />
+<col width="4%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">effect</th>
+<th align="left">term</th>
+<th align="right">OR</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+<th align="right">2.5%</th>
+<th align="right">97.5%</th>
+<th align="left">sig</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">fixed</td>
+<td align="left">(Intercept)</td>
+<td align="right">12328.876</td>
+<td align="right">1.177050e+04</td>
+<td align="right">9.866556</td>
+<td align="right">0.0000</td>
+<td align="right">1897.898</td>
+<td align="right">80089.218</td>
+<td align="left">***</td>
+</tr>
+<tr class="even">
+<td align="left">fixed</td>
+<td align="left">E_RoleTextual_Pure</td>
+<td align="right">0.016</td>
+<td align="right">7.355800e-03</td>
+<td align="right">-8.932033</td>
+<td align="right">0.0000</td>
+<td align="right">0.006</td>
+<td align="right">0.039</td>
+<td align="left">***</td>
+</tr>
+<tr class="odd">
+<td align="left">fixed</td>
+<td align="left">E_RoleTextual_Selfish</td>
+<td align="right">0.059</td>
+<td align="right">2.465010e-02</td>
+<td align="right">-6.768907</td>
+<td align="right">0.0000</td>
+<td align="right">0.026</td>
+<td align="right">0.134</td>
+<td align="left">***</td>
+</tr>
+<tr class="even">
+<td align="left">fixed</td>
+<td align="left">SourceExp2_Belief</td>
+<td align="right">0.493</td>
+<td align="right">2.646470e-01</td>
+<td align="right">-1.317221</td>
+<td align="right">0.1878</td>
+<td align="right">0.172</td>
+<td align="right">1.412</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">fixed</td>
+<td align="left">SourceExp2_Punishment</td>
+<td align="right">5.589</td>
+<td align="right">3.266667e+00</td>
+<td align="right">2.944061</td>
+<td align="right">0.0032</td>
+<td align="right">1.777</td>
+<td align="right">17.573</td>
+<td align="left">**</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Three-source E_Role interaction GLMM — LRT</caption>
+<thead>
+<tr class="header">
+<th align="left">Term</th>
+<th align="right">Chi_sq</th>
+<th align="right">df</th>
+<th align="right">p</th>
+<th align="left">sig</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">E_Role</td>
+<td align="right">78.3842</td>
+<td align="right">2</td>
+<td align="right">0.0000</td>
+<td align="left">***</td>
+</tr>
+<tr class="even">
+<td align="left">Source</td>
+<td align="right">57.3163</td>
+<td align="right">2</td>
+<td align="right">0.0000</td>
+<td align="left">***</td>
+</tr>
+<tr class="odd">
+<td align="left">E_Role:Source</td>
+<td align="right">9.9495</td>
+<td align="right">4</td>
+<td align="right">0.0413</td>
+<td align="left">*</td>
+</tr>
+</tbody>
+</table>
+<table style="width:100%;">
+<caption>Three-source E_Role interaction — fixed effects (OR)</caption>
+<colgroup>
+<col width="6%" />
+<col width="38%" />
+<col width="7%" />
+<col width="11%" />
+<col width="9%" />
+<col width="7%" />
+<col width="7%" />
+<col width="8%" />
+<col width="3%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">effect</th>
+<th align="left">term</th>
+<th align="right">OR</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+<th align="right">2.5%</th>
+<th align="right">97.5%</th>
+<th align="left">sig</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">fixed</td>
+<td align="left">(Intercept)</td>
+<td align="right">7977.309</td>
+<td align="right">9738.4950267</td>
+<td align="right">7.3595548</td>
+<td align="right">0.0000</td>
+<td align="right">729.006</td>
+<td align="right">87293.419</td>
+<td align="left">***</td>
+</tr>
+<tr class="even">
+<td align="left">fixed</td>
+<td align="left">E_RoleTextual_Pure</td>
+<td align="right">0.022</td>
+<td align="right">0.0182066</td>
+<td align="right">-4.5367149</td>
+<td align="right">0.0000</td>
+<td align="right">0.004</td>
+<td align="right">0.113</td>
+<td align="left">***</td>
+</tr>
+<tr class="odd">
+<td align="left">fixed</td>
+<td align="left">E_RoleTextual_Selfish</td>
+<td align="right">0.255</td>
+<td align="right">0.1950218</td>
+<td align="right">-1.7871793</td>
+<td align="right">0.0739</td>
+<td align="right">0.057</td>
+<td align="right">1.141</td>
+<td align="left">.</td>
+</tr>
+<tr class="even">
+<td align="left">fixed</td>
+<td align="left">SourceExp2_Belief</td>
+<td align="right">0.668</td>
+<td align="right">0.6293119</td>
+<td align="right">-0.4284758</td>
+<td align="right">0.6683</td>
+<td align="right">0.105</td>
+<td align="right">4.234</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">fixed</td>
+<td align="left">SourceExp2_Punishment</td>
+<td align="right">43.173</td>
+<td align="right">46.4422267</td>
+<td align="right">3.5001376</td>
+<td align="right">0.0005</td>
+<td align="right">5.243</td>
+<td align="right">355.528</td>
+<td align="left">***</td>
+</tr>
+<tr class="even">
+<td align="left">fixed</td>
+<td align="left">E_RoleTextual_Pure:SourceExp2_Belief</td>
+<td align="right">1.225</td>
+<td align="right">1.2236437</td>
+<td align="right">0.2027599</td>
+<td align="right">0.8393</td>
+<td align="right">0.173</td>
+<td align="right">8.680</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">fixed</td>
+<td align="left">E_RoleTextual_Selfish:SourceExp2_Belief</td>
+<td align="right">0.331</td>
+<td align="right">0.3203372</td>
+<td align="right">-1.1422781</td>
+<td align="right">0.2533</td>
+<td align="right">0.049</td>
+<td align="right">2.209</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">fixed</td>
+<td align="left">E_RoleTextual_Pure:SourceExp2_Punishment</td>
+<td align="right">0.159</td>
+<td align="right">0.1728644</td>
+<td align="right">-1.6905969</td>
+<td align="right">0.0909</td>
+<td align="right">0.019</td>
+<td align="right">1.341</td>
+<td align="left">.</td>
+</tr>
+<tr class="odd">
+<td align="left">fixed</td>
+<td align="left">E_RoleTextual_Selfish:SourceExp2_Punishment</td>
+<td align="right">0.034</td>
+<td align="right">0.0390970</td>
+<td align="right">-2.9665926</td>
+<td align="right">0.0030</td>
+<td align="right">0.004</td>
+<td align="right">0.319</td>
+<td align="left">**</td>
+</tr>
+</tbody>
+</table>
+<hr />
+</div>
+<div id="exp3-compliance-judgments-likert-by-option-role" class="section level2" number="9.6">
+<h2><span class="header-section-number">9.6</span> 6.5 Exp3 — Compliance
+Judgments (Likert) by Option Role</h2>
+<blockquote>
+<p>DV: Likert compliance score (1 = Definitely violates → 6 = Definitely
+complies). Model:
+<code>Likert_num ~ Role + Condition + (1|participant_id)</code>. Role
+captures within-condition differences; Condition controls for
+between-condition baseline.</p>
+</blockquote>
+<table>
+<caption>Exp3 Likert: mean compliance score by option Role</caption>
+<thead>
+<tr class="header">
+<th align="left">Role</th>
+<th align="right">N</th>
+<th align="right">Mean</th>
+<th align="right">SD</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Other</td>
+<td align="right">5944</td>
+<td align="right">2.00</td>
+<td align="right">1.42</td>
+</tr>
+<tr class="even">
+<td align="left">Selfish_Only</td>
+<td align="right">581</td>
+<td align="right">1.60</td>
+<td align="right">1.49</td>
+</tr>
+<tr class="odd">
+<td align="left">Equal_Only</td>
+<td align="right">435</td>
+<td align="right">3.77</td>
+<td align="right">2.13</td>
+</tr>
+<tr class="even">
+<td align="left">Textual_Pure</td>
+<td align="right">293</td>
+<td align="right">4.06</td>
+<td align="right">1.97</td>
+</tr>
+<tr class="odd">
+<td align="left">Textual_Selfish</td>
+<td align="right">289</td>
+<td align="right">3.94</td>
+<td align="right">2.31</td>
+</tr>
+<tr class="even">
+<td align="left">Textual_Equal</td>
+<td align="right">288</td>
+<td align="right">5.53</td>
+<td align="right">1.24</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Exp3 Likert Role LMM — ANOVA table (LRT)</caption>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">npar</th>
+<th align="right">Sum Sq</th>
+<th align="right">Mean Sq</th>
+<th align="right">F value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Role</td>
+<td align="right">5</td>
+<td align="right">6502.51899</td>
+<td align="right">1300.50380</td>
+<td align="right">772.463255</td>
+</tr>
+<tr class="even">
+<td align="left">Condition</td>
+<td align="right">5</td>
+<td align="right">21.47945</td>
+<td align="right">4.29589</td>
+<td align="right">2.551639</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Exp3 Likert Role LMM — fixed effects (vs. Other, controlling
+for Condition)</caption>
+<colgroup>
+<col width="35%" />
+<col width="12%" />
+<col width="13%" />
+<col width="13%" />
+<col width="12%" />
+<col width="13%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">conf.low</th>
+<th align="right">conf.high</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">1.958</td>
+<td align="right">0.063</td>
+<td align="right">31.327</td>
+<td align="right">1.836</td>
+<td align="right">2.081</td>
+</tr>
+<tr class="even">
+<td align="left">RoleSelfish_Only</td>
+<td align="right">-0.421</td>
+<td align="right">0.058</td>
+<td align="right">-7.290</td>
+<td align="right">-0.534</td>
+<td align="right">-0.308</td>
+</tr>
+<tr class="odd">
+<td align="left">RoleEqual_Only</td>
+<td align="right">1.852</td>
+<td align="right">0.066</td>
+<td align="right">27.863</td>
+<td align="right">1.722</td>
+<td align="right">1.982</td>
+</tr>
+<tr class="even">
+<td align="left">RoleTextual_Pure</td>
+<td align="right">1.994</td>
+<td align="right">0.081</td>
+<td align="right">24.660</td>
+<td align="right">1.836</td>
+<td align="right">2.153</td>
+</tr>
+<tr class="odd">
+<td align="left">RoleTextual_Selfish</td>
+<td align="right">1.982</td>
+<td align="right">0.081</td>
+<td align="right">24.446</td>
+<td align="right">1.823</td>
+<td align="right">2.141</td>
+</tr>
+<tr class="even">
+<td align="left">RoleTextual_Equal</td>
+<td align="right">3.560</td>
+<td align="right">0.082</td>
+<td align="right">43.649</td>
+<td align="right">3.400</td>
+<td align="right">3.720</td>
+</tr>
+<tr class="odd">
+<td align="left">ConditionOver</td>
+<td align="right">0.051</td>
+<td align="right">0.057</td>
+<td align="right">0.897</td>
+<td align="right">-0.060</td>
+<td align="right">0.162</td>
+</tr>
+<tr class="even">
+<td align="left">ConditionUnder</td>
+<td align="right">0.151</td>
+<td align="right">0.058</td>
+<td align="right">2.619</td>
+<td align="right">0.038</td>
+<td align="right">0.265</td>
+</tr>
+<tr class="odd">
+<td align="left">ConditionOverUnder</td>
+<td align="right">0.015</td>
+<td align="right">0.058</td>
+<td align="right">0.268</td>
+<td align="right">-0.098</td>
+<td align="right">0.129</td>
+</tr>
+<tr class="even">
+<td align="left">ConditionUnderSelfish</td>
+<td align="right">0.067</td>
+<td align="right">0.059</td>
+<td align="right">1.136</td>
+<td align="right">-0.049</td>
+<td align="right">0.182</td>
+</tr>
+<tr class="odd">
+<td align="left">ConditionOverUnderSelfish</td>
+<td align="right">-0.036</td>
+<td align="right">0.058</td>
+<td align="right">-0.618</td>
+<td align="right">-0.150</td>
+<td align="right">0.078</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Exp3 Likert Role LMM — ICC and R²</caption>
+<thead>
+<tr class="header">
+<th align="right">ICC</th>
+<th align="right">R2_marginal.Marginal R2</th>
+<th align="right">R2_conditional.Conditional R2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.204</td>
+<td align="right">0.264</td>
+<td align="right">0.468</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Exp3 Likert: key Role contrasts (Bonferroni-adjusted, estimated
+marginal means scale)</caption>
+<colgroup>
+<col width="48%" />
+<col width="13%" />
+<col width="8%" />
+<col width="5%" />
+<col width="11%" />
+<col width="11%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">contrast</th>
+<th align="right">estimate</th>
+<th align="right">SE</th>
+<th align="right">df</th>
+<th align="right">z.ratio</th>
+<th align="right">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Textual_Pure vs. Equal_Only</td>
+<td align="right">0.142</td>
+<td align="right">0.102</td>
+<td align="right">Inf</td>
+<td align="right">1.398</td>
+<td align="right">0.973</td>
+</tr>
+<tr class="even">
+<td align="left">Textual_Pure vs. Other</td>
+<td align="right">1.994</td>
+<td align="right">0.081</td>
+<td align="right">Inf</td>
+<td align="right">24.660</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="odd">
+<td align="left">Equal_Only vs. Other</td>
+<td align="right">1.852</td>
+<td align="right">0.066</td>
+<td align="right">Inf</td>
+<td align="right">27.863</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="even">
+<td align="left">Textual_Equal vs. Equal_Only</td>
+<td align="right">1.708</td>
+<td align="right">0.102</td>
+<td align="right">Inf</td>
+<td align="right">16.715</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="odd">
+<td align="left">Textual_Selfish vs. Selfish_Only</td>
+<td align="right">2.403</td>
+<td align="right">0.099</td>
+<td align="right">Inf</td>
+<td align="right">24.189</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="even">
+<td align="left">Textual_Selfish vs. Other</td>
+<td align="right">1.982</td>
+<td align="right">0.081</td>
+<td align="right">Inf</td>
+<td align="right">24.446</td>
+<td align="right">0.000</td>
+</tr>
+</tbody>
+</table>
+<hr />
+</div>
+<div id="exp3-deduction-points-by-option-role" class="section level2" number="9.7">
+<h2><span class="header-section-number">9.7</span> 6.6 Exp3 — Deduction
+Points by Option Role</h2>
+<blockquote>
+<p>DV: Deduction points assigned (0–50; higher = more punishment).
+Model: <code>value ~ Role + Condition + (1|participant_id)</code>.</p>
+</blockquote>
+<table>
+<caption>Exp3 Deduction: mean deduction points by option Role</caption>
+<thead>
+<tr class="header">
+<th align="left">Role</th>
+<th align="right">N</th>
+<th align="right">Mean</th>
+<th align="right">SD</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Other</td>
+<td align="right">5944</td>
+<td align="right">12.03</td>
+<td align="right">16.84</td>
+</tr>
+<tr class="even">
+<td align="left">Selfish_Only</td>
+<td align="right">581</td>
+<td align="right">21.87</td>
+<td align="right">21.51</td>
+</tr>
+<tr class="odd">
+<td align="left">Equal_Only</td>
+<td align="right">435</td>
+<td align="right">5.57</td>
+<td align="right">13.28</td>
+</tr>
+<tr class="even">
+<td align="left">Textual_Pure</td>
+<td align="right">293</td>
+<td align="right">6.60</td>
+<td align="right">13.77</td>
+</tr>
+<tr class="odd">
+<td align="left">Textual_Selfish</td>
+<td align="right">289</td>
+<td align="right">19.10</td>
+<td align="right">21.66</td>
+</tr>
+<tr class="even">
+<td align="left">Textual_Equal</td>
+<td align="right">288</td>
+<td align="right">4.41</td>
+<td align="right">12.54</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Exp3 Deduction Role LMM — ANOVA table (LRT)</caption>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">npar</th>
+<th align="right">Sum Sq</th>
+<th align="right">Mean Sq</th>
+<th align="right">F value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Role</td>
+<td align="right">5</td>
+<td align="right">114454.9561</td>
+<td align="right">22890.9912</td>
+<td align="right">143.6546702</td>
+</tr>
+<tr class="even">
+<td align="left">Condition</td>
+<td align="right">5</td>
+<td align="right">719.9845</td>
+<td align="right">143.9969</td>
+<td align="right">0.9036667</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Exp3 Deduction Role LMM — fixed effects (vs. Other, controlling
+for Condition)</caption>
+<colgroup>
+<col width="35%" />
+<col width="12%" />
+<col width="13%" />
+<col width="13%" />
+<col width="12%" />
+<col width="13%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">conf.low</th>
+<th align="right">conf.high</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">12.404</td>
+<td align="right">0.780</td>
+<td align="right">15.898</td>
+<td align="right">10.875</td>
+<td align="right">13.934</td>
+</tr>
+<tr class="even">
+<td align="left">RoleSelfish_Only</td>
+<td align="right">9.955</td>
+<td align="right">0.562</td>
+<td align="right">17.721</td>
+<td align="right">8.854</td>
+<td align="right">11.056</td>
+</tr>
+<tr class="odd">
+<td align="left">RoleEqual_Only</td>
+<td align="right">-6.155</td>
+<td align="right">0.647</td>
+<td align="right">-9.518</td>
+<td align="right">-7.422</td>
+<td align="right">-4.887</td>
+</tr>
+<tr class="even">
+<td align="left">RoleTextual_Pure</td>
+<td align="right">-4.566</td>
+<td align="right">0.787</td>
+<td align="right">-5.805</td>
+<td align="right">-6.108</td>
+<td align="right">-3.025</td>
+</tr>
+<tr class="odd">
+<td align="left">RoleTextual_Selfish</td>
+<td align="right">6.937</td>
+<td align="right">0.789</td>
+<td align="right">8.796</td>
+<td align="right">5.391</td>
+<td align="right">8.482</td>
+</tr>
+<tr class="even">
+<td align="left">RoleTextual_Equal</td>
+<td align="right">-8.278</td>
+<td align="right">0.793</td>
+<td align="right">-10.434</td>
+<td align="right">-9.833</td>
+<td align="right">-6.723</td>
+</tr>
+<tr class="odd">
+<td align="left">ConditionOver</td>
+<td align="right">-0.937</td>
+<td align="right">0.555</td>
+<td align="right">-1.687</td>
+<td align="right">-2.025</td>
+<td align="right">0.152</td>
+</tr>
+<tr class="even">
+<td align="left">ConditionUnder</td>
+<td align="right">-0.458</td>
+<td align="right">0.565</td>
+<td align="right">-0.810</td>
+<td align="right">-1.566</td>
+<td align="right">0.650</td>
+</tr>
+<tr class="odd">
+<td align="left">ConditionOverUnder</td>
+<td align="right">-0.279</td>
+<td align="right">0.564</td>
+<td align="right">-0.495</td>
+<td align="right">-1.385</td>
+<td align="right">0.827</td>
+</tr>
+<tr class="even">
+<td align="left">ConditionUnderSelfish</td>
+<td align="right">-0.039</td>
+<td align="right">0.576</td>
+<td align="right">-0.068</td>
+<td align="right">-1.168</td>
+<td align="right">1.090</td>
+</tr>
+<tr class="odd">
+<td align="left">ConditionOverUnderSelfish</td>
+<td align="right">-0.723</td>
+<td align="right">0.569</td>
+<td align="right">-1.270</td>
+<td align="right">-1.840</td>
+<td align="right">0.393</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Exp3 Deduction Role LMM — ICC and R²</caption>
+<thead>
+<tr class="header">
+<th align="right">ICC</th>
+<th align="right">R2_marginal.Marginal R2</th>
+<th align="right">R2_conditional.Conditional R2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.428</td>
+<td align="right">0.049</td>
+<td align="right">0.476</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Exp3 Deduction: key Role contrasts
+(Bonferroni-adjusted)</caption>
+<colgroup>
+<col width="48%" />
+<col width="13%" />
+<col width="8%" />
+<col width="5%" />
+<col width="11%" />
+<col width="11%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">contrast</th>
+<th align="right">estimate</th>
+<th align="right">SE</th>
+<th align="right">df</th>
+<th align="right">z.ratio</th>
+<th align="right">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Textual_Pure vs. Equal_Only</td>
+<td align="right">1.588</td>
+<td align="right">0.989</td>
+<td align="right">Inf</td>
+<td align="right">1.606</td>
+<td align="right">0.649</td>
+</tr>
+<tr class="even">
+<td align="left">Textual_Pure vs. Other</td>
+<td align="right">-4.566</td>
+<td align="right">0.787</td>
+<td align="right">Inf</td>
+<td align="right">-5.805</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="odd">
+<td align="left">Equal_Only vs. Other</td>
+<td align="right">-6.155</td>
+<td align="right">0.647</td>
+<td align="right">Inf</td>
+<td align="right">-9.518</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="even">
+<td align="left">Textual_Equal vs. Equal_Only</td>
+<td align="right">-2.124</td>
+<td align="right">0.994</td>
+<td align="right">Inf</td>
+<td align="right">-2.137</td>
+<td align="right">0.196</td>
+</tr>
+<tr class="odd">
+<td align="left">Textual_Selfish vs. Selfish_Only</td>
+<td align="right">-3.018</td>
+<td align="right">0.966</td>
+<td align="right">Inf</td>
+<td align="right">-3.124</td>
+<td align="right">0.011</td>
+</tr>
+<tr class="even">
+<td align="left">Textual_Selfish vs. Other</td>
+<td align="right">6.937</td>
+<td align="right">0.789</td>
+<td align="right">Inf</td>
+<td align="right">8.796</td>
+<td align="right">0.000</td>
+</tr>
+</tbody>
+</table>
+<hr />
+</div>
+<div id="summary-what-role-adds-over-condition-level-models" class="section level2" number="9.8">
+<h2><span class="header-section-number">9.8</span> 6.7 Summary: What
+Role Adds Over Condition-Level Models</h2>
+<blockquote>
+<p><strong>E_Role (Exp1/Exp2):</strong> If the three E_Role GLMMs
+(§6.1–6.3) replicate the six-condition pattern with comparable fit, this
+confirms that what drives compliance is the <em>type</em> of textual
+prescription, not the specific condition label. The parsimony of three
+levels over six is a direct test of the theoretical taxonomy.</p>
+<p><strong>Option Role (Exp3):</strong> The key contrasts in §6.5–6.6
+answer the four central questions of the textualism/purposivism
+framework:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>Does following the letter buy leniency even when it
+betrays the purpose?</strong> → <code>Textual_Pure</code>
+vs. <code>Other</code> (Under, OverUnder conditions)</p></li>
+<li><p><strong>Does achieving the purpose buy leniency without the
+textual label?</strong> → <code>Equal_Only</code> vs. <code>Other</code>
+(Over, OverUnder, OverUnderSelfish conditions)</p></li>
+<li><p><strong>Which wins — text or purpose?</strong> →
+<code>Textual_Pure</code> vs. <code>Equal_Only</code> (within OverUnder:
+E=30-70 vs. C=50-50, same participants, strongest within-person
+test)</p></li>
+<li><p><strong>Does the textual label soften punishment for
+greed?</strong> → <code>Textual_Selfish</code>
+vs. <code>Selfish_Only</code> (cross-condition: E=100-0 in
+UnderSelfish/OverUnderSelfish vs. A=100-0 in Normal–OverUnder)</p></li>
+</ol>
+</blockquote>
+<hr />
+</div>
+</div>
+<div id="session-info" class="section level1" number="10">
+<h1><span class="header-section-number">10</span> Session Info</h1>
 <pre><code>## R version 4.5.2 (2025-10-31 ucrt)
 ## Platform: x86_64-w64-mingw32/x64
 ## Running under: Windows 11 x64 (build 26200)
