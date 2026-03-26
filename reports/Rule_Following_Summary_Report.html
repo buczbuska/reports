@@ -1945,13 +1945,107 @@ punishment is most effective precisely where deviation was highest — in
 underinclusion conditions.</p>
 </blockquote>
 </div>
-<div id="normative-beliefs-exp-2-belief-task" class="section level3">
-<h3>3.4 Normative Beliefs (Exp 2 Belief Task)</h3>
-<p>Beliefs mirrored adherence (Normal 90%, Under 60%, OverUnder 59%).
-Normative beliefs strongly predicted own adherence (OR = 8.97, p &lt;
-.001) but condition effects remained significant after controlling for
-beliefs: the rule structure shifts behaviour beyond normative
-expectations (<strong>partial mediation</strong>).</p>
+<div id="three-source-comparison-no-consequences-beliefs-and-anticipated-punishment" class="section level3">
+<h3>3.4 Three-Source Comparison: No Consequences, Beliefs, and
+Anticipated Punishment</h3>
+<p>Adding the Exp 2 Belief Task (BT) to the cross-experiment comparison
+creates three theoretically distinct sources of data for each condition:
+<strong>no-consequences own choice</strong> (Exp1), <strong>normative
+beliefs about others</strong> (Exp2 BT), and <strong>own choice under
+anticipated punishment</strong> (Exp2 DG). This allows us to ask whether
+beliefs track spontaneous behaviour and whether punishment lifts
+adherence beyond both.</p>
+<table>
+<thead>
+<tr class="header">
+<th>Condition</th>
+<th>Exp1 %</th>
+<th>Exp2 BT %</th>
+<th>Exp2 DG %</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Normal</td>
+<td>88.7%</td>
+<td>90.0%</td>
+<td><strong>96.0%</strong></td>
+</tr>
+<tr class="even">
+<td>Over</td>
+<td>85.4%</td>
+<td>89.0%</td>
+<td><strong>95.0%</strong></td>
+</tr>
+<tr class="odd">
+<td>Under</td>
+<td>66.0%</td>
+<td>60.4%</td>
+<td><strong>82.2%</strong></td>
+</tr>
+<tr class="even">
+<td>OverUnder</td>
+<td>63.9%</td>
+<td>59.4%</td>
+<td><strong>77.0%</strong></td>
+</tr>
+<tr class="odd">
+<td>UnderSelfish</td>
+<td>84.5%</td>
+<td>73.3%</td>
+<td><strong>91.0%</strong></td>
+</tr>
+<tr class="even">
+<td>OverUnderSelfish</td>
+<td>79.2%</td>
+<td>64.4%</td>
+<td><strong>79.2%</strong></td>
+</tr>
+</tbody>
+</table>
+<p>A GLMM with
+<code>Rule_Adherence ~ Condition + Source + (1 | participant_id)</code>
+— where Exp2 participants appear in both BT and DG rows under a shared
+random intercept — yields two clean findings:</p>
+<p><strong>1. Normative beliefs are not significantly different from
+no-consequences behaviour.</strong> The Exp2_Belief vs. Exp1_Adherence
+contrast is non-significant: OR = 1.89 (Exp1 / BT), p = .742. What
+people expect others to do tracks almost exactly what people themselves
+do when there are no stakes. This alignment is consistent whether
+interpreted as accurate social perception, social projection, or
+both.</p>
+<p><strong>2. Anticipated punishment substantially elevates adherence
+beyond both baselines.</strong> Exp2_Punishment exceeds Exp1_Adherence
+(OR_DG/Exp1 = 6.67, p = .005**) and Exp2_Belief (OR_DG/BT = 12.66, p
+&lt; .001***). The punishment effect is thus genuine and not reducible
+to normative expectations about what others do — people comply more
+under anticipated scrutiny than both their unconstrained choices and
+their expectations of others would predict.</p>
+<p><strong>3. The source effect does not interact with
+condition.</strong> The Condition × Source interaction is not
+significant: χ²(10) = 14.19, p = .165. This means the punishment lift is
+approximately uniform across conditions rather than being concentrated
+in underinclusion conditions specifically (despite the numerical
+patterns suggesting largest absolute lifts in Under/OverUnder). The
+condition-specific punishment story from §3.3 thus reflects raw
+frequency differences rather than a statistically reliable differential
+effect.</p>
+<p>One notable descriptive pattern: in the selfish conditions, BT rates
+fall clearly below Exp1 (UnderSelfish: 73% vs 85%; OverUnderSelfish: 64%
+vs 79%) — people underestimate how often others will follow a selfish
+rule prescription. This belief deficit is not captured in the omnibus
+interaction test, but may reflect a systematic attribution bias worth
+exploring in future work.</p>
+</div>
+<div id="normative-beliefs-as-a-predictor-exp-2" class="section level3">
+<h3>3.5 Normative Beliefs as a Predictor (Exp 2)</h3>
+<p>Independent of the between-source comparison, normative beliefs
+strongly predict own adherence within Exp2. Beliefs strongly predicted
+own DG choice (OR = 8.97, p &lt; .001) but condition effects remained
+significant after controlling for beliefs — the rule structure shifts
+behaviour beyond normative expectations (<strong>partial
+mediation</strong>: belief accounts for part of the condition effect but
+does not fully explain it).</p>
 <p><strong>Exp 2 BT Belief Rates:</strong></p>
 <table>
 <thead>
