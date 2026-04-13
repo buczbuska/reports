@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zaburzenia poznawcze w chorobach przewlekłych</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --purple: #534AB7;
+    --purple-light: #EEEDFE;
+    --purple-mid: #AFA9EC;
+    --teal: #0F6E56;
+    --teal-light: #E1F5EE;
+    --teal-mid: #5DCAA5;
+    --coral: #993C1D;
+    --coral-light: #FAECE7;
+    --coral-mid: #F0997B;
+    --blue: #185FA5;
+    --blue-light: #E6F1FB;
+    --amber: #854F0B;
+    --amber-light: #FAEEDA;
+    --amber-mid: #EF9F27;
+    --gray: #5F5E5A;
+    --gray-light: #F1EFE8;
+    --text: #1a1a18;
+    --text-muted: #5F5E5A;
+    --text-faint: #888780;
+    --bg: #fafaf8;
+    --surface: #ffffff;
+    --border: rgba(0,0,0,0.08);
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .deck-wrap {
+    width: 100%;
+    max-width: 960px;
+    padding: 24px 16px 80px;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--purple);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  .slide { display: none; animation: fadeIn 0.35s ease; }
+  .slide.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .slide-card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 20px;
+    padding: 48px 56px;
+    min-height: 480px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .block-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+  }
+  .badge-purple { background: var(--purple-light); color: var(--purple); }
+  .badge-teal   { background: var(--teal-light);   color: var(--teal); }
+  .badge-coral  { background: var(--coral-light);  color: var(--coral); }
+  .badge-blue   { background: var(--blue-light);   color: var(--blue); }
+  .badge-amber  { background: var(--amber-light);  color: var(--amber); }
+  .badge-gray   { background: var(--gray-light);   color: var(--gray); }
+
+  h1.slide-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 42px;
+    font-weight: 400;
+    line-height: 1.15;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+  h2.slide-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 32px;
+    font-weight: 400;
+    line-height: 1.2;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+  h3.slide-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    font-weight: 400;
+    line-height: 1.25;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  .slide-subtitle {
+    font-size: 17px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 28px;
+    max-width: 680px;
+  }
+
+  .slide-meta {
+    font-size: 13px;
+    color: var(--text-faint);
+    margin-top: 32px;
+    font-style: italic;
+  }
+
+  .key-point {
+    border-left: 3px solid var(--purple);
+    padding: 10px 16px;
+    margin-bottom: 12px;
+    background: var(--purple-light);
+    border-radius: 0 8px 8px 0;
+    font-size: 14px;
+    line-height: 1.55;
+    color: #3C3489;
+  }
+  .key-point.teal  { border-color: var(--teal);  background: var(--teal-light);  color: #085041; }
+  .key-point.coral { border-color: var(--coral); background: var(--coral-light); color: #712B13; }
+  .key-point.amber { border-color: var(--amber); background: var(--amber-light); color: #633806; }
+  .key-point.blue  { border-color: var(--blue);  background: var(--blue-light);  color: #0C447C; }
+
+  .two-col   { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 16px; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-top: 16px; }
+
+  .info-card {
+    background: var(--gray-light);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .info-card h4 {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 10px;
+  }
+  .info-card p, .info-card li { font-size: 14px; line-height: 1.6; color: var(--text); }
+  .info-card ul { padding-left: 16px; }
+  .info-card li { margin-bottom: 5px; }
+  .info-card.purple { background: var(--purple-light); }
+  .info-card.teal   { background: var(--teal-light); }
+  .info-card.coral  { background: var(--coral-light); }
+  .info-card.blue   { background: var(--blue-light); }
+  .info-card.amber  { background: var(--amber-light); }
+
+  .domain-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .domain-pill { border-radius: 10px; padding: 12px 14px; text-align: center; }
+  .domain-pill .label  { font-size: 12px; font-weight: 500; margin-bottom: 4px; }
+  .domain-pill .detail { font-size: 11px; opacity: 0.8; line-height: 1.4; }
+  .domain-pill.imp  { background: #FCEBEB; color: #791F1F; }
+  .domain-pill.mod  { background: #FAEEDA; color: #633806; }
+  .domain-pill.pres { background: #EAF3DE; color: #27500A; }
+
+  .comparison-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 16px; }
+  .comparison-table th {
+    text-align: left;
+    padding: 10px 12px;
+    font-weight: 500;
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--border);
+  }
+  .comparison-table td {
+    padding: 10px 12px;
+    border-bottom: 0.5px solid var(--border);
+    line-height: 1.5;
+    vertical-align: top;
+    color: var(--text);
+  }
+  .comparison-table tr:last-child td { border-bottom: none; }
+  .comparison-table tr:hover td { background: var(--gray-light); }
+
+  .case-box {
+    background: var(--amber-light);
+    border: 0.5px solid #EF9F27;
+    border-radius: 14px;
+    padding: 24px 28px;
+    margin-top: 20px;
+  }
+  .case-box h4 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    color: #412402;
+    margin-bottom: 12px;
+  }
+  .case-box p { font-size: 14px; line-height: 1.65; color: #633806; margin-bottom: 12px; }
+  .case-box .q-label {
+    font-size: 12px; font-weight: 500; text-transform: uppercase;
+    letter-spacing: 0.06em; color: #854F0B; margin-bottom: 8px;
+  }
+  .case-box .q-list { list-style: none; padding: 0; }
+  .case-box .q-list li {
+    font-size: 13px; color: #633806; padding: 5px 0;
+    padding-left: 16px; position: relative; line-height: 1.5;
+  }
+  .case-box .q-list li::before { content: '?'; position: absolute; left: 0; font-weight: 500; color: #BA7517; }
+
+  .mech-row { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 0.5px solid var(--border); }
+  .mech-row:last-child { border-bottom: none; }
+  .mech-icon { width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+  .mech-text h5 { font-size: 14px; font-weight: 500; margin-bottom: 3px; color: var(--text); }
+  .mech-text p  { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+
+  .ref-item { padding: 10px 0; border-bottom: 0.5px solid var(--border); font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+  .ref-item:last-child { border-bottom: none; }
+  .ref-item strong { color: var(--text); font-weight: 500; }
+
+  .nav-row { display: flex; align-items: center; justify-content: space-between; margin-top: 24px; }
+  .nav-btn {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 24px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    color: var(--text);
+    transition: background 0.15s, transform 0.1s;
+  }
+  .nav-btn:hover { background: var(--gray-light); }
+  .nav-btn:active { transform: scale(0.98); }
+  .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .nav-btn.primary { background: var(--purple); color: #fff; border-color: var(--purple); }
+  .nav-btn.primary:hover { background: #3C3489; }
+
+  .slide-counter { font-size: 13px; color: var(--text-faint); }
+
+  .toc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 24px; }
+  .toc-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 16px; border-radius: 12px; cursor: pointer;
+    border: 0.5px solid transparent; transition: all 0.15s;
+  }
+  .toc-item:hover { border-color: var(--border); background: var(--gray-light); }
+  .toc-num { width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; flex-shrink: 0; }
+  .toc-item h4 { font-size: 14px; font-weight: 500; margin-bottom: 3px; color: var(--text); }
+  .toc-item p  { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+
+  .highlight-stat { font-family: 'DM Serif Display', serif; font-size: 48px; color: var(--purple); line-height: 1; margin-bottom: 6px; }
+  .highlight-stat.teal  { color: var(--teal); }
+  .highlight-stat.coral { color: var(--coral); }
+
+  .legend-row { display: flex; gap: 16px; margin-top: 12px; font-size: 11px; color: var(--text-muted); }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+
+  @media (max-width: 640px) {
+    .slide-card { padding: 28px 24px; }
+    h1.slide-title { font-size: 28px; }
+    h2.slide-title { font-size: 22px; }
+    .two-col, .three-col, .toc-grid { grid-template-columns: 1fr; }
+    .domain-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="deck-wrap">
+
+  <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+
+  <!-- SLAJD 1: Tytuł -->
+  <div class="slide active" id="slide-1">
+    <div class="slide-card" style="min-height:520px; justify-content:space-between;">
+      <div>
+        <div class="block-badge badge-gray">Psychologiczne aspekty opieki — choroby przewlekłe</div>
+        <h1 class="slide-title">Zaburzenia poznawcze<br><em>w chorobach przewlekłych</em></h1>
+        <p class="slide-subtitle">Trzy role zaburzeń poznawczych: czynnik psychogenny, osiowy objaw choroby, deterioracja wtórna do choroby somatycznej. Kliniczno-neuropsychologiczne ramy dla pracowników ochrony zdrowia.</p>
+      </div>
+      <div class="toc-grid">
+        <div class="toc-item" onclick="goTo(3)">
+          <div class="toc-num" style="background:#EEEDFE;color:#534AB7;">I</div>
+          <div><h4>Czynnik psychogenny</h4><p>Zaburzenia nastroju, psychotyczne, lękowe</p></div>
+        </div>
+        <div class="toc-item" onclick="goTo(9)">
+          <div class="toc-num" style="background:#E1F5EE;color:#0F6E56;">II</div>
+          <div><h4>Objaw choroby</h4><p>Otępienie — Alzheimer, Parkinson</p></div>
+        </div>
+        <div class="toc-item" onclick="goTo(15)">
+          <div class="toc-num" style="background:#FAECE7;color:#993C1D;">III</div>
+          <div><h4>Powikłanie somatyczne</h4><p>Cukrzyca, ChNS, POChP, nerki</p></div>
+        </div>
+        <div class="toc-item" onclick="goTo(21)">
+          <div class="toc-num" style="background:#E6F1FB;color:#185FA5;">IV</div>
+          <div><h4>Narzędzia przesiewowe</h4><p>MoCA, ACE-III, GPCOG, Mini-Cog</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLAJD 2: Ramy pojęciowe -->
+  <div class="slide" id="slide-2">
+    <div class="slide-card">
+      <div class="block-badge badge-gray">Ramy pojęciowe</div>
+      <h2 class="slide-title">Dlaczego zaburzenia poznawcze mają znaczenie w chorobach przewlekłych?</h2>
+      <p class="slide-subtitle">Dysfunkcja poznawcza to nie tylko zjawisko towarzyszące. Kształtuje powstawanie objawów, przebieg choroby, zarządzanie chorobą i procesem leczenia oraz jakość życia.</p>
+      <div class="three-col">
+        <div class="info-card purple">
+          <h4>Rola 1</h4>
+          <p>Dysregulacja poznawcza <em>konstytuuje</em> objawy psychiatryczne — zniekształcenia uwagi generują lęk, zniekształcenia pamięci kształtują urojenia</p>
+        </div>
+        <div class="info-card teal">
+          <h4>Rola 2</h4>
+          <p>Zaburzenie poznawcze <em>określa obraz</em> choroby — zespoły otępienne definiowane przez specyficzne profile neuropsychologiczne</p>
+        </div>
+        <div class="info-card coral">
+          <h4>Rola 3</h4>
+          <p>Przewlekła choroba somatyczna lub psychiczna <em>sprzyja deterioracji poznawczej</em> — poprzez mechanizmy naczyniowe, metaboliczne, zapalne i inne</p>
+        </div>
+      </div>
+      <p class="slide-meta">Kluczowy punkt kliniczny: te role nie wykluczają się wzajemnie. Przykład: cukrzyca współwystępująca z depresją wnosi skumulowane ryzyko zakłóceń poznawczych we wszystkich trzech wymiarach jednocześnie.</p>
+    </div>
+  </div>
+
+  <!-- SLAJD 3: Blok I – wprowadzenie -->
+  <div class="slide" id="slide-3">
+    <div class="slide-card" style="background: linear-gradient(135deg, #EEEDFE 0%, #fff 60%);">
+      <div class="block-badge badge-purple">Blok I — Czynnik psychogenny</div>
+      <h2 class="slide-title">Zaburzenia poznawcze jako czynnik psychogenny w zaburzeniach psychicznych</h2>
+      <p class="slide-subtitle">Dysfunkcja poznawcza nie jest jedynie następstwem zaburzenia psychicznego. W wielu przypadkach jest mechanistycznie <em>konstytutywna</em> dla fenomenologii objawów.</p>
+      <div class="two-col" style="margin-top:24px;">
+        <div>
+          <div class="key-point">Zaburzenia nastroju: dysfunkcja obwodów czołowo-prążkowiowych (frontostrialnych) powoduje deficyty uwagi, pamięci roboczej i funkcji wykonawczych — część z nich utrzymuje się w eutymii (Chamberlain &amp; Sahakian, 2006)</div>
+          <div class="key-point">Zaburzenia psychotyczne: deficyty uwagi i monitorowania źródła są konstytutywne dla formowania treści urojeniowych</div>
+        </div>
+        <div>
+          <div class="key-point">Zaburzenie lękowe o zdrowie (hipochondria): nadmiernie czujna, wybiorczo ukierunkowana uwaga na sygnały interoceptywne wzmacnia percepcję objawów</div>
+          <div class="key-point">Zaburzenia lękowe ogólnie: nadmierna wybiórczość uwagi w kierunku zagrożenia → zniekształcenie interpretacyjne → podtrzymanie objawów</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLAJD 4: Neuropsychologia zaburzeń nastroju -->
+  <div class="slide" id="slide-4">
+    <div class="slide-card">
+      <div class="block-badge badge-purple">Blok I — Zaburzenia nastroju</div>
+      <h2 class="slide-title">Neuropsychologia zaburzeń nastroju</h2>
+      <p class="slide-subtitle">Chamberlain &amp; Sahakian (2006) dokumentują systematyczny wzorzec deficytów poznawczych w epizodach afektywnych — i poza nimi.</p>
+      <div class="two-col">
+        <div>
+          <div class="info-card purple">
+            <h4>Dotknięte domeny</h4>
+            <ul>
+              <li>Uwaga podtrzymana — obniżona czujność</li>
+              <li>Pamięć robocza — zmniejszona pojemność i tempo</li>
+              <li>Funkcje wykonawcze — planowanie, elastyczność, hamowanie</li>
+              <li>Szybkość przetwarzania — spowolnienie psychomotoryczne</li>
+              <li>Pamięć werbalna — deficyty kodowania</li>
+            </ul>
+          </div>
+          <div class="info-card" style="margin-top:12px;">
+            <h4>Podłoże neurologiczne</h4>
+            <ul>
+              <li>Kora przedczołowa — funkcje wykonawcze i pamięć robocza</li>
+              <li>Obwody czołowo-prążkowiowe (frontostrialne) — nagroda, hamowanie</li>
+              <li>Ciało migdałowate — wybiórczość pamięci emocjonalnej</li>
+              <li>Modulacja serotoninergiczna i noradrenergiczna</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="key-point">Stan vs. cecha: deficyty są wyraźniejsze w epizodach, ale część zaburzeń utrzymuje się w eutymii — dowód na neuropsychologiczną podatność jako wyjściową dyspozycję poznawczą (cecha, nie tylko stan)</div>
+          <div class="key-point" style="margin-top:10px;">Zaburzenie afektywne dwubiegunowe: epizody manii i depresji wykazują odrębne (nie tylko przeciwstawne) profile. Eutymiczni pacjenci z CHAD mają rezydualne deficyty wykonawcze i pamięciowe</div>
+          <div class="key-point" style="margin-top:10px;">Implikacja kliniczna: powrót do funkcjonowania wyprzedza ustąpienie objawów nastroju — rehabilitacja poznawcza może być konieczna nawet po remisji</div>
+        </div>
+      </div>
+      <p class="slide-meta">Źródło główne: Chamberlain &amp; Sahakian (2006). Curr Psychiatry Rep 8, 458–463.</p>
+    </div>
+  </div>
+
+  <!-- SLAJD 5: Zaburzenia psychotyczne -->
+  <div class="slide" id="slide-5">
+    <div class="slide-card">
+      <div class="block-badge badge-purple">Blok I — Zaburzenia psychotyczne</div>
+      <h2 class="slide-title">Zaburzenia poznawcze w zaburzeniach psychotycznych</h2>
+      <p class="slide-subtitle">W schizofrenii i zaburzeniu urojeniowym deficyty poznawcze nie są cechami wtórnymi — są prawdopodobnie konstytutywne dla samej patologii.</p>
+      <div class="two-col">
+        <div>
+          <div class="info-card purple">
+            <h4>Kluczowe deficyty poznawcze</h4>
+            <ul>
+              <li>Błędy monitorowania źródła — przypisywanie wewnętrznych doświadczeń zewnętrznym źródłom</li>
+              <li>Stronniczość przedwczesnych wniosków (JTC) — niewystarczające zbieranie dowodów</li>
+              <li>Zaburzenie teorii umysłu — trudności mentalizacyjne</li>
+              <li>Deficyty uwagi podtrzymanej i pamięci roboczej</li>
+              <li>Zaburzenie uczenia werbalnego</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="key-point">W zaburzeniu urojeniowym szczególnie: nadmierna czujność uwagi + błędy monitorowania źródła + stronniczość JTC łączą się, generując treści urojeniowe z niejednoznacznych danych</div>
+          <div class="key-point" style="margin-top:10px;">Deficyty te poprzedzają ujawnienie objawów zaburzeń psychotycznych (badania na populacjach wysokiego ryzyka) — sugerując status endofenotypowy, a nie następstwo choroby</div>
+          <div class="key-point" style="margin-top:10px;">Znaczenie kliniczne: leki przeciwpsychotyczne częściowo redukują objawy pozytywne, ale mają ograniczony wpływ na deficyty poznawcze — główny czynnik niepełnosprawności funkcjonalnej</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLAJD 6: Zaburzenia lękowe -->
+  <div class="slide" id="slide-6">
+    <div class="slide-card">
+      <div class="block-badge badge-purple">Blok I — Zaburzenia lękowe</div>
+      <h2 class="slide-title">Zaburzenia uwagi w lęku i hipochondrii</h2>
+      <p class="slide-subtitle">Nawiązując do prezentacji Karola: stronniczość uwagi w hipochondrii jest szczególnym przypadkiem szerszego mechanizmu lękowego.</p>
+      <div class="two-col">
+        <div>
+          <div class="info-card purple">
+            <h4>Lęk ogólny: stronniczość uwagi w kierunku zagrożenia</h4>
+            <ul>
+              <li>Uwaga selektywna przechwytuje bodźce związane z zagrożeniem</li>
+              <li>Trudność z przekierowaniem uwagi od potencjalnych zagrożeń na inne bodźce</li>
+              <li>Stronniczość interpretacyjna: niejednoznaczność odczytywana jako zagrożenie</li>
+              <li>Nadmierna czujność → wzmocnione wykrywanie zagrożeń → pętla podtrzymania lęku</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="info-card purple">
+            <h4>Hipochondria (zaburzenie lękowe o zdrowie)</h4>
+            <ul>
+              <li>Interoceptywna nadmierna czujność uwagi</li>
+              <li>Normalne doznania cielesne są wzmacniane i błędnie interpretowane</li>
+              <li>Stronniczość zapamiętywania — preferencja dla kodowania informacji zgodnych z chorobą</li>
+              <li>Zachowania zabezpieczające (szukanie zapewnień, wielokrotne sprawdzanie) chwilowo łagodzą lęk, lecz podtrzymują skupienie uwagi na objawach i wzmacniają pętlę lękową</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="key-point" style="margin-top:16px;">Kluczowy wniosek: zaburzenie uwagi nie jest następstwem lęku — jest mechanizmem, przez który lęk <em>generuje</em> objawy. Leczenie musi być ukierunkowane na proces poznawczy, nie tylko na stan emocjonalny.</div>
+    </div>
+  </div>
+
+  <!-- SLAJD 7: Przypadek kliniczny A -->
+  <div class="slide" id="slide-7">
+    <div class="slide-card">
+      <div class="block-badge badge-purple">Blok I — Przypadek kliniczny</div>
+      <h2 class="slide-title">Przypadek A: Maria, lat 42</h2>
+      <div class="case-box">
+        <h4>Opis przypadku</h4>
+        <p>Skierowana przez lekarza POZ z powodu „problemów z pamięcią." Trudności z koncentracją w pracy, zapominanie o spotkaniach. 6-miesięczny epizod depresji dużej, aktualnie lek przeciwdepresyjny z częściową odpowiedzią na nastrój. Zaniepokojona — obawia się wczesnego otępienia. Badanie neuropsychologiczne: obniżona pamięć robocza i uwaga podtrzymana; kodowanie pamięci epizodycznej zachowane.</p>
+        <div class="q-label">Pytania do dyskusji</div>
+        <ul class="q-list">
+          <li>Czy jej zaburzenia poznawcze są „prawdziwe"? Co Chamberlain &amp; Sahakian mówią o rozróżnieniu stan/cecha?</li>
+          <li>Jak w praktyce odróżnić depresyjne upośledzenie poznawcze od prodromu otępienia?</li>
+          <li>Który profil zaburzeń poznawczych najlepiej wyjaśnia trudności prezentowane przez pacjentkę — i które narzędzie przesiewowe byś wybrał?</li>
+          <li>Co literatura dotycząca deficytów rezydualnych implikuje dla jej rokowania funkcjonalnego po remisji zaburzeń nastroju?</li>
+          <li>Jak wyjaśnić jej objawy poznawcze w sposób nieeskalujący niepokoju pacjentki?</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLAJD 8: Podsumowanie Bloku I -->
+  <div class="slide" id="slide-8">
+    <div class="slide-card">
+      <div class="block-badge badge-purple">Blok I — Podsumowanie</div>
+      <h2 class="slide-title">Wnioski kluczowe — zaburzenia poznawcze jako czynnik psychogenny</h2>
+      <div class="three-col">
+        <div style="text-align:center; padding:20px;">
+          <div class="highlight-stat">↑</div>
+          <p style="font-size:13px;color:var(--text-muted);margin-top:8px;">Deficyty poznawcze przewidują stan funkcjonalny pacjenta <em>niezależnie</em> od nasilenia objawów w zaburzeniach nastroju</p>
+        </div>
+        <div style="text-align:center; padding:20px;">
+          <div class="highlight-stat">↔</div>
+          <p style="font-size:13px;color:var(--text-muted);margin-top:8px;">Część deficytów ma charakter <em>cechy</em> — utrzymuje się w remisji — nie jest czysto stanozależna</p>
+        </div>
+        <div style="text-align:center; padding:20px;">
+          <div class="highlight-stat">⊂</div>
+          <p style="font-size:13px;color:var(--text-muted);margin-top:8px;">W niektórych zaburzeniach psychicznych (psychotyczne, lękowe) dysregulacja poznawcza jest <em>konstytutywna</em> dla powstawania objawów, nie wtórna</p>
+        </div>
+      </div>
+      <div class="key-point" style="margin-top:16px;">Zasada kliniczna: traktuj dysfunkcję poznawczą bezpośrednio — nie tylko jako objaw zaburzenia psychiatrycznego, ale jako cel interwencji sam w sobie. Psychoedukacja, rehabilitacja poznawcza i trening funkcji poznawczych mają rozwijające się podstawy dowodowe.</div>
+    </div>
+  </div>
+
+  <!-- SLAJD 9: Blok II – wprowadzenie -->
+  <div class="slide" id="slide-9">
+    <div class="slide-card" style="background: linear-gradient(135deg, #E1F5EE 0%, #fff 60%);">
+      <div class="block-badge badge-teal">Blok II — Objawy choroby</div>
+      <h2 class="slide-title">Zaburzenia poznawcze jako objawy zaburzeń</h2>
+      <p class="slide-subtitle">Choroby neurodegeneracyjne, w których upośledzenie poznawcze jest osiowym objawem. Umiejętność kliniczna polega na odczytywaniu <em>profili domenowych</em>, nie binarnych ocen.</p>
+      <div class="two-col" style="margin-top:24px;">
+        <div>
+          <div class="key-point teal">Choroba Alzheimera: pamięć epizodyczna (hipokampowa) → wzrokowo-przestrzenna → wykonawcza. Pamięć proceduralna i semantyczna odległa stosunkowo zachowana do późnych stadiów</div>
+          <div class="key-point teal" style="margin-top:10px;">Otępienie w chorobie Parkinsona: dysfunkcja wykonawcza i spowolnienie poprzedzają zaburzenia pamięci</div>
+        </div>
+        <div>
+          <div class="key-point teal">Otępienie naczyniowe: postęp schodkowy, zespół dysegzekutywny, labilność emocjonalna, wzorzec czołowo-podkorowy</div>
+          <div class="key-point teal" style="margin-top:10px;">Profile domenowe mają wartość diagnostyczną — różne wzorce sugerują różne patologie i rokowania</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLAJD 10: Profil Alzheimera -->
+  <div class="slide" id="slide-10">
+    <div class="slide-card">
+      <div class="block-badge badge-teal">Blok II — Choroba Alzheimera</div>
+      <h2 class="slide-title">Choroba Alzheimera — specyficzny domenowo profil poznawczy</h2>
+      <div class="domain-grid" style="margin-bottom:20px;">
+        <div class="domain-pill imp"><div class="label">Pamięć epizodyczna</div><div class="detail">Pierwsza i najsilniej zajęta. Hipokampozależna dysfunkcja kodowania.</div></div>
+        <div class="domain-pill imp"><div class="label">Wzrokowo-przestrzenna</div><div class="detail">Zajęcie płata ciemieniowego. Nawigacja, rozpoznawanie obiektów.</div></div>
+        <div class="domain-pill mod"><div class="label">Język</div><div class="detail">Anomia, trudności ze znalezieniem słów w stadiach umiarkowanych.</div></div>
+        <div class="domain-pill mod"><div class="label">Funkcje wykonawcze</div><div class="detail">Planowanie, elastyczność — zajęte w stadium umiarkowanym.</div></div>
+        <div class="domain-pill pres"><div class="label">Pamięć proceduralna</div><div class="detail">Stosunkowo zachowana — umiejętności nawykowe najdłużej nienaruszone.</div></div>
+        <div class="domain-pill mod"><div class="label">Uwaga</div><div class="detail">Zaburzenia uwagi jako wczesny objaw, często poprzedzają wyraźne deficyty pamięci.</div></div>
+        <div class="domain-pill pres"><div class="label">Semantyczna odległa</div><div class="detail">Odległa pamięć długoterminowa bardziej zachowana niż świeża.</div></div>
+      </div>
+      <div class="legend-row">
+        <div class="legend-item"><div style="width:12px;height:12px;border-radius:3px;background:#FCEBEB;border:1px solid #F09595;"></div> Silnie zaburzona we wczesnym stadium</div>
+        <div class="legend-item"><div style="width:12px;height:12px;border-radius:3px;background:#FAEEDA;border:1px solid #EF9F27;"></div> Umiarkowana — postępująca</div>
+        <div class="legend-item"><div style="width:12px;height:12px;border-radius:3px;background:#EAF3DE;border:1px solid #97C459;"></div> Stosunkowo zachowana</div>
+      </div>
+      <p class="slide-meta">Uwaga: ten gradient zaburzeń ma znaczenie diagnostyczne. Pacjent prezentujący pogorszenie zaczynające się od funkcji wykonawczych może nie mieć ChA — rozważ otępienie czołowo-skroniowe lub chorobę Parkinsona.</p>
+    </div>
+  </div>
+
+  <!-- SLAJD 11: Profil Parkinsona -->
+  <div class="slide" id="slide-11">
+    <div class="slide-card">
+      <div class="block-badge badge-teal">Blok II — Choroba Parkinsona</div>
+      <h2 class="slide-title">Choroba Parkinsona — profil poznawczy</h2>
+      <p class="slide-subtitle">PD-MCI i PDD prezentują odrębny wzorzec „podkorowy" — dysfunkcja wykonawcza jako pierwsza, ze stosunkowym oszczędzeniem pamięci epizodycznej do późniejszych stadiów.</p>
+      <div class="two-col">
+        <div>
+          <div class="domain-grid" style="grid-template-columns:1fr 1fr;">
+            <div class="domain-pill imp"><div class="label">Funkcje wykonawcze</div><div class="detail">Elastyczność poznawcza, zmiany nastawień, planowanie</div></div>
+            <div class="domain-pill imp"><div class="label">Szybkość przetwarzania</div><div class="detail">Spowolnienie psychomotoryczne — bradyfrenia</div></div>
+            <div class="domain-pill imp"><div class="label">Uwaga</div><div class="detail">Szczególnie podzielna i podtrzymana</div></div>
+            <div class="domain-pill mod"><div class="label">Wzrokowo-przestrzenna</div><div class="detail">Zadania konstrukcyjne; kora tylna</div></div>
+            <div class="domain-pill pres"><div class="label">Pamięć epizodyczna</div><div class="detail">Kodowanie stosunkowo oszczędzone; pomoc naprowadzaniem</div></div>
+            <div class="domain-pill pres"><div class="label">Język</div><div class="detail">W dużej mierze zachowany we wczesnej ChP</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="info-card teal">
+            <h4>Mechanizmy neurologiczne</h4>
+            <ul>
+              <li>Deplecja dopaminergiczna w obwodach frontostrialnych</li>
+              <li>Szerzenie się ciał Lewy'ego — staging Braaka</li>
+              <li>Deficyty cholinergiczne — cięższe niż w ChA przy porównywalnym stadium otępienia</li>
+              <li>Zajęcie kory tylnej w wariancie z ciałami Lewy'ego</li>
+            </ul>
+          </div>
+          <div class="key-point teal" style="margin-top:12px;">Wskazówka diagnostyczna: jeśli pacjent z zaburzeniami pamięci <em>wyraźnie korzysta z naprowadzeń</em>, sugeruje to PDD lub wzorzec podkorowy — nie ChA (która obejmuje dysfunkcję przechowywania/kodowania)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLAJD 12: Otępienie naczyniowe -->
+  <div class="slide" id="slide-12">
+    <div class="slide-card">
+      <div class="block-badge badge-teal">Blok II — Otępienie naczyniowe</div>
+      <h2 class="slide-title">Otępienie naczyniowe — wzorzec i cechy kliniczne</h2>
+      <div class="two-col">
+        <div>
+          <div class="info-card teal">
+            <h4>Profil poznawczy</h4>
+            <ul>
+              <li>Dysfunkcja wykonawcza: planowanie, zmiana nastawień</li>
+              <li>Spowolnienie psychomotoryczne</li>
+              <li>Deficyty uwagi i pamięci roboczej</li>
+              <li>Pamięć: często zaburzenie odtwarzania &gt; kodowania</li>
+              <li>Labilność emocjonalna, apatia</li>
+            </ul>
+          </div>
+          <div class="info-card" style="margin-top:12px;">
+            <h4>Przebieg</h4>
+            <ul>
+              <li>Schodkowe pogorszenie (w odróżnieniu od stopniowego w ChA)</li>
+              <li>Fluktuacje częste</li>
+              <li>Możliwe ogniskowe objawy neurologiczne</li>
+              <li>Silny związek z czynnikami ryzyka sercowo-naczyniowego</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="key-point teal">Mechanizmy: udary dużych naczyń, choroba małych naczyń (zawały lakunarne), zmiany w istocie białej (hiperintensywności), przewlekłe niedokrwienie mózgu (hipoperfuzja)</div>
+          <div class="key-point teal" style="margin-top:10px;">Dysrupcja obwodów czołowo-podkorowych tłumaczy zespół dysegzekutywny — uszkodzenie przerywa pętle łączące korę przedczołową, prążkowie, wzgórze i z powrotem</div>
+          <div class="key-point teal" style="margin-top:10px;">Znaczenie kliniczne: kontrola naczyniowych czynników ryzyka (ciśnienie, cukrzyca, cholesterol, palenie) jest podstawową interwencją modyfikującą chorobę. Badanie przesiewowe poznawcze informuje o rokowaniu.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLAJD 13: Tabela porównawcza -->
+  <div class="slide" id="slide-13">
+    <div class="slide-card">
+      <div class="block-badge badge-teal">Blok II — Porównanie</div>
+      <h2 class="slide-title">Profile otępień — zestawienie</h2>
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Domena</th>
+            <th style="color:#085041;">Alzheimer</th>
+            <th style="color:#085041;">Parkinson / DLB</th>
+            <th style="color:#085041;">Naczyniowe</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Pamięć epizodyczna</td><td>Silnie zaburzona wcześnie</td><td>Stosunkowo zachowana; naprowadzanie pomaga</td><td>Zaburzenie odtwarzania &gt; kodowania</td></tr>
+          <tr><td>Funkcje wykonawcze</td><td>Umiarkowane, postępujące</td><td>Wczesne i wyraźne</td><td>Wczesne i wyraźne</td></tr>
+          <tr><td>Szybkość przetwarzania</td><td>Lekko obniżona</td><td>Znacznie obniżona (bradyfrenia)</td><td>Obniżona</td></tr>
+          <tr><td>Wzrokowo-przestrzenna</td><td>Umiarkowana (ciemieniowa)</td><td>Wyraźna (tylno-korowa)</td><td>Zmienna</td></tr>
+          <tr><td>Język</td><td>Anomia, potem afazja</td><td>Wczesno zachowany</td><td>Zmienny</td></tr>
+          <tr><td>Przebieg</td><td>Stopniowy, postępujący</td><td>Stopniowy; fluktuacje w DLB</td><td>Schodkowy</td></tr>
+          <tr><td>Omamy</td><td>Rzadkie do późnych stadiów</td><td>Wzrokowe — częste</td><td>Rzadkie</td></tr>
+        </tbody>
+      </table>
+      <p class="slide-meta">Litvan i in. (2012) kryteria diagnostyczne MCI w chorobie Parkinsona; Petersen (2004) nozologia MCI. Profilowe podejście jest diagnostycznie cenniejsze niż samo globalne punktowanie.</p>
+    </div>
+  </div>
+
+  <!-- SLAJD 14: Przypadek kliniczny B -->
+  <div class="slide" id="slide-14">
+    <div class="slide-card">
+      <div class="block-badge badge-teal">Blok II — Przypadek kliniczny</div>
+      <h2 class="slide-title">Przypadek B: Tomasz, lat 71</h2>
+      <div class="case-box" style="background:#E1F5EE;border-color:#5DCAA5;">
+        <h4 style="color:#04342C;">Opis przypadku</h4>
+        <p style="color:#085041;">Przyprowadzony przez córkę. Zapomina rozmowy w ciągu minut, gubi się w znanych okolicach, niedawno nie rozpoznał starego znajomego. Córka wspomina też, że czasem widzi rzeczy, których ona nie widzi. Poza tym zdrowy somatycznie. MMSE = 19/30.</p>
+        <div class="q-label" style="color:#0F6E56;">Pytania do dyskusji</div>
+        <ul class="q-list" style="color:#085041;">
+          <li style="color:#085041;">Które funkcje poznawcze objęte są deficytami? Co sugeruje ten profil w zakresie prawdopodobnej patologii?</li>
+          <li style="color:#085041;">Córka wspomina o epizodycznych omamach wzrokowych. Jak to zmienia diagnostykę różnicową?</li>
+          <li style="color:#085041;">Które narzędzie przesiewowe dostarczyłoby bogatszych informacji diagnostycznych niż sam MMSE?</li>
+          <li style="color:#085041;">Jak komunikować niepewność diagnostyczną pacjentowi i rodzinie?</li>
+          <li style="color:#085041;">Jak planować opiekę nad pacjentem, który ma trudności z zapamiętywaniem zaleceń?</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLAJD 15: Blok III – wprowadzenie -->
+  <div class="slide" id="slide-15">
+    <div class="slide-card" style="background: linear-gradient(135deg, #FAECE7 0%, #fff 60%);">
+      <div class="block-badge badge-coral">Blok III — Powikłania somatyczne</div>
+      <h2 class="slide-title">Zaburzenia poznawcze jako powikłanie przewlekłych chorób somatycznych</h2>
+      <p class="slide-subtitle">Przewlekłe choroby somatyczne wywołują specyficzne profile trudności poznawczych przez identyfikowalne mechanizmy biologiczne — często niedodiagnozowane, bo pacjenci i klinicyści przypisują je zmęczeniu lub starzeniu.</p>
+      <div class="two-col" style="margin-top:20px;">
+        <div>
+          <div class="key-point coral">Cukrzyca (T1 i T2): hiperglikemia, hipoglikemia, insulinooporność OUN, uszkodzenie naczyniowe, neuroinflammacja — odrębne profile zależnie od typu (Aderinto i in., 2023)</div>
+          <div class="key-point coral" style="margin-top:10px;">Choroby sercowo-naczyniowe: migotanie przedsionków, niewydolność serca, nadciśnienie — obniżona szybkość przetwarzania, pamięć robocza, ryzyko otępienia</div>
+        </div>
+        <div>
+          <div class="key-point coral">POChP: hipoksemicznie mediowane zaburzenia uwagi i sprawności psychomotorycznej — często przypisywane zmęczeniu</div>
+          <div class="key-point coral" style="margin-top:10px;">Przewlekła choroba nerek: encefalopatia mocznicowa — częściowo odwracalna dializą. Dowód, że somatyczne zaburzenia poznawcze mogą fluktuować ze stanem somatycznym pacjenta</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLAJD 16: Cukrzyca -->
+  <div class="slide" id="slide-16">
+    <div class="slide-card">
+      <div class="block-badge badge-coral">Blok III — Cukrzyca</div>
+      <h2 class="slide-title">Cukrzyca a zaburzenia poznawcze</h2>
+      <p class="slide-subtitle">Aderinto i in. (2023) prezentują kompleksowy przegląd mechanizmów i specyficznych domenowo efektów w cukrzycy typu 1 i 2.</p>
+      <div class="two-col">
+        <div>
+          <div class="info-card coral">
+            <h4>Mechanizmy</h4>
+            <ul>
+              <li>Przewlekła hiperglikemia — glikacja, stres oksydacyjny</li>
+              <li>Epizody hipoglikemii — podatność hipokampa</li>
+              <li>Insulinooporność OUN — upośledzona plastyczność synaptyczna</li>
+              <li>Choroba mikronaczyniowa — zmiany istoty białej</li>
+              <li>Neuroinflammacja — mediowana cytokinami</li>
+              <li>Interakcja z czynnikami ryzyka sercowo-naczyniowego</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="info-card coral">
+            <h4>Profil poznawczy według typu</h4>
+            <p style="margin-bottom:8px;"><strong style="color:#712B13;">Cukrzyca T2:</strong> Uwaga, szybkość przetwarzania, funkcje wykonawcze przede wszystkim. Zwiększone ryzyko objawów zespołu otępiennego typu alzheimerowskiego (przez zaburzenia sygnalizacji insulinowej w OUN).</p>
+            <p><strong style="color:#712B13;">Cukrzyca T1:</strong> Spowolnienie psychomotoryczne, deficyty uwagi. Przewlekła hipoglikemia szczególnie szkodliwa przy wczesnym początku u dzieci — podatność rozwojowa.</p>
+          </div>
+          <div class="key-point coral" style="margin-top:12px;">Trajektoria: efekty kumulują się i wchodzą w interakcję z wiekiem. Długi czas trwania cukrzycy + zła kontrola glikemii + nadciśnienie = istotnie podwyższone ryzyko otępienia (Biessels i in., 2006)</div>
+        </div>
+      </div>
+      <p class="slide-meta">Źródło główne: Aderinto i in. (2023). Medicine 102(43), e35557.</p>
+    </div>
+  </div>
+
+  <!-- SLAJD 17: ChNS i POChP -->
+  <div class="slide" id="slide-17">
+    <div class="slide-card">
+      <div class="block-badge badge-coral">Blok III — Sercowo-naczyniowe i płucne</div>
+      <h2 class="slide-title">ChNS, POChP i choroby nerek — profile poznawcze</h2>
+      <div class="three-col">
+        <div class="info-card coral">
+          <h4>Sercowo-naczyniowe</h4>
+          <ul>
+            <li><strong style="color:#712B13;">Nadciśnienie:</strong> szybkość przetwarzania, pamięć, funkcje wykonawcze — uszkodzenia istoty białej</li>
+            <li><strong style="color:#712B13;">Niewydolność serca:</strong> uwaga, wykonawcze, pamięć — mózgowa hipoperfuzja</li>
+            <li><strong style="color:#712B13;">Migotanie przedsionków:</strong> subkliniczne epizody zatorowe → naczyniowe zaburzenia poznawcze; ryzyko otępienia podwyższone o ~40%</li>
+          </ul>
+        </div>
+        <div class="info-card coral">
+          <h4>POChP</h4>
+          <ul>
+            <li>Przewlekła hipoksemia uszkadza korę przedczołową</li>
+            <li>Zaburzenia uwagi</li>
+            <li>Spowolnienie psychomotoryczne</li>
+            <li>Deficyty wykonawcze</li>
+            <li>Często błędnie przypisywane zmęczeniu lub depresji</li>
+            <li>Tlenoterapia może częściowo cofnąć efekty ostrego niedotlenienia</li>
+          </ul>
+        </div>
+        <div class="info-card coral">
+          <h4>Przewlekła choroba nerek</h4>
+          <ul>
+            <li>Encefalopatia mocznicowa: uwaga, pamięć robocza, szybkość przetwarzania</li>
+            <li>Toksyny mocznicowe: bezpośredni efekt neurotoksyczny</li>
+            <li>Niedokrwistość pogłębia uszkodzenia hipoksyczne</li>
+            <li>Fluktuacja kondycji poznawczej w zależności od sesji dializ</li>
+            <li>Klinicznie ważne: zaburzenia poznawcze wpływają na adherencję do dializoterapii</li>
+          </ul>
+        </div>
+      </div>
+      <div class="key-point coral" style="margin-top:16px;">We wszystkich chorobach somatycznych: zaburzenia poznawcze komplikują zdolność zarządzania chorobą. Pacjenci z wybiorczymi lub globalnymi zaburzeniami poznawczymi prezentują niższą adherencję do złożonych schematów leczenia — tworzy to pętlę zwrotną.</div>
+    </div>
+  </div>
+
+  <!-- SLAJD 18: Mechanizmy -->
+  <div class="slide" id="slide-18">
+    <div class="slide-card">
+      <div class="block-badge badge-coral">Blok III — Mechanizmy</div>
+      <h2 class="slide-title">Wspólne szlaki patofiziologiczne</h2>
+      <p class="slide-subtitle">Pomimo zróżnicowanego obrazu klinicznego, przewlekłe choroby somatyczne prowadzą do ograniczonej liczby wspólnych mechanizmów neurotoksycznych.</p>
+      <div>
+        <div class="mech-row">
+          <div class="mech-icon" style="background:#FAECE7;">&#9680;</div>
+          <div class="mech-text">
+            <h5>Szlak naczyniowy</h5>
+            <p>Dysfunkcja śródbłonka, mikroangiopatia, zmiany istoty białej, zmniejszona perfuzja mózgu. Obecny w cukrzycy, nadciśnieniu, niewydolności serca, POChP.</p>
+          </div>
+        </div>
+        <div class="mech-row">
+          <div class="mech-icon" style="background:#FAECE7;">&#9650;</div>
+          <div class="mech-text">
+            <h5>Szlak neuroinflammacyjny</h5>
+            <p>Systemowe zapalenie (podwyższone CRP, IL-6, TNF-α) przekracza barierę krew-mózg; aktywacja mikroglejów; dysfunkcja synaptyczna. Szczególnie w cukrzycy, PChN, POChP.</p>
+          </div>
+        </div>
+        <div class="mech-row">
+          <div class="mech-icon" style="background:#FAECE7;">&#9711;</div>
+          <div class="mech-text">
+            <h5>Szlak metaboliczny/hipoksyczny</h5>
+            <p>Bezpośrednie uszkodzenie neuronów przez toksyczność glukozy, hipoglikemię, hipoksemię lub toksyny mocznicowe. Specyficzność domenowa odzwierciedla regionalną podatność (hipokamp, kora przedczołowa).</p>
+          </div>
+        </div>
+        <div class="mech-row">
+          <div class="mech-icon" style="background:#FAECE7;">&#9654;</div>
+          <div class="mech-text">
+            <h5>Dysregulacja osi HPA</h5>
+            <p>Przewlekły stres i choroba aktywują oś HPA; podtrzymana ekspozycja na kortyzol działa hipokampalnie neurotoksycznie. Łączy chorobę somatyczną ze współwystępowaniem zaburzeń nastroju i funkcji poznawczych.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLAJD 19: Przypadek kliniczny C -->
+  <div class="slide" id="slide-19">
+    <div class="slide-card">
+      <div class="block-badge badge-coral">Blok III — Przypadek kliniczny</div>
+      <h2 class="slide-title">Przypadek C: Danuta, lat 65</h2>
+      <div class="case-box" style="background:#FAECE7;border-color:#F0997B;">
+        <h4 style="color:#4A1B0C;">Opis przypadku</h4>
+        <p style="color:#712B13;">Cukrzyca typu 2 od 14 lat, nadciśnienie, umiarkowana POChP. Diabetolog stwierdził powtarzające się nieprawidłowości w podawaniu insuliny, pomimo wcześniejszego prawidłowego opanowania tej umiejętności przez pacjentkę. Pacjentka zaprzecza skargom poznawczym; córka mówi, że jest „wolniejsza." MoCA = 24/30 — zaburzona uwaga i szybkość przetwarzania, kodowanie pamięci nienaruszone.</p>
+        <div class="q-label" style="color:#993C1D;">Pytania do dyskusji</div>
+        <ul class="q-list">
+          <li style="color:#712B13;">Które mechanizmy z pracy Aderinto i in. najlepiej tłumaczą jej profil poznawczy?</li>
+          <li style="color:#712B13;">Jak cukrzyca i POChP wchodzą w interakcję w kontekście ryzyka poznawczego?</li>
+          <li style="color:#712B13;">MoCA 24 to wynik graniczny — czy jest tu klinicznie istotny?</li>
+          <li style="color:#712B13;">Jakie są implikacje dla opieki w zarządzaniu złożonym schematem leczenia u pacjentki z zaburzeniami uwagi?</li>
+          <li style="color:#712B13;">Jak przekazać te wyniki diabetologowi, który ją skierował?</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLAJD 20: Podsumowanie Bloku III -->
+  <div class="slide" id="slide-20">
+    <div class="slide-card">
+      <div class="block-badge badge-coral">Blok III — Podsumowanie</div>
+      <h2 class="slide-title">Wnioski kluczowe — choroba somatyczna i zaburzenia poznawcze</h2>
+      <div class="two-col">
+        <div>
+          <div class="key-point coral">Zaburzenia poznawcze w chorobach somatycznych są częste, niedodiagnozowane i często przypisywane zmęczeniu, starzeniu lub niskiemu nastrojowi — konieczne jest systematyczne badanie przesiewowe</div>
+          <div class="key-point coral" style="margin-top:10px;">Profile poznawcze odzwierciedlają specyficzne mechanizmy patologiczne — podejście profilowe jest diagnostycznie bardziej informacyjne niż samo globalne punktowanie</div>
+        </div>
+        <div>
+          <div class="key-point coral">Somatyczne zaburzenia poznawcze tworzą samowzmacniający się cykl: obniżona zdolność poznawcza → gorsza kontrola choroby → postęp choroby → dalsze pogorszenie poznawcze</div>
+          <div class="key-point coral" style="margin-top:10px;">Cele interwencji: kontrola glikemii, leczenie nadciśnienia, korekcja hipoksji, leczenie przeciwzapalne — mogą częściowo cofnąć lub spowolnić deteriorację poznawczą</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLAJD 21: Narzędzia przesiewowe – przegląd -->
+  <div class="slide" id="slide-21">
+    <div class="slide-card">
+      <div class="block-badge badge-blue">Narzędzia przesiewowe</div>
+      <h2 class="slide-title">Przesiewowe badania poznawcze — które narzędzie, kiedy?</h2>
+      <p class="slide-subtitle">MoCA, ACE-III, GPCOG i Mini-Cog nie są wymienne. Każde zajmuje odrębną niszę kliniczną zdefiniowaną przez pokrycie domenowe, czas i kontekst.</p>
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Narzędzie</th>
+            <th>Czas</th>
+            <th>Kluczowe domeny</th>
+            <th>Najlepszy kontekst</th>
+            <th>Czułość (MCI)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>MoCA</strong></td>
+            <td>~10 min</td>
+            <td>Uwaga, wykonawcze, pamięć, język, wzrokowo-przestrzenna, orientacja</td>
+            <td>Neurologia/psychiatria ambulatoryjna; wykrywanie MCI</td>
+            <td>~90%</td>
+          </tr>
+          <tr>
+            <td><strong>ACE-III</strong></td>
+            <td>15–20 min</td>
+            <td>Bogata pamięć (kodowanie/odtwarzanie), płynność i nazywanie, wzrokowo-przestrzenna</td>
+            <td>Różnicowanie podtypów otępień (ChA vs. FTD vs. DLB)</td>
+            <td>~96%</td>
+          </tr>
+          <tr>
+            <td><strong>GPCOG</strong></td>
+            <td>~5 min</td>
+            <td>Pamięć, orientacja, rysowanie zegara + wywiad z informatorem</td>
+            <td>Szybkie badanie przesiewowe w POZ</td>
+            <td>~85%</td>
+          </tr>
+          <tr>
+            <td><strong>Mini-Cog</strong></td>
+            <td>~3 min</td>
+            <td>Przypominanie 3 słów + rysowanie zegara</td>
+            <td>Szpital — oddział ostry; geriatria; pacjenci leżący</td>
+            <td>~76–99% (zmienna)</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="slide-meta">Wybór niewłaściwego narzędzia dla danego kontekstu może skutkować przeoczeniem diagnozy. MoCA i ACE-III umożliwiają ponadto różnicowanie profilu zaburzeń właściwych chorobie organicznej/somatycznej od zaburzenia funkcjonalnego (np. zespół otępienny vs. zaburzenia nastroju) oraz ocenę funkcji wykonawczych — osiowych w niektórych zaburzeniach. Dopasuj narzędzie do pytania klinicznego i warunków badania.</p>
+    </div>
+  </div>
+
+  <!-- SLAJD 22: MoCA szczegółowo -->
+  <div class="slide" id="slide-22">
+    <div class="slide-card">
+      <div class="block-badge badge-blue">Narzędzia — MoCA</div>
+      <h2 class="slide-title">Montreal Cognitive Assessment (MoCA)</h2>
+      <div class="two-col">
+        <div>
+          <div class="info-card blue">
+            <h4>Pokrycie domenowe (30 punktów)</h4>
+            <ul>
+              <li>Wzrokowo-przestrzenna/wykonawcze (5 pkt): łączenie liter/cyfr, sześcian, zegar</li>
+              <li>Nazywanie (3 pkt): zwierzęta</li>
+              <li>Pamięć (5 pkt): odroczone odtwarzanie, bez punktów za natychmiastowe</li>
+              <li>Uwaga (6 pkt): powtarzanie cyfr, uwaga podtrzymana, odejmowanie 7</li>
+              <li>Język (3 pkt): powtarzanie zdań, płynność</li>
+              <li>Abstrahowanie (2 pkt): podobieństwa</li>
+              <li>Orientacja (6 pkt)</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="key-point blue">Punkt odcięcia: ≥26 norma. +1 punkt przy ≤12 latach edukacji. Wyniki 18–25 sugerują MCI; &lt;18 sugeruje otępienie — interpretuj w kontekście klinicznym</div>
+          <div class="key-point blue" style="margin-top:10px;">Mocne strony: najlepiej zwalidowany do wykrywania MCI, wersje wielojęzyczne, czuły na wczesne dysfunkcje wykonawcze (ważne w ChP, naczyniowym)</div>
+          <div class="key-point blue" style="margin-top:10px;">Słabość: mniej czuły w różnicowaniu podtypów otępień. Użyj ACE-III gdy liczy się podtyp. Wymagana korekta na edukację i język.</div>
+        </div>
+      </div>
+      <p class="slide-meta">Nasreddine i in. (2005). JAGS 53, 695–699. Dostępny na mocatest.org — zalecane szkolenie w administracji dla wiarygodnych wyników.</p>
+    </div>
+  </div>
+
+  <!-- SLAJD 23: ACE-III szczegółowo -->
+  <div class="slide" id="slide-23">
+    <div class="slide-card">
+      <div class="block-badge badge-blue">Narzędzia — ACE-III</div>
+      <h2 class="slide-title">Addenbrooke's Cognitive Examination III (ACE-III)</h2>
+      <div class="two-col">
+        <div>
+          <div class="info-card blue">
+            <h4>Pokrycie domenowe (100 punktów)</h4>
+            <ul>
+              <li>Uwaga (18 pkt): orientacja, odejmowanie 7, miesiące wstecz</li>
+              <li>Pamięć (26 pkt): rejestracja, odtwarzanie następcze, wsteczne</li>
+              <li>Płynność (14 pkt): literowa i kategoryczna — czuła na patologię czołową</li>
+              <li>Język (26 pkt): rozumienie, powtarzanie, nazywanie, czytanie</li>
+              <li>Wzrokowo-przestrzenna (16 pkt): kopiowanie, liczenie kropek, rozpoznawanie liter</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="key-point blue">Najlepsze do różnicowania ChA (pamięć-pierwsza) od FTD (płynność/język-pierwsza) i DLB (wzrokowo-przestrzenna-pierwsza). Wyniki subskali są diagnostycznie informacyjne.</div>
+          <div class="key-point blue" style="margin-top:10px;">Iloraz VLOM (werbalna/język vs. pamięć/orientacja): iloraz &gt;3,2 sugeruje FTD; &lt;2,2 sugeruje ChA. Użyteczna heurystyka diagnostyki różnicowej.</div>
+          <div class="key-point blue" style="margin-top:10px;">Ograniczenie: 15–20 minut — nieodpowiednie dla bardzo słabych, ciężko chorych somatycznie lub ostro zdezorientowanych. W tych kontekstach użyj Mini-Cog lub GPCOG.</div>
+        </div>
+      </div>
+      <p class="slide-meta">Hsieh i in. (2013). Dementia Geriatr Cogn Disord 36, 242–250. Zwalidowany wobec diagnoz ChA i FTD.</p>
+    </div>
+  </div>
+
+  <!-- SLAJD 24: GPCOG + Mini-Cog -->
+  <div class="slide" id="slide-24">
+    <div class="slide-card">
+      <div class="block-badge badge-blue">Narzędzia — GPCOG i Mini-Cog</div>
+      <h2 class="slide-title">Szybkie przesiewanie — GPCOG i Mini-Cog</h2>
+      <div class="two-col">
+        <div>
+          <div class="info-card blue">
+            <h4>GPCOG (ocena poznawcza w POZ)</h4>
+            <ul>
+              <li>Część pacjenta: zapamiętanie imienia/adresu, rysowanie zegara, orientacja</li>
+              <li>Część informatora: 6 pytań porównujących obecne z wcześniejszym funkcjonowaniem</li>
+              <li>Punkt odcięcia: ≤5 pkt pacjenta → przejdź do części informatora</li>
+              <li>Mocna strona: komponent informatora dodaje trafność ekologiczną</li>
+              <li>Najlepszy w: POZ, warunkach ograniczonego czasu, monitorowaniu follow-up</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="info-card blue">
+            <h4>Mini-Cog</h4>
+            <ul>
+              <li>Przypominanie 3 słów (3 pkt) + rysowanie zegara (2 pkt)</li>
+              <li>Łącznie: 0–5. Wynik ≤2 sugeruje zaburzenie</li>
+              <li>Rysowanie zegara: czułe na wzrokowo-przestrzenne i wykonawcze dysfunkcje</li>
+              <li>Mocna strona: minimalne obciążenie językowe/edukacyjne, bardzo szybkie, możliwe w przesiewaniu majaczenia</li>
+              <li>Najlepszy w: ostrych oddziałach, SOR, geriatrii, ocenie przedoperacyjnej</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="key-point blue" style="margin-top:16px;">Punkt dydaktyczny: narzędzia przesiewowe sygnalizują — nie diagnozują. Pozytywny wynik wymaga klinicznego pogłębienia, wywiadu od informatora, informacji zbiorczych i często skierowania do neuropsychologa. Wybór narzędzia powinien odpowiadać pytaniu klinicznemu.</div>
+    </div>
+  </div>
+
+  <!-- SLAJD 25: Przewodnik decyzyjny -->
+  <div class="slide" id="slide-25">
+    <div class="slide-card">
+      <div class="block-badge badge-blue">Narzędzia — Przewodnik decyzyjny</div>
+      <h2 class="slide-title">Wybór właściwego narzędzia — kliniczne ramy decyzji</h2>
+      <table class="comparison-table">
+        <thead>
+          <tr><th>Scenariusz kliniczny</th><th>Zalecane narzędzie</th><th>Uzasadnienie</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Pacjent ambulatoryjny ze skargą na pamięć, bez diagnozy</td><td><strong>MoCA</strong></td><td>Szerokie pokrycie domenowe, czuły na MCI, 10 min</td></tr>
+          <tr><td>Różnicowanie ChA od FTD lub DLB</td><td><strong>ACE-III</strong></td><td>Profile subskali, iloraz VLOM, bogaty językowo</td></tr>
+          <tr><td>Gabinet POZ, ograniczony czas, każdy wiek</td><td><strong>GPCOG</strong></td><td>5 min, część informatora dodaje trafność ekologiczną</td></tr>
+          <tr><td>Ostre przyjęcie szpitalne, słaby pacjent w podeszłym wieku</td><td><strong>Mini-Cog</strong></td><td>3 min, minimalny komponent językowy, działa przy dezorientacji</td></tr>
+          <tr><td>Monitorowanie w czasie (odpowiedź na leczenie)</td><td><strong>MoCA lub ACE-III</strong></td><td>Oba zwalidowane do oceny seryjnej (ACE-III ma wersje równoległe), znane efekty wprawy</td></tr>
+          <tr><td>Prezentacja wykonawczo-dominująca (ChP, naczyniowe)</td><td><strong>MoCA lub ACE-III</strong></td><td>Oba zawierają silne podtesty wykonawcze</td></tr>
+          <tr><td>Podejrzany deficyt wzrokowo-przestrzenny (DLB, ChP)</td><td><strong>ACE-III</strong></td><td>Najbardziej szczegółowa podskala wzrokowo-przestrzenna</td></tr>
+          <tr><td>Pacjent o wyjściowo wysokim potencjale poznawczym (wykształcenie, zawód)</td><td><strong>MoCA lub ACE-III</strong></td><td>Efekt sufitu Mini-Cog i GPCOG — tylko narzędzia o szerszym zakresie wykryją subtelne deficyty</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SLAJD 26: Piśmiennictwo -->
+  <div class="slide" id="slide-26">
+    <div class="slide-card">
+      <div class="block-badge badge-gray">Piśmiennictwo</div>
+      <h2 class="slide-title">Kluczowe pozycje bibliograficzne</h2>
+      <div class="ref-item"><strong>Teksty główne:</strong> Chamberlain, S.R., &amp; Sahakian, B.J. (2006). The neuropsychology of mood disorders. <em>Current Psychiatry Reports, 8</em>, 458–463. | Aderinto, N. i in. (2023). The impact of diabetes in cognitive impairment. <em>Medicine, 102</em>(43), e35557.</div>
+      <div class="ref-item"><strong>Blok I:</strong> Rock, P.L. i in. (2014). Cognitive impairment in depression: meta-analysis. <em>Psychological Medicine, 44</em>(10), 2029–2040. | Bora, E. i in. (2009). Cognitive endophenotypes of bipolar disorder. <em>J Affect Disord, 113</em>, 1–20.</div>
+      <div class="ref-item"><strong>Blok II:</strong> Petersen, R.C. (2004). MCI as a diagnostic entity. <em>J Intern Med, 256</em>(3), 183–194. | Litvan, I. i in. (2012). Diagnostic criteria for MCI in Parkinson's disease. <em>Movement Disorders, 27</em>(3), 349–356.</div>
+      <div class="ref-item"><strong>Blok III:</strong> Biessels, G.J. i in. (2006). Risk of dementia in diabetes: systematic review. <em>Lancet Neurology, 5</em>(1), 64–74. | Deckers, K. i in. (2015). Target risk factors for dementia prevention. <em>Int J Geriatr Psychiatry, 30</em>(3), 234–246.</div>
+      <div class="ref-item"><strong>Narzędzia:</strong> Nasreddine, Z.S. i in. (2005). The MoCA. <em>JAGS, 53</em>(4), 695–699. | Hsieh, S. i in. (2013). Validation of ACE-III. <em>Dementia Geriatr Cogn Disord, 36</em>(3–4), 242–250.</div>
+    </div>
+  </div>
+
+  <!-- SLAJD 27: Zakończenie -->
+  <div class="slide" id="slide-27">
+    <div class="slide-card" style="background: linear-gradient(135deg, #EEEDFE 0%, #E1F5EE 100%); text-align:center; align-items:center;">
+      <div>
+        <div class="block-badge badge-gray" style="margin:0 auto 24px;">Podsumowanie zajęć</div>
+        <h2 class="slide-title" style="max-width:560px;margin:0 auto 20px;">Synteza — zasada kliniczna</h2>
+        <p class="slide-subtitle" style="max-width:580px;margin:0 auto 32px;">Zaburzenia poznawcze w chorobach przewlekłych to nie szum tła. Kształtują sposób powstawania objawów, przebieg choroby i zdolność pacjenta do zarządzania własnym leczeniem. Ich identyfikacja, właściwy pomiar i jasna komunikacja wyników to podstawowa kompetencja kliniczna.</p>
+        <div class="three-col" style="max-width:620px;margin:0 auto;">
+          <div style="text-align:center;padding:16px;background:rgba(255,255,255,0.6);border-radius:12px;">
+            <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:#534AB7;margin-bottom:6px;">Identyfikuj</div>
+            <p style="font-size:13px;color:var(--text-muted);">Badaj przesiewowo systematycznie — nie polegaj wyłącznie na skardze</p>
+          </div>
+          <div style="text-align:center;padding:16px;background:rgba(255,255,255,0.6);border-radius:12px;">
+            <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:#0F6E56;margin-bottom:6px;">Mierz</div>
+            <p style="font-size:13px;color:var(--text-muted);">Dobieraj narzędzie do pytania klinicznego i warunków badania</p>
+          </div>
+          <div style="text-align:center;padding:16px;background:rgba(255,255,255,0.6);border-radius:12px;">
+            <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:#993C1D;margin-bottom:6px;">Działaj</div>
+            <p style="font-size:13px;color:var(--text-muted);">Dostosuj opiekę do możliwości poznawczych — uprość, powtórz, zaangażuj opiekunów</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nawigacja -->
+  <div class="nav-row">
+    <button class="nav-btn" id="prev-btn" onclick="navigate(-1)" disabled>← Poprzedni</button>
+    <span class="slide-counter" id="counter">1 / 27</span>
+    <button class="nav-btn primary" id="next-btn" onclick="navigate(1)">Następny →</button>
+  </div>
+
+</div>
+
+<script>
+  const totalSlides = 27;
+  let current = 1;
+
+  function navigate(dir) {
+    const next = current + dir;
+    if (next < 1 || next > totalSlides) return;
+    document.getElementById('slide-' + current).classList.remove('active');
+    current = next;
+    document.getElementById('slide-' + current).classList.add('active');
+    document.getElementById('counter').textContent = current + ' / ' + totalSlides;
+    document.getElementById('progress').style.width = ((current / totalSlides) * 100) + '%';
+    document.getElementById('prev-btn').disabled = current === 1;
+    document.getElementById('next-btn').disabled = current === totalSlides;
+    document.getElementById('next-btn').textContent = current === totalSlides ? 'Zakończ' : 'Następny →';
+  }
+
+  function goTo(n) {
+    document.getElementById('slide-' + current).classList.remove('active');
+    current = n;
+    document.getElementById('slide-' + current).classList.add('active');
+    document.getElementById('counter').textContent = current + ' / ' + totalSlides;
+    document.getElementById('progress').style.width = ((current / totalSlides) * 100) + '%';
+    document.getElementById('prev-btn').disabled = current === 1;
+    document.getElementById('next-btn').disabled = current === totalSlides;
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') navigate(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   navigate(-1);
+  });
+
+  document.getElementById('progress').style.width = ((1 / totalSlides) * 100) + '%';
+</script>
+</body>
+</html>
