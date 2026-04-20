@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Offenses — Analysis Report</title>
+<style>
+  /* ── Base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Georgia", serif;
+    font-size: 16px;
+    line-height: 1.75;
+    color: #1a1a1a;
+    background: #f7f6f3;
+  }
+
+  /* ── Layout ── */
+  .page {
+    max-width: 900px;
+    margin: 0 auto;
+    background: #ffffff;
+    padding: 60px 72px;
+    box-shadow: 0 2px 24px rgba(0,0,0,0.08);
+  }
+
+  /* ── Cover ── */
+  .cover {
+    text-align: center;
+    padding: 48px 0 56px;
+    border-bottom: 2px solid #1a1a1a;
+    margin-bottom: 56px;
+  }
+  .cover h1 {
+    font-size: 2.0rem;
+    font-weight: 700;
+    line-height: 1.25;
+    margin-bottom: 14px;
+    letter-spacing: -0.02em;
+  }
+  .cover .subtitle {
+    font-size: 1.1rem;
+    color: #555;
+    font-style: italic;
+    margin-bottom: 24px;
+  }
+  .cover .meta {
+    font-size: 0.88rem;
+    color: #888;
+    font-family: "Helvetica Neue", sans-serif;
+  }
+
+  /* ── Section headings ── */
+  h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin: 52px 0 14px;
+    padding-bottom: 6px;
+    border-bottom: 1.5px solid #ddd;
+    letter-spacing: -0.01em;
+  }
+  h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 32px 0 10px;
+    color: #222;
+  }
+  h4 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin: 24px 0 8px;
+    color: #333;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-family: "Helvetica Neue", sans-serif;
+  }
+
+  /* ── Body text ── */
+  p { margin-bottom: 1rem; }
+  p + p { margin-top: 0; }
+
+  /* ── Tables ── */
+  .tbl-wrap { overflow-x: auto; margin: 20px 0 28px; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.90rem;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+  }
+  thead tr { background: #1a1a1a; color: #fff; }
+  thead th {
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+  }
+  tbody tr:nth-child(even) { background: #f7f6f3; }
+  tbody tr:hover { background: #eef3fb; }
+  tbody td { padding: 9px 14px; border-bottom: 1px solid #e8e8e8; vertical-align: top; }
+  tfoot td { padding: 8px 14px; font-size: 0.82rem; color: #666; border-top: 1.5px solid #ddd; }
+
+  /* ── Verdict boxes ── */
+  .verdict {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 3px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    font-family: "Helvetica Neue", sans-serif;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .verdict.supported    { background: #d4edda; color: #155724; }
+  .verdict.partial      { background: #fff3cd; color: #856404; }
+  .verdict.not-supported { background: #f8d7da; color: #721c24; }
+
+  /* ── Stat callouts ── */
+  .stat-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin: 16px 0 24px;
+  }
+  .stat-box {
+    flex: 1 1 140px;
+    background: #f0f4fa;
+    border-left: 4px solid #457B9D;
+    padding: 12px 16px;
+    border-radius: 0 4px 4px 0;
+  }
+  .stat-box .val {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.1;
+    color: #1a3a5c;
+    font-family: "Helvetica Neue", sans-serif;
+  }
+  .stat-box .lbl {
+    font-size: 0.78rem;
+    color: #555;
+    font-family: "Helvetica Neue", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 4px;
+  }
+
+  /* ── Colour legend chips ── */
+  .chip {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-family: "Helvetica Neue", sans-serif;
+    margin: 1px 2px;
+    color: #fff;
+  }
+  .chip-prison  { background: #E63946; }
+  .chip-fine    { background: #c07a30; color: #fff; }
+  .chip-ib      { background: #457B9D; }
+  .chip-sm      { background: #2A9D8F; }
+
+  /* ── Callout boxes ── */
+  .callout {
+    margin: 24px 0;
+    padding: 16px 20px;
+    border-radius: 4px;
+    font-size: 0.93rem;
+    font-family: "Helvetica Neue", sans-serif;
+    line-height: 1.55;
+  }
+  .callout.key     { background: #eaf4fb; border-left: 4px solid #457B9D; }
+  .callout.warning { background: #fff8e6; border-left: 4px solid #f4a261; }
+  .callout.result  { background: #eaf7f0; border-left: 4px solid #2A9D8F; }
+
+  /* ── Code ── */
+  code {
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: 0.85em;
+    background: #f3f4f6;
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  /* ── HR ── */
+  hr { border: none; border-top: 1px solid #e0e0e0; margin: 40px 0; }
+
+  /* ── Footer ── */
+  .footer {
+    margin-top: 64px;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+    font-size: 0.8rem;
+    color: #999;
+    font-family: "Helvetica Neue", sans-serif;
+    text-align: center;
+  }
+
+  /* ── Print ── */
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; padding: 20px 40px; }
+    h2 { page-break-before: auto; }
+  }
+
+  @media (max-width: 700px) {
+    .page { padding: 28px 18px; }
+    .stat-row { gap: 10px; }
+  }
+
+  /* ── Charts ── */
+  .chart-wrap {
+    margin: 22px 0 30px;
+    background: #fafaf8;
+    border: 1px solid #e8e8e8;
+    border-radius: 6px;
+    padding: 20px 20px 14px;
+  }
+  .chart-wrap canvas { display: block; }
+  .chart-title {
+    font-family: "Helvetica Neue", sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #666;
+    margin-bottom: 14px;
+  }
+  .chart-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin: 22px 0 30px;
+  }
+  .chart-grid .chart-wrap { margin: 0; }
+  @media (max-width: 700px) { .chart-grid { grid-template-columns: 1fr; } }
+
+  /* Heatmap table */
+  .heatmap td { text-align: center; font-family: "Helvetica Neue", sans-serif; font-size: 0.85rem; font-weight: 600; }
+  .heatmap th { text-align: center; font-family: "Helvetica Neue", sans-serif; font-size: 0.78rem; }
+
+  /* Ordering bars */
+  .ord-list { list-style: none; margin: 0; padding: 0; }
+  .ord-item { display: flex; align-items: center; gap: 10px; margin-bottom: 7px; font-family: "Helvetica Neue", sans-serif; font-size: 0.83rem; }
+  .ord-bar { height: 18px; border-radius: 2px; background: #457B9D; }
+  .ord-label { min-width: 0; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #333; }
+  .ord-n { color: #888; font-size: 0.78rem; min-width: 32px; text-align: right; }
+
+  /* Sankey-like flow */
+  .flow-row { display: flex; gap: 0; margin-bottom: 4px; }
+  .flow-cell { flex: 1; padding: 5px 4px; text-align: center; font-family: "Helvetica Neue", sans-serif; font-size: 0.8rem; border-radius: 3px; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<div class="page">
+
+<!-- ═══════════════════════════════════════════════════ COVER -->
+<div class="cover">
+  <h1>Digital Offenses:<br>Public Punishment Preferences for Online vs. Offline Crime</h1>
+  <p class="subtitle">Full Analysis Report</p>
+  <p class="meta">N = 499 &nbsp;·&nbsp; 2 × 3 between-subjects design &nbsp;·&nbsp; Plackett-Luce ranking model</p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ 1. INTRO -->
+<h2>1. Introduction &amp; Study Design</h2>
+
+<p>This study investigated how people prefer to punish <strong>digital offenses</strong> — criminal acts committed online — compared with equivalent offline offenses. The central question was: do people think that internet bans and social media bans are more appropriate when an offense was committed online? And does the type of offense change these preferences?</p>
+
+<h3>Design</h3>
+<p>A <strong>2 × 3 between-subjects factorial design</strong>. Each participant was randomly assigned to one cell, read one vignette, and completed the full battery.</p>
+
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>Factor</th><th>Levels</th><th>Manipulation</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Context</strong></td><td>Offline / Online</td><td>Vignette setting and mode of interaction</td></tr>
+    <tr><td><strong>Offense type</strong></td><td>Scam / Stalking / Incitement to suicide</td><td>Three matched vignettes describing different criminal acts</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>The Four Punishments</h3>
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>Punishment</th><th>Severity metric</th><th>Range</th></tr></thead>
+  <tbody>
+    <tr><td><span class="chip chip-prison">Prison</span></td><td>Duration (months)</td><td>1–120</td></tr>
+    <tr><td><span class="chip chip-fine">Fine</span></td><td>Amount (GBP)</td><td>£200–£20,000</td></tr>
+    <tr><td><span class="chip chip-ib">Internet ban</span></td><td>Duration (months)</td><td>1–120</td></tr>
+    <tr><td><span class="chip chip-sm">SM ban</span></td><td>Duration (months)</td><td>1–120</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>Measures</h3>
+<p>For each punishment participants: (1) <strong>ranked</strong> all four from most to least preferred (drag-and-drop, producing a complete ordering); (2) set an independent <strong>severity level</strong>; (3) rated how well it serves <strong>three penal rationales</strong> — just deserts, deterrence, and expressive function (1–6). Individual difference variables (punitiveness, internet reliance, enforceability beliefs, speech restriction concern, political orientation) were measured after the punishment tasks.</p>
+
+<!-- ═══════════════════════════════════════════════════ 2. SAMPLE -->
+<h2>2. Sample Characteristics</h2>
+
+<div class="stat-row">
+  <div class="stat-box"><div class="val">499</div><div class="lbl">Total participants</div></div>
+  <div class="stat-box"><div class="val">35.8</div><div class="lbl">Mean age (SD = 12.2)</div></div>
+  <div class="stat-box"><div class="val">48.5%</div><div class="lbl">Female</div></div>
+  <div class="stat-box"><div class="val">66.5%</div><div class="lbl">Degree-level education</div></div>
+</div>
+
+<p>All 499 participants passed the comprehension check before entering the study (participants who failed were screened out and are not included in the data).</p>
+
+<h3>Condition Breakdown</h3>
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>Offense</th><th>Offline</th><th>Online</th><th>Total</th></tr></thead>
+  <tbody>
+    <tr><td>Scam</td><td>72</td><td>92</td><td>164</td></tr>
+    <tr><td>Stalking</td><td>79</td><td>87</td><td>166</td></tr>
+    <tr><td>Incitement to suicide</td><td>81</td><td>88</td><td>169</td></tr>
+    <tr><td><strong>Total</strong></td><td><strong>232</strong></td><td><strong>267</strong></td><td><strong>499</strong></td></tr>
+  </tbody>
+</table>
+</div>
+<p>Groups are reasonably balanced. The online conditions are ~15% larger across the board, reflecting sampling variability on Prolific.</p>
+
+<h3>Demographics</h3>
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>Variable</th><th>Summary</th></tr></thead>
+  <tbody>
+    <tr><td>Gender</td><td>Female: 242 (48.5%) &nbsp;·&nbsp; Male: 251 (50.3%) &nbsp;·&nbsp; Other: 6 (1.2%)</td></tr>
+    <tr><td>Age</td><td>Mean = 35.8 years, SD = 12.2, range 18–82</td></tr>
+    <tr><td>Education</td><td>Bachelor's: 44.1% &nbsp;·&nbsp; Master's: 22.4% &nbsp;·&nbsp; Some college: 16.8% &nbsp;·&nbsp; High school: 12.6% &nbsp;·&nbsp; Doctorate: 4.0%</td></tr>
+    <tr><td>Political orientation (L–R, 1–7)</td><td>Mean = 3.28, SD = 1.47 — slightly left-of-centre on average</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>Individual Difference Variables</h3>
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>Variable</th><th>Scale</th><th>Mean</th><th>SD</th><th>Interpretation</th></tr></thead>
+  <tbody>
+    <tr><td>Punitiveness</td><td>1–6</td><td>4.40</td><td>0.99</td><td>Above midpoint; sample is moderately punitive</td></tr>
+    <tr><td>Internet reliance</td><td>1–7</td><td>5.61</td><td>1.00</td><td>High dependence on internet in daily life</td></tr>
+    <tr><td>Enforceability</td><td>1–7</td><td>2.71</td><td>1.55</td><td><strong>Low</strong> — widespread skepticism that digital bans can be enforced</td></tr>
+    <tr><td>Speech restriction concern</td><td>1–7</td><td>4.54</td><td>1.63</td><td>Moderate-to-high concern</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="callout warning">
+  <strong>Notable baseline finding:</strong> The enforceability mean of 2.71/7 is well below the scale midpoint. Even before testing any hypothesis, the sample is clearly skeptical that internet and social media bans can be practically enforced. This will become relevant when we examine whether enforceability beliefs predict punishment preferences.
+</div>
+
+<!-- ═══════════════════════════════════════════════════ 3. SEVERITY -->
+<h2>3. Preferred Punishment Severity</h2>
+
+<p>Participants set a severity level for each punishment independently, treating it as the <em>sole</em> sanction. This allows us to understand not just which punishment they prefer, but how much of each they want.</p>
+
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>Punishment</th><th>Median</th><th>Mean</th><th>SD</th><th>Range</th></tr></thead>
+  <tbody>
+    <tr><td><span class="chip chip-prison">Prison</span></td><td>13 months</td><td>29.4 months</td><td>32.5</td><td>1–120</td></tr>
+    <tr><td><span class="chip chip-fine">Fine</span></td><td>£10,000</td><td>£9,508</td><td>£6,516</td><td>£200–£20,000</td></tr>
+    <tr><td><span class="chip chip-ib">Internet ban</span></td><td>24 months</td><td>36.2 months</td><td>35.6</td><td>1–120</td></tr>
+    <tr><td><span class="chip chip-sm">SM ban</span></td><td>36 months</td><td>50.5 months</td><td>41.1</td><td>1–120</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p><strong>Key observations:</strong></p>
+<ul style="margin: 0 0 1rem 1.4rem; line-height: 1.9;">
+  <li>The prison sentence <strong>median (13 months) is far below the mean (29.4)</strong>, indicating a right-skewed distribution — most people want fairly short sentences, but a minority wants the maximum.</li>
+  <li>Internet and social media ban medians (24 and 36 months) are <strong>longer than prison</strong>. This may reflect participants treating digital bans as a lighter sanction that requires greater duration to be equivalent in harshness.</li>
+  <li>The fine has a relatively flat distribution — the median (£10,000) sits at the midpoint of the scale, and both extremes are well-populated.</li>
+  <li>All distributions have very high SDs relative to their means, indicating substantial individual heterogeneity in severity preferences.</li>
+</ul>
+
+<!-- ═══════════════════════════════════════════════════ 4. OVERALL MODEL -->
+<h2>4. Overall Punishment Preferences</h2>
+
+<h3>The Plackett-Luce Model</h3>
+<p>Rankings were analysed using the <strong>Plackett-Luce (PL) model</strong>, which treats each complete ranking as a sequence of choices: at each stage, a person "picks" the most preferred remaining option with probability proportional to that option's <strong>worth</strong> parameter. Worth values sum to 1 and are directly interpretable as the probability that a punishment would be selected as most preferred in a random pairwise comparison. All hypothesis tests use <strong>Likelihood Ratio Tests (LRTs)</strong> comparing nested PL models.</p>
+
+<h3>Overall Worth Parameters</h3>
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>Punishment</th><th>Worth</th><th>95% quasi-CI lower</th><th>95% quasi-CI upper</th><th>Rank</th></tr></thead>
+  <tbody>
+    <tr><td><span class="chip chip-fine">Fine</span></td><td>0.315</td><td>0.282</td><td>0.353</td><td>1st</td></tr>
+    <tr><td><span class="chip chip-prison">Prison</span></td><td>0.309</td><td>0.275</td><td>0.348</td><td>2nd</td></tr>
+    <tr><td><span class="chip chip-sm">SM ban</span></td><td>0.189</td><td>0.169</td><td>0.211</td><td>3rd</td></tr>
+    <tr><td><span class="chip chip-ib">Internet ban</span></td><td>0.187</td><td>0.168</td><td>0.207</td><td>4th</td></tr>
+  </tbody>
+  <tfoot><tr><td colspan="5">Note: Quasi-CIs are computed using quasi-variances (qvcalc), which allow valid pairwise comparisons between any pair of items.</td></tr></tfoot>
+</table>
+</div>
+
+<h3>Rank-1 (Most Preferred) Frequencies</h3>
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>Punishment</th><th>Chosen 1st</th><th>Chosen 2nd</th><th>Chosen 3rd</th><th>Chosen 4th</th></tr></thead>
+  <tbody>
+    <tr><td><span class="chip chip-prison">Prison</span></td><td><strong>225 (45.1%)</strong></td><td>96 (19.2%)</td><td>53 (10.6%)</td><td>125 (25.1%)</td></tr>
+    <tr><td><span class="chip chip-fine">Fine</span></td><td><strong>171 (34.3%)</strong></td><td>162 (32.5%)</td><td>64 (12.8%)</td><td>102 (20.4%)</td></tr>
+    <tr><td><span class="chip chip-sm">SM ban</span></td><td>67 (13.4%)</td><td>127 (25.5%)</td><td>159 (31.9%)</td><td>146 (29.3%)</td></tr>
+    <tr><td><span class="chip chip-ib">Internet ban</span></td><td>36 (7.2%)</td><td>114 (22.8%)</td><td>223 (44.7%)</td><td>126 (25.3%)</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="callout key">
+  <strong>Summary:</strong> Across the full sample, <strong>prison and fine are roughly equally preferred</strong> and are chosen as most preferred by ~79% of participants combined. Digital punishments are substantially less preferred overall — but this masks important variation by context and offense type explored below.
+</div>
+
+<div class="chart-grid">
+  <div class="chart-wrap">
+    <div class="chart-title">Overall worth parameters (Plackett-Luce)</div>
+    <canvas id="chartOverallWorth" height="160"></canvas>
+  </div>
+  <div class="chart-wrap">
+    <div class="chart-title">Rank-position distribution (% at each rank)</div>
+    <canvas id="chartRankPos" height="160"></canvas>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ 5. H1 -->
+<h2>5. H1 — Context Effect: Does Online Change Punishment Preferences?</h2>
+
+<p><strong>Hypothesis:</strong> When an offense is committed online rather than offline, participants will prefer internet ban and social media ban relatively more (compared with fine as the non-digital reference anchor).</p>
+
+<h3>Omnibus Test</h3>
+<div class="callout result">
+  <strong>LRT χ²(3) = 72.14, p &lt; .0001</strong> — The punishment preference distribution differs significantly between online and offline conditions. The omnibus test for H1 is passed.
+</div>
+
+<h3>Worth Parameters by Context</h3>
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>Punishment</th><th>Offline worth</th><th>Online worth</th><th>Change</th></tr></thead>
+  <tbody>
+    <tr><td><span class="chip chip-prison">Prison</span></td><td>0.384</td><td>0.252</td><td>▼ −34%</td></tr>
+    <tr><td><span class="chip chip-fine">Fine</span></td><td>0.360</td><td>0.269</td><td>▼ −25%</td></tr>
+    <tr><td><span class="chip chip-ib">Internet ban</span></td><td>0.141</td><td>0.216</td><td>▲ +53%</td></tr>
+    <tr><td><span class="chip chip-sm">SM ban</span></td><td>0.115</td><td>0.263</td><td>▲ +129%</td></tr>
+  </tbody>
+  <tfoot><tr><td colspan="4">Note: offline n = 232; online n = 267.</td></tr></tfoot>
+</table>
+</div>
+
+<p>In the offline condition, prison and fine dominate (combined worth ≈ 0.74). In the online condition, the distribution becomes <strong>substantially more equal</strong> — all four punishments converge toward 0.25. Social media ban more than doubles in worth, and internet ban increases by over 50%.</p>
+
+<h3>Directional Contrasts (Preregistered, One-Tailed, Bonferroni α = .025 each)</h3>
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>Contrast (vs. fine as reference)</th><th>log-OR</th><th>OR</th><th>SE</th><th>z</th><th>p (two-tailed)</th><th>Significant one-tailed?</th></tr></thead>
+  <tbody>
+    <tr><td><span class="chip chip-ib">Internet ban</span> × online</td><td>+0.724</td><td>2.063</td><td>0.163</td><td>4.445</td><td>&lt;.001</td><td><span class="verdict supported">Yes</span></td></tr>
+    <tr><td><span class="chip chip-sm">SM ban</span> × online</td><td>+1.122</td><td>3.070</td><td>0.168</td><td>6.696</td><td>&lt;.001</td><td><span class="verdict supported">Yes</span></td></tr>
+    <tr><td><span class="chip chip-prison">Prison</span> × online</td><td>−0.131</td><td>0.877</td><td>0.165</td><td>−0.797</td><td>.425</td><td>n/a (not preregistered)</td></tr>
+  </tbody>
+  <tfoot><tr><td colspan="7">OR = odds ratio; reference item = fine; reference context = offline. Positive OR = item preferred relatively more in online condition.</td></tr></tfoot>
+</table>
+</div>
+
+<p><strong>Interpreting the odds ratios:</strong> In the online condition, participants are <strong>2.06× more likely</strong> to choose internet ban over fine (vs. the offline condition), and <strong>3.07× more likely</strong> to choose social media ban over fine. These are large, meaningful shifts. Prison vs. fine shows no context effect — both traditional punishments decline equally when the offense is online.</p>
+
+<div class="callout result">
+  <strong>H1 verdict: <span class="verdict supported">Fully supported</span></strong><br>
+  The omnibus LRT is significant (p &lt; .0001). Both preregistered directional contrasts are significant (both p &lt; .001, well below the Bonferroni threshold of .025). Context systematically shifts preferences toward digital punishments in the online condition.
+</div>
+
+<div class="chart-wrap">
+  <div class="chart-title">Worth parameters: offline vs. online (arrows show direction of shift)</div>
+  <canvas id="chartContext" height="130"></canvas>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ 6. H2 -->
+<h2>6. H2 — Offense Effect: Does Crime Type Change Preferences?</h2>
+
+<p><strong>Hypothesis:</strong> Different offense types will produce different punishment preference orderings.</p>
+
+<h3>Omnibus Test</h3>
+<div class="callout result">
+  <strong>LRT χ²(6) = 259.28, p &lt; .0001</strong> — Offense type has a massive influence on punishment preferences. This is the <em>largest effect in the entire study</em>, dwarfing the context effect (χ²(3) = 72).
+</div>
+
+<h3>Worth Parameters by Offense Type</h3>
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>Punishment</th><th>Scam</th><th>Stalking</th><th>Incitement to suicide</th></tr></thead>
+  <tbody>
+    <tr><td><span class="chip chip-prison">Prison</span></td><td>0.240</td><td>0.166</td><td><strong>0.516</strong></td></tr>
+    <tr><td><span class="chip chip-fine">Fine</span></td><td><strong>0.595</strong></td><td>0.327</td><td>0.138</td></tr>
+    <tr><td><span class="chip chip-ib">Internet ban</span></td><td>0.097</td><td>0.197</td><td>0.176</td></tr>
+    <tr><td><span class="chip chip-sm">SM ban</span></td><td>0.068</td><td><strong>0.310</strong></td><td>0.170</td></tr>
+  </tbody>
+  <tfoot><tr><td colspan="4">Bold = highest worth within each offense. Scam n = 164; stalking n = 166; incitement to suicide n = 169.</td></tr></tfoot>
+</table>
+</div>
+
+<p><strong>Scam:</strong> Fine completely dominates (worth = 0.595 — the highest worth value for any punishment in any condition across the entire study). Financial crime → financial punishment. Prison is a distant second (0.240). Digital bans are very low (combined ~0.165).</p>
+
+<p><strong>Stalking:</strong> The most balanced profile. Fine leads (0.327), but social media ban surges to 0.310 — nearly equal to fine and well above its overall average of 0.189. Prison is the <em>least</em> preferred punishment (0.166). This is intuitively compelling: stalking involves unwanted contact, and a social media ban directly removes the mechanism. Internet ban is moderate (0.197).</p>
+
+<p><strong>Incitement to suicide:</strong> Prison overwhelmingly dominates (0.516 — over half the probability mass). Fine collapses to the bottom (0.138). Digital bans are moderate and similar to each other (IB = 0.176, SM = 0.170). When someone repeatedly encourages a vulnerable person to take their own life, participants demand the most serious sanction available. Financial or digital punishment is seen as inadequate.</p>
+
+<div class="callout result">
+  <strong>H2 verdict: <span class="verdict supported">Strongly supported</span></strong><br>
+  The "best" punishment changes completely depending on the offense. The preference ordering reverses: for scam, fine is #1 and prison is #2; for incitement to suicide, prison is #1 and fine is #4.
+</div>
+
+<div class="chart-wrap">
+  <div class="chart-title">Worth parameters by offense type</div>
+  <canvas id="chartOffense" height="160"></canvas>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ 7. H3 -->
+<h2>7. H3 — Three-Way Interaction: Does the Context Effect Differ by Offense?</h2>
+
+<p><strong>Hypothesis:</strong> The shift toward digital punishments in the online condition is not uniform — it is moderated by offense type (context × offense × punishment type three-way interaction).</p>
+
+<h3>Tests</h3>
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>Test</th><th>χ²</th><th>df</th><th>p</th></tr></thead>
+  <tbody>
+    <tr><td>Omnibus: 6 cells vs. pooled model</td><td>356.97</td><td>15</td><td>&lt;.0001</td></tr>
+    <tr><td><strong>Three-way interaction (H3): controlling for main effects</strong></td><td><strong>25.55</strong></td><td><strong>6</strong></td><td><strong>.0003</strong></td></tr>
+  </tbody>
+  <tfoot><tr><td colspan="4">The three-way interaction LRT isolates the interaction by subtracting the log-likelihoods attributable to context and offense main effects separately.</td></tr></tfoot>
+</table>
+</div>
+
+<p>In plain English: the way context (online vs. offline) changes punishment preferences is <strong>not the same for all three offenses</strong>. The context effect is significantly moderated by offense type, above and beyond what would be expected from the main effects of context and offense alone.</p>
+
+<p>Intuitively: for a scam, moving to the online context cannot shift much because fine already dominates so strongly. For stalking, the already-elevated social media ban preference can be further amplified by an online context. For incitement to suicide, prison's strong dominance acts as a ceiling that buffers the context shift. These differential patterns constitute the three-way interaction.</p>
+
+<div class="callout result">
+  <strong>H3 verdict: <span class="verdict supported">Supported</span></strong><br>
+  χ²(6) = 25.55, p = .0003. The context effect is not uniform — it depends on what the offense was. Decomposing which specific cells drive this interaction is treated as exploratory follow-up.
+</div>
+
+<!-- ═══════════════════════════════════════════════════ 8. H4 -->
+<h2>8. H4 — Punitiveness: Does Being More Punitive Predict Punishment Preference?</h2>
+
+<p><strong>Hypothesis:</strong> Higher punitiveness predicts a greater preference for imprisonment over fine (primary preregistered prediction), and exploratorily for internet ban and social media ban over fine.</p>
+
+<p>Punitiveness was measured as the mean of 6 items (1–6 scale; M = 4.40, SD = 0.99). For the continuous analysis, punitiveness was z-scored. Fine is used as the reference item throughout, making the prison × punitiveness coefficient directly interpretable.</p>
+
+<h3>Worth by Punitiveness Group (Median Split at 4.5)</h3>
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>Punishment</th><th>Low punit (&lt;4.5, n ≈ 232)</th><th>High punit (≥4.5, n ≈ 267)</th><th>Difference</th></tr></thead>
+  <tbody>
+    <tr><td><span class="chip chip-prison">Prison</span></td><td>0.229</td><td><strong>0.399</strong></td><td>▲ +74%</td></tr>
+    <tr><td><span class="chip chip-fine">Fine</span></td><td><strong>0.357</strong></td><td>0.273</td><td>▼ −24%</td></tr>
+    <tr><td><span class="chip chip-ib">Internet ban</span></td><td>0.198</td><td>0.169</td><td>▼ −15%</td></tr>
+    <tr><td><span class="chip chip-sm">SM ban</span></td><td>0.216</td><td>0.160</td><td>▼ −26%</td></tr>
+  </tbody>
+</table>
+</div>
+<p><strong>Overall LRT χ²(3) = 34.74, p &lt; .0001.</strong></p>
+
+<p>Low-punitiveness people prefer fine most; high-punitiveness people prefer prison most — by a large margin. Both groups rate digital bans similarly, and in similar (lower) positions.</p>
+
+<h3>Continuous Punitiveness × Item Interactions (Fine as Reference, Preregistered Contrasts)</h3>
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>Contrast</th><th>log-OR</th><th>OR</th><th>SE</th><th>z</th><th>p (two-tailed)</th><th>One-tailed sig (α = .017)?</th></tr></thead>
+  <tbody>
+    <tr><td><span class="chip chip-prison">Prison</span> × punitiveness (primary)</td><td>+0.497</td><td>1.644</td><td>0.085</td><td>5.837</td><td>&lt;.001</td><td><span class="verdict supported">Yes</span></td></tr>
+    <tr><td><span class="chip chip-ib">Internet ban</span> × punitiveness (exploratory)</td><td>+0.079</td><td>1.082</td><td>0.082</td><td>0.963</td><td>.336</td><td><span class="verdict not-supported">No</span></td></tr>
+    <tr><td><span class="chip chip-sm">SM ban</span> × punitiveness (exploratory)</td><td>−0.014</td><td>0.987</td><td>0.083</td><td>−0.163</td><td>.870</td><td><span class="verdict not-supported">No</span></td></tr>
+  </tbody>
+  <tfoot><tr><td colspan="7">OR = odds ratio per 1-SD increase in punitiveness, relative to fine. Three-contrast Bonferroni correction: α = .017 per test.</td></tr></tfoot>
+</table>
+</div>
+
+<h3>Targeted 1-df LRT for Prison</h3>
+<p>A focused likelihood ratio test directly comparing models with and without the prison × punitiveness term: <strong>χ²(1) = 25.01, p = 5.7 × 10⁻⁷ ***</strong></p>
+<p>Prison odds ratio (high vs. low punitiveness group): <strong>OR = 2.28</strong> — high-punitiveness participants are 2.28× more likely to choose prison over fine, relative to low-punitiveness participants.</p>
+
+<p><strong>Why don't digital bans increase with punitiveness?</strong> More punitive people want prison specifically — they want liberty deprivation, the most severe sanction. Digital bans are not seen as a punitive escalation; they are seen as a qualitatively different (and lighter) category of punishment. Punitiveness, in this sample, is fundamentally about imprisonment.</p>
+
+<div class="callout result">
+  <strong>H4 verdict: <span class="verdict partial">Partially supported (as anticipated)</span></strong><br>
+  The prison × punitiveness effect is large and highly significant (OR = 1.64 per SD, p &lt; .001). Internet ban and SM ban × punitiveness are not significant (both p &gt; .30). The preregistration noted that pilot data supported only the imprisonment contrast; this is confirmed.
+</div>
+
+<div class="chart-wrap">
+  <div class="chart-title">Worth parameters by punitiveness group (median split)</div>
+  <canvas id="chartPunit" height="130"></canvas>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ 9. ENFORCEABILITY -->
+<h2>9. Enforceability as a Predictor of Digital Punishment Preference</h2>
+
+<p>This was a prespecified exploratory analysis. The enforceability item asked whether internet and social media bans can be effectively enforced (1–7; M = 2.71, SD = 1.55 — the sample is strongly skeptical).</p>
+
+<h3>Enforceability × Item Interactions (Fine as Reference)</h3>
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>Contrast</th><th>log-OR</th><th>OR</th><th>SE</th><th>z</th><th>p</th></tr></thead>
+  <tbody>
+    <tr><td><span class="chip chip-prison">Prison</span> × enforceability</td><td>−0.050</td><td>0.951</td><td>0.085</td><td>−0.592</td><td>.554</td></tr>
+    <tr><td><span class="chip chip-ib">Internet ban</span> × enforceability</td><td><strong>+0.352</strong></td><td><strong>1.422</strong></td><td>0.080</td><td>4.421</td><td><strong>&lt;.001</strong></td></tr>
+    <tr><td><span class="chip chip-sm">SM ban</span> × enforceability</td><td><strong>+0.376</strong></td><td><strong>1.456</strong></td><td>0.081</td><td>4.663</td><td><strong>&lt;.001</strong></td></tr>
+  </tbody>
+  <tfoot><tr><td colspan="6">OR = odds ratio per 1-SD increase in perceived enforceability, relative to fine.</td></tr></tfoot>
+</table>
+</div>
+
+<p>People who believe digital bans <em>can actually be enforced</em> are significantly more likely to prefer them. A 1-SD increase in enforceability belief is associated with internet ban being <strong>1.42× more likely</strong> to be chosen over fine, and social media ban being <strong>1.46× more likely</strong>. The effect is entirely specific to digital punishments — prison preference is unaffected by enforceability beliefs (OR ≈ 1.0, p = .554).</p>
+
+<div class="callout key">
+  <strong>Implication:</strong> The low overall preference for digital punishments appears to be at least partially driven by <em>practical skepticism</em> rather than principled opposition. If participants thought the ban would actually work, they endorsed it substantially more. This has direct policy relevance: improving the perceived or actual enforceability of digital bans could shift public support.
+</div>
+
+<!-- ═══════════════════════════════════════════════════ 10. EXCHANGE RATES -->
+<h2>10. Punishment Severity Exchange Rates</h2>
+
+<p>How do participants mentally convert between punishment types? These exchange rates are computed as median ratios of independently-set severity values, indicating how much of punishment B is considered equivalent to one unit of punishment A.</p>
+
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>Equivalence</th><th>Median</th><th>IQR (Q25–Q75)</th></tr></thead>
+  <tbody>
+    <tr><td>1 month of <span class="chip chip-prison">Prison</span> ≈</td><td>£416.80 <span class="chip chip-fine">Fine</span></td><td>[£200 – £1,000]</td></tr>
+    <tr><td>1 month of <span class="chip chip-prison">Prison</span> ≈</td><td>2.0 months <span class="chip chip-sm">SM ban</span></td><td>[1.0 – 5.0 months]</td></tr>
+    <tr><td>1 month of <span class="chip chip-prison">Prison</span> ≈</td><td>1.5 months <span class="chip chip-ib">Internet ban</span></td><td>[0.8 – 3.0 months]</td></tr>
+    <tr><td>1 month of <span class="chip chip-sm">SM ban</span> ≈</td><td>£172.40 <span class="chip chip-fine">Fine</span></td><td>[£116 – £360]</td></tr>
+    <tr><td>1 month of <span class="chip chip-ib">Internet ban</span> ≈</td><td>£300.10 <span class="chip chip-fine">Fine</span></td><td>[£167 – £669]</td></tr>
+    <tr><td>1 month of <span class="chip chip-sm">SM ban</span> ≈</td><td>0.8 months <span class="chip chip-ib">Internet ban</span></td><td>[0.5 – 1.0 months]</td></tr>
+  </tbody>
+  <tfoot><tr><td colspan="3">Note: Ratios computed participant-by-participant; median and IQR summarise the distribution of individual ratios.</td></tr></tfoot>
+</table>
+</div>
+
+<p><strong>Key takeaways:</strong></p>
+<ul style="margin: 0 0 1rem 1.4rem; line-height: 1.9;">
+  <li><strong>Prison is the most "costly" punishment.</strong> Each month of prison is valued at ~£417, but the IQR spans £200–£1,000 — enormous individual variation.</li>
+  <li><strong>Internet ban is valued higher per month than social media ban</strong> (£300 vs. £172 equivalent to fine) — participants likely see an internet ban as more comprehensive and therefore harsher.</li>
+  <li><strong>SM ban and internet ban are roughly equivalent to each other</strong> (1 month SM ban ≈ 0.8 months IB), consistent with their similar worth parameters in the ranking model.</li>
+  <li><strong>All IQRs are very wide</strong>, confirming that there is no consensus on how to compare punishments quantitatively — this is a highly individual judgment.</li>
+</ul>
+
+<!-- ═══════════════════════════════════════════════════ 11. SEVERITY OLS -->
+<h2>11. Punitiveness and Preferred Punishment Severity</h2>
+
+<p>Separate OLS regressions (all variables z-scored) tested whether more punitive people set higher severity levels, and by how much. Coefficients are standardised β: SD-change in preferred severity per SD-increase in punitiveness.</p>
+
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>Punishment</th><th>β</th><th>SE</th><th>t</th><th>p</th><th>Significance</th></tr></thead>
+  <tbody>
+    <tr><td><span class="chip chip-prison">Prison</span></td><td>0.235</td><td>0.044</td><td>5.38</td><td>&lt;.001</td><td>***</td></tr>
+    <tr><td><span class="chip chip-ib">Internet ban</span></td><td>0.167</td><td>0.044</td><td>3.78</td><td>&lt;.001</td><td>***</td></tr>
+    <tr><td><span class="chip chip-sm">SM ban</span></td><td>0.128</td><td>0.044</td><td>2.87</td><td>.004</td><td>**</td></tr>
+    <tr><td><span class="chip chip-fine">Fine</span></td><td>0.113</td><td>0.045</td><td>2.53</td><td>.012</td><td>*</td></tr>
+  </tbody>
+  <tfoot><tr><td colspan="6">All variables z-scored. *** p &lt; .001; ** p &lt; .01; * p &lt; .05.</td></tr></tfoot>
+</table>
+</div>
+
+<p>All four effects are positive and significant: <strong>more punitive people want more of every punishment</strong>. Prison has the largest effect (β = 0.235), consistent with it being the most harshness-sensitive sanction. Fine has the smallest effect (β = 0.113).</p>
+
+<p>Note the contrast with the ranking analysis (H4): in the <em>ranking</em>, only prison was significantly elevated relative to fine as punitiveness rose. In the <em>severity</em> ratings, all sanctions increase. This means punitiveness lifts the overall level of harshness demanded, while specifically re-ordering preferences toward prison over fine. Both patterns are complementary and consistent.</p>
+
+<!-- ═══════════════════════════════════════════════════ 12. INAPPROPRIATE -->
+<h2>12. Inappropriate Punishment Flagging</h2>
+
+<p>Participants could voluntarily flag any punishment they considered inappropriate for the offense described, and optionally provide a written reason. This is an exploratory descriptive analysis.</p>
+
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>Punishment</th><th>n flagged</th><th>% of sample</th></tr></thead>
+  <tbody>
+    <tr><td><span class="chip chip-ib">Internet ban</span></td><td>177</td><td><strong>35.5%</strong></td></tr>
+    <tr><td><span class="chip chip-sm">SM ban</span></td><td>163</td><td><strong>32.7%</strong></td></tr>
+    <tr><td><span class="chip chip-prison">Prison</span></td><td>109</td><td>21.8%</td></tr>
+    <tr><td><span class="chip chip-fine">Fine</span></td><td>89</td><td>17.8%</td></tr>
+  </tbody>
+  <tfoot><tr><td colspan="3">Note: Participants could flag multiple punishments; % computed over full N = 499.</td></tr></tfoot>
+</table>
+</div>
+
+<p>Digital punishments are flagged as inappropriate roughly <strong>twice as often</strong> as fine. This is consistent with the low enforceability ratings and moderate-to-high speech restriction concerns. Written reasons were exported for qualitative review (see <code>inappropriate_reasons.md</code>).</p>
+
+<p>The imprisonment flag rate (21.8%) is also notable — for some offense types (especially scam), participants found prison disproportionate. Logistic regressions predicting each flag from context and offense type were run but are treated as exploratory.</p>
+
+<!-- ═══════════════════════════════════════════════════ 13. PENAL JUSTIFICATION -->
+<h2>13. Penal Justification Ratings</h2>
+
+<p>For each punishment, participants rated how well it serves three classic justificatory rationales: <strong>just deserts</strong> (the punishment fits the crime), <strong>deterrence</strong> (it prevents future offending), and <strong>expressive function</strong> (it communicates society's condemnation) — all on a 1–6 scale.</p>
+
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>Punishment</th><th>Just deserts</th><th>Deterrence</th><th>Expressive function</th></tr></thead>
+  <tbody>
+    <tr><td><span class="chip chip-prison">Prison</span></td><td>4.23</td><td><strong>4.77</strong></td><td><strong>4.78</strong></td></tr>
+    <tr><td><span class="chip chip-fine">Fine</span></td><td>4.13</td><td>4.01</td><td>4.00</td></tr>
+    <tr><td><span class="chip chip-sm">SM ban</span></td><td>3.55</td><td>3.34</td><td>3.41</td></tr>
+    <tr><td><span class="chip chip-ib">Internet ban</span></td><td>3.49</td><td>3.61</td><td>3.49</td></tr>
+  </tbody>
+  <tfoot><tr><td colspan="4">Scale: 1 = not at all, 6 = perfectly. Scale midpoint = 3.5.</td></tr></tfoot>
+</table>
+</div>
+
+<p><strong>Prison scores highest on all three rationales</strong>, especially deterrence (4.77) and expressive function (4.78). Participants not only prefer prison for certain offenses — they believe it most effectively communicates moral condemnation and discourages reoffending.</p>
+
+<p><strong>Digital bans score near or below the scale midpoint</strong> on all three rationales. This is a striking finding: even when the online context makes digital bans more <em>preferred</em> (H1), participants still don't fully believe they serve traditional penal goals. Social media ban scores the lowest of all on deterrence (3.34), consistent with widespread skepticism about its practical effectiveness.</p>
+
+<p><strong>Fine is moderate and balanced</strong> — it satisfies all three rationales at roughly equal levels, which may explain its broadly acceptable position across very different offense types.</p>
+
+<div class="callout warning">
+  <strong>Theoretical tension:</strong> Context increases the <em>preference</em> for digital bans (H1), but participants do not strongly endorse them on traditional penal rationales. This suggests the appeal of digital bans in the online context may be driven by an intuitive <em>matching</em> logic ("the punishment fits the medium") rather than fully articulated penal reasoning.
+</div>
+
+<div class="chart-wrap">
+  <div class="chart-title">Penal justification ratings by punishment (1–6 scale)</div>
+  <canvas id="chartPenal" height="160"></canvas>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ 14. INAPPROPRIATENESS REASONS -->
+<h2>14. Why Participants Flagged Punishments as Inappropriate</h2>
+
+<p>Of 499 participants, <strong>345 (69.1%) wrote a free-text explanation</strong> for why they flagged at least one punishment as inappropriate. These were coded into 11 thematic categories using keyword-assisted analysis. The full analysis is in <a href="inappropriateness_analysis.html">inappropriateness_analysis.html</a>. Key findings are summarised here.</p>
+
+<h3>Theme Summary</h3>
+
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>Theme</th><th>n entries</th><th>Primarily concerns</th><th>Strongest in</th></tr></thead>
+  <tbody>
+    <tr><td><strong>A. Crime-punishment mismatch</strong> — digital ban irrelevant to offline offense</td><td><strong>69</strong></td><td><span class="chip chip-ib">IB</span> <span class="chip chip-sm">SM</span></td><td>Offline conditions (56 vs 13 online)</td></tr>
+    <tr><td><strong>B. Internet ban too disruptive</strong> — essential to daily life</td><td><strong>57</strong></td><td><span class="chip chip-ib">IB</span></td><td>All conditions</td></tr>
+    <tr><td><strong>C. Digital bans too lenient</strong> — insufficient for the crime</td><td><strong>48</strong></td><td><span class="chip chip-ib">IB</span> <span class="chip chip-sm">SM</span></td><td>Incitement to suicide</td></tr>
+    <tr><td><strong>G. Imprisonment too severe</strong> — disproportionate, non-violent offense</td><td><strong>42</strong></td><td><span class="chip chip-prison">Prison</span></td><td>Stalking (online), Scam</td></tr>
+    <tr><td><strong>D. Digital bans unenforceable</strong> — easy to circumvent</td><td><strong>28</strong></td><td><span class="chip chip-ib">IB</span> <span class="chip chip-sm">SM</span></td><td>All conditions</td></tr>
+    <tr><td><strong>J. Calls for alternatives</strong> — therapy, restraining orders, rehabilitation</td><td><strong>27</strong></td><td>All</td><td>Stalking, Incitement</td></tr>
+    <tr><td><strong>F. Fine morally inappropriate</strong> — cannot price a human life</td><td><strong>22</strong></td><td><span class="chip chip-fine">Fine</span></td><td>Incitement to suicide (19/22)</td></tr>
+    <tr><td><strong>H. Prison counterproductive</strong> — anti-rehabilitative, makes reoffending more likely</td><td><strong>22</strong></td><td><span class="chip chip-prison">Prison</span></td><td>Stalking, Scam</td></tr>
+    <tr><td><strong>E. Fine wealth-dependent</strong> — punishes poor more than rich</td><td><strong>21</strong></td><td><span class="chip chip-fine">Fine</span></td><td>Incitement (online), Stalking</td></tr>
+    <tr><td><strong>I. Fine to victim, not state</strong> — money should compensate victim</td><td><strong>12</strong></td><td><span class="chip chip-fine">Fine</span></td><td>Incitement to suicide</td></tr>
+    <tr><td><strong>K. Fine insufficient deterrent</strong></td><td><strong>10</strong></td><td><span class="chip chip-fine">Fine</span></td><td>Stalking</td></tr>
+  </tbody>
+  <tfoot><tr><td colspan="4">Entries may be coded in multiple themes; counts overlap. Keyword-assisted coding on 345 explanations.</td></tr></tfoot>
+</table>
+</div>
+
+<h3>Three Key Patterns</h3>
+
+<p><strong>1. Crime-punishment matching is the dominant folk theory (Theme A, n = 69).</strong> The single most common objection is that the punishment should target the mechanism of the offense — digital bans are inappropriate when the crime wasn't committed digitally. This reasoning is concentrated almost entirely in offline conditions (56 offline vs. 13 online), and directly explains the context effect found in H1. When offense moves online, this mismatch objection largely disappears, and digital ban preferences rise accordingly.</p>
+
+<p><strong>2. The internet ban is caught in a contradiction (Themes B and C).</strong> Some participants find a full internet ban too disruptive to daily life (banking, healthcare, employment — "too much"), while others find it too trivial given the gravity of the crime ("too little"). These objections co-exist, pulling in opposite directions, and together explain why internet ban has lower worth than social media ban even in online conditions — a narrower, more targeted restriction is more acceptable than a total prohibition.</p>
+
+<p><strong>3. Fine and prison face punishment-specific objections that mirror the quantitative data.</strong> Fine is rejected for incitement to suicide primarily on moral grounds (Themes F, E, I — you cannot price a human life; £20,000 is trivial; money goes to the state). This directly explains why fine has its lowest worth (0.138) for that offense. Prison is rejected for stalking on proportionality grounds (Theme G — no physical harm, first offense) and counterproductivity grounds (Theme H), consistent with prison having its lowest worth (0.166) for stalking.</p>
+
+<div class="callout key">
+  <strong>The qualitative data validate the quantitative patterns from a completely different angle.</strong> The ranking model tells us <em>what</em> people prefer; the explanations tell us <em>why</em>. Every major statistical result in sections 5–6 has a corresponding qualitative rationale identifiable in the free-text data. This convergence substantially strengthens confidence in the interpretation of the quantitative findings.
+</div>
+
+<!-- ═══════════════════════════════════════════════════ 15. SUMMARY -->
+<h2>15. Summary of Hypothesis Tests</h2>
+
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>Hypothesis</th><th>Test statistic</th><th>p</th><th>Verdict</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>H1 omnibus</strong> — Online context increases preference for digital bans</td>
+      <td>LRT χ²(3) = 72.14</td>
+      <td>&lt;.0001</td>
+      <td><span class="verdict supported">Supported</span></td>
+    </tr>
+    <tr>
+      <td><strong>H1 directional</strong> — Internet ban preferred more online (vs. fine)</td>
+      <td>OR = 2.06, z = 4.45</td>
+      <td>&lt;.001 (one-tailed)</td>
+      <td><span class="verdict supported">Supported</span></td>
+    </tr>
+    <tr>
+      <td><strong>H1 directional</strong> — SM ban preferred more online (vs. fine)</td>
+      <td>OR = 3.07, z = 6.70</td>
+      <td>&lt;.001 (one-tailed)</td>
+      <td><span class="verdict supported">Supported</span></td>
+    </tr>
+    <tr>
+      <td><strong>H2</strong> — Offense type affects punishment preferences</td>
+      <td>LRT χ²(6) = 259.28</td>
+      <td>&lt;.0001</td>
+      <td><span class="verdict supported">Strongly supported</span></td>
+    </tr>
+    <tr>
+      <td><strong>H3</strong> — Three-way interaction: context effect differs by offense</td>
+      <td>LRT χ²(6) = 25.55</td>
+      <td>.0003</td>
+      <td><span class="verdict supported">Supported</span></td>
+    </tr>
+    <tr>
+      <td><strong>H4 primary</strong> — Punitiveness predicts prison over fine</td>
+      <td>OR = 1.64, z = 5.84; LRT χ²(1) = 25.01</td>
+      <td>&lt;.001 (one-tailed)</td>
+      <td><span class="verdict supported">Supported</span></td>
+    </tr>
+    <tr>
+      <td><strong>H4 exploratory</strong> — Punitiveness predicts IB over fine</td>
+      <td>OR = 1.08, z = 0.96</td>
+      <td>.168 (one-tailed)</td>
+      <td><span class="verdict not-supported">Not supported</span></td>
+    </tr>
+    <tr>
+      <td><strong>H4 exploratory</strong> — Punitiveness predicts SM ban over fine</td>
+      <td>OR = 0.99, z = −0.08</td>
+      <td>.435 (one-tailed)</td>
+      <td><span class="verdict not-supported">Not supported</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ 15. DISCUSSION -->
+<h2>15. Overall Narrative and Key Takeaways</h2>
+
+<h3>Context matters — but it operates on a baseline of traditional preference</h3>
+<p>The headline finding is that when an offense is described as occurring online, participants shift substantially toward preferring digital punishments (H1 fully supported, all effects p &lt; .001). Social media ban more than doubles in worth; internet ban increases by 53%. This is a large and robust effect. But it operates on top of a strong baseline preference for traditional punishments — prison and fine together account for ~79% of first-choice selections across the full sample. Context shifts the distribution but does not overturn it.</p>
+
+<h3>Offense type is the dominant factor</h3>
+<p>Offense type produces by far the largest effect in the study (χ²(6) = 259, vs. 72 for context). Participants engage in a clear <strong>punishment-crime matching</strong> logic: financial crime → financial punishment; harassment/contact → contact-restricting punishment; severe moral harm → the most severe sanction available. This "intuitive retributivism" shapes preferences more powerfully than whether the offense happened online or offline.</p>
+
+<h3>Digital punishments face a dual legitimacy problem</h3>
+<p>Even when preferred, digital bans score below traditional punishments on every penal rationale (just deserts, deterrence, expressive function). A third of participants flag them as inappropriate. The average enforceability rating is 2.71/7. Yet among those who believe they can be enforced, digital bans are significantly more preferred (OR ≈ 1.44). The problem appears to be <em>practical skepticism</em>, not principled rejection — a meaningful distinction for policy.</p>
+
+<h3>Punitiveness is specifically about prison, not punishment in general</h3>
+<p>More punitive people want more of every punishment (severity analysis), but when forced to choose between punishment types, only their prison-over-fine preference is elevated. Punitiveness, in this context, means wanting liberty-deprivation specifically — digital bans are not perceived as a punitive escalation equivalent to imprisonment, regardless of how long they last.</p>
+
+<h3>The enforceability bottleneck</h3>
+<p>The enforceability finding is perhaps the most policy-actionable result. If public resistance to digital bans is primarily practical (people don't think they work) rather than principled (people think they're wrong in principle), then demonstrating effective enforcement mechanisms could shift public support substantially. This is a testable hypothesis for future work.</p>
+
+<!-- ═══════════════════════════════════════════════════ 16. RANKING PATTERNS -->
+<h2>16. How People Ordered the Punishments</h2>
+
+<p>Beyond the Plackett-Luce worth parameters, examining complete 4-item orderings reveals the internal structure of preference profiles — which punishments are mentally grouped together, and how the full ordering shifts across conditions.</p>
+
+<h3>Most Common Complete Orderings (Overall)</h3>
+<p>Out of 4! = 24 possible orderings, the top five account for just over half of all responses, indicating substantial concentration around a few dominant patterns.</p>
+
+<ul class="ord-list" id="ordOverall"></ul>
+
+<h3>Top Orderings by Context</h3>
+<div class="chart-grid">
+  <div>
+    <h4 style="margin-top:0">Offline (n = 232)</h4>
+    <ul class="ord-list" id="ordOffline"></ul>
+  </div>
+  <div>
+    <h4 style="margin-top:0">Online (n = 267)</h4>
+    <ul class="ord-list" id="ordOnline"></ul>
+  </div>
+</div>
+
+<div class="callout key">
+  <strong>The offline/online contrast is stark.</strong> In offline conditions, the top two orderings are both "Prison &gt; Fine &gt; ..." variants (91/232 = 39% of offline participants). In online conditions, those orderings drop sharply and a diverse cluster of digital-ban-leading patterns emerges — including "Fine &gt; SM ban &gt; IB &gt; Prison" (n = 24) and "Prison &gt; SM ban &gt; IB &gt; Fine" (n = 25).
+</div>
+
+<h3>Top Orderings by Offense Type</h3>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin:16px 0 24px">
+  <div>
+    <h4 style="margin-top:0">Scam (n = 164)</h4>
+    <ul class="ord-list" id="ordScam"></ul>
+  </div>
+  <div>
+    <h4 style="margin-top:0">Stalking (n = 166)</h4>
+    <ul class="ord-list" id="ordStalking"></ul>
+  </div>
+  <div>
+    <h4 style="margin-top:0">Incitement (n = 169)</h4>
+    <ul class="ord-list" id="ordIncitement"></ul>
+  </div>
+</div>
+
+<h3>Rank-Position Distribution</h3>
+<p>What percentage of participants placed each punishment at each rank position? Note that prison and fine attract extreme positions (often 1st or 4th), while digital bans cluster in the middle — but in opposite directions: internet ban is most often ranked 3rd, social media ban is more evenly spread.</p>
+
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>Rank</th><th><span class="chip chip-prison">Prison</span></th><th><span class="chip chip-fine">Fine</span></th><th><span class="chip chip-ib">IB</span></th><th><span class="chip chip-sm">SM ban</span></th></tr></thead>
+  <tbody>
+    <tr><td><strong>1st (most preferred)</strong></td><td>45.1%</td><td>34.3%</td><td>7.2%</td><td>13.4%</td></tr>
+    <tr><td><strong>2nd</strong></td><td>19.2%</td><td>32.5%</td><td>22.8%</td><td>25.5%</td></tr>
+    <tr><td><strong>3rd</strong></td><td>10.6%</td><td>12.8%</td><td>44.7%</td><td>31.9%</td></tr>
+    <tr><td><strong>4th (least preferred)</strong></td><td>25.1%</td><td>20.4%</td><td>25.3%</td><td>29.3%</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>Conditional Rank-2: Given Your Top Choice, What Comes Second?</h3>
+<p>When prison is ranked first, participants pair it with fine second (60%) rather than any digital ban. When fine is first, prison comes second (46.8%). This near-exclusive pairing of the two traditional punishments at the top is the structural signature of a "traditional vs. digital" preference cleavage. The digital bans pair with <em>each other</em>: if IB is first, SM ban is second (61.1%); if SM ban is first, IB is second (56.7%).</p>
+
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>If rank-1 is…</th><th>Most common rank-2</th><th>%</th><th>Second most common rank-2</th><th>%</th></tr></thead>
+  <tbody>
+    <tr><td><span class="chip chip-prison">Prison</span> (n = 225)</td><td><span class="chip chip-fine">Fine</span></td><td>60.0%</td><td><span class="chip chip-sm">SM ban</span></td><td>20.9%</td></tr>
+    <tr><td><span class="chip chip-fine">Fine</span> (n = 171)</td><td><span class="chip chip-prison">Prison</span></td><td>46.8%</td><td><span class="chip chip-sm">SM ban</span></td><td>33.9%</td></tr>
+    <tr><td><span class="chip chip-ib">IB</span> (n = 36)</td><td><span class="chip chip-sm">SM ban</span></td><td>61.1%</td><td><span class="chip chip-fine">Fine</span></td><td>27.8%</td></tr>
+    <tr><td><span class="chip chip-sm">SM ban</span> (n = 67)</td><td><span class="chip chip-ib">IB</span></td><td>56.7%</td><td><span class="chip chip-fine">Fine</span></td><td>25.4%</td></tr>
+  </tbody>
+  <tfoot><tr><td colspan="5">Strong "traditional" cluster (Prison–Fine) and "digital" cluster (IB–SM ban) at ranks 1–2.</td></tr></tfoot>
+</table>
+</div>
+
+<h3>Mean Rank by Offense × Context</h3>
+<p>Lower mean rank = more preferred. Each cell shows how each punishment is placed on average in that condition. The heatmap captures the full 2 × 3 × 4 preference structure in one view.</p>
+
+<div class="tbl-wrap">
+<table class="heatmap" id="heatmapMeanRank">
+  <thead><tr><th></th><th><span class="chip chip-prison">Prison</span></th><th><span class="chip chip-fine">Fine</span></th><th><span class="chip chip-ib">IB</span></th><th><span class="chip chip-sm">SM ban</span></th></tr></thead>
+  <tbody id="heatmapBody"></tbody>
+</table>
+</div>
+
+<h3>Pairwise Preferences</h3>
+<p>For every pair of punishments, we can ask: what percentage of participants ranked A higher than B? This is the simplest summary of overall relative preference, free of any modelling assumptions.</p>
+
+<div class="chart-wrap">
+  <div class="chart-title">Pairwise preferences: % who prefer A (left) over B (right)</div>
+  <canvas id="chartPairwise" height="160"></canvas>
+</div>
+
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>Pair</th><th>A preferred</th><th>B preferred</th></tr></thead>
+  <tbody>
+    <tr><td><span class="chip chip-prison">Prison</span> vs <span class="chip chip-fine">Fine</span></td><td>53.5%</td><td>46.5%</td></tr>
+    <tr><td><span class="chip chip-prison">Prison</span> vs <span class="chip chip-ib">IB</span></td><td>67.5%</td><td>32.5%</td></tr>
+    <tr><td><span class="chip chip-prison">Prison</span> vs <span class="chip chip-sm">SM ban</span></td><td>63.3%</td><td>36.7%</td></tr>
+    <tr><td><span class="chip chip-fine">Fine</span> vs <span class="chip chip-ib">IB</span></td><td>68.3%</td><td>31.7%</td></tr>
+    <tr><td><span class="chip chip-fine">Fine</span> vs <span class="chip chip-sm">SM ban</span></td><td>65.7%</td><td>34.3%</td></tr>
+    <tr><td><span class="chip chip-ib">IB</span> vs <span class="chip chip-sm">SM ban</span></td><td>47.9%</td><td>52.1%</td></tr>
+  </tbody>
+  <tfoot><tr><td colspan="3">Note: Prison and Fine are closely matched (53.5/46.5); IB and SM ban are likewise close (47.9/52.1). Traditional vs. digital gap is large (~65–68%).</td></tr></tfoot>
+</table>
+</div>
+
+<div class="callout result">
+  <strong>Structural summary:</strong> There are two distinct preference clusters — a <em>traditional cluster</em> (Prison + Fine) and a <em>digital cluster</em> (IB + SM ban). Within each cluster, preferences are near-even. Across clusters, traditional punishments are preferred by a ~2:1 margin. Context (online vs. offline) and offense type shift the balance within and between clusters but do not dissolve the underlying two-cluster structure.
+</div>
+
+<hr>
+<div class="footer">
+  Analysis: R (PlackettLuce, survival, tidyverse) &nbsp;·&nbsp; Data: main.csv (N = 499) &nbsp;·&nbsp; Script: main.R &nbsp;·&nbsp; Report generated April 2026
+</div>
+
+</div><!-- .page -->
+
+<script>
+// ── Colour palette ──
+const C = {
+  prison: '#E63946',
+  fine:   '#c07a30',
+  ib:     '#457B9D',
+  sm:     '#2A9D8F'
+};
+const PUNISHMENTS = ['Prison','Fine','IB','SM ban'];
+const COLORS = [C.prison, C.fine, C.ib, C.sm];
+
+const defaultFont = { family: "'Helvetica Neue', Arial, sans-serif", size: 12 };
+Chart.defaults.font = defaultFont;
+
+// ── 1. Overall Worth ──
+new Chart(document.getElementById('chartOverallWorth'), {
+  type: 'bar',
+  data: {
+    labels: PUNISHMENTS,
+    datasets: [{
+      data: [0.309, 0.315, 0.187, 0.189],
+      backgroundColor: COLORS,
+      borderRadius: 4
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    plugins: { legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ' Worth = ' + ctx.raw.toFixed(3) } } },
+    scales: {
+      x: { min: 0, max: 0.4, grid: { color: '#eee' },
+           title: { display: true, text: 'Worth (sum = 1)', font: { size: 11 } } },
+      y: { grid: { display: false } }
+    }
+  }
+});
+
+// ── 2. Rank-position distribution ──
+new Chart(document.getElementById('chartRankPos'), {
+  type: 'bar',
+  data: {
+    labels: ['1st (most preferred)', '2nd', '3rd', '4th (least)'],
+    datasets: [
+      { label: 'Prison',  data: [45.1, 19.2, 10.6, 25.1], backgroundColor: C.prison, borderRadius: 2 },
+      { label: 'Fine',    data: [34.3, 32.5, 12.8, 20.4], backgroundColor: C.fine,   borderRadius: 2 },
+      { label: 'IB',      data: [7.2,  22.8, 44.7, 25.3], backgroundColor: C.ib,     borderRadius: 2 },
+      { label: 'SM ban',  data: [13.4, 25.5, 31.9, 29.3], backgroundColor: C.sm,     borderRadius: 2 }
+    ]
+  },
+  options: {
+    plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 10 } } },
+    scales: {
+      x: { grid: { display: false } },
+      y: { max: 100, grid: { color: '#eee' },
+           title: { display: true, text: '% of participants', font: { size: 11 } } }
+    }
+  }
+});
+
+// ── 3. Context chart (grouped bar) ──
+new Chart(document.getElementById('chartContext'), {
+  type: 'bar',
+  data: {
+    labels: PUNISHMENTS,
+    datasets: [
+      { label: 'Offline', data: [0.384, 0.360, 0.141, 0.115],
+        backgroundColor: COLORS.map(c => c + 'aa'), borderColor: COLORS, borderWidth: 2, borderRadius: 3 },
+      { label: 'Online',  data: [0.252, 0.269, 0.216, 0.263],
+        backgroundColor: COLORS, borderRadius: 3 }
+    ]
+  },
+  options: {
+    plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 10 } } },
+    scales: {
+      x: { grid: { display: false } },
+      y: { min: 0, max: 0.45, grid: { color: '#eee' },
+           title: { display: true, text: 'Worth', font: { size: 11 } } }
+    }
+  }
+});
+
+// ── 4. Offense chart ──
+new Chart(document.getElementById('chartOffense'), {
+  type: 'bar',
+  data: {
+    labels: PUNISHMENTS,
+    datasets: [
+      { label: 'Scam',       data: [0.240, 0.595, 0.097, 0.068],
+        backgroundColor: '#6c757d', borderRadius: 3 },
+      { label: 'Stalking',   data: [0.166, 0.327, 0.197, 0.310],
+        backgroundColor: '#8b5cf6', borderRadius: 3 },
+      { label: 'Incitement', data: [0.516, 0.138, 0.176, 0.170],
+        backgroundColor: '#dc3545', borderRadius: 3 }
+    ]
+  },
+  options: {
+    plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 10 } } },
+    scales: {
+      x: { grid: { display: false } },
+      y: { min: 0, max: 0.65, grid: { color: '#eee' },
+           title: { display: true, text: 'Worth', font: { size: 11 } } }
+    }
+  }
+});
+
+// ── 5. Punitiveness chart ──
+new Chart(document.getElementById('chartPunit'), {
+  type: 'bar',
+  data: {
+    labels: PUNISHMENTS,
+    datasets: [
+      { label: 'Low punitiveness', data: [0.229, 0.357, 0.198, 0.216],
+        backgroundColor: COLORS.map(c => c + '88'), borderColor: COLORS, borderWidth: 2, borderRadius: 3 },
+      { label: 'High punitiveness', data: [0.399, 0.273, 0.169, 0.160],
+        backgroundColor: COLORS, borderRadius: 3 }
+    ]
+  },
+  options: {
+    plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 10 } } },
+    scales: {
+      x: { grid: { display: false } },
+      y: { min: 0, max: 0.45, grid: { color: '#eee' },
+           title: { display: true, text: 'Worth', font: { size: 11 } } }
+    }
+  }
+});
+
+// ── 6. Penal justification radar ──
+new Chart(document.getElementById('chartPenal'), {
+  type: 'bar',
+  data: {
+    labels: ['Just deserts', 'Deterrence', 'Expressive function'],
+    datasets: [
+      { label: 'Prison',  data: [4.23, 4.77, 4.78], backgroundColor: C.prison + 'cc', borderRadius: 3 },
+      { label: 'Fine',    data: [4.13, 4.01, 4.00], backgroundColor: C.fine   + 'cc', borderRadius: 3 },
+      { label: 'SM ban',  data: [3.55, 3.34, 3.41], backgroundColor: C.sm     + 'cc', borderRadius: 3 },
+      { label: 'IB',      data: [3.49, 3.61, 3.49], backgroundColor: C.ib     + 'cc', borderRadius: 3 }
+    ]
+  },
+  options: {
+    plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 10 } } },
+    scales: {
+      x: { grid: { display: false } },
+      y: { min: 1, max: 6, grid: { color: '#eee' },
+           title: { display: true, text: 'Mean rating (1–6)', font: { size: 11 } },
+           ticks: { stepSize: 1 } }
+    }
+  }
+});
+
+// ── 7. Pairwise preferences chart ──
+new Chart(document.getElementById('chartPairwise'), {
+  type: 'bar',
+  data: {
+    labels: ['Prison vs Fine','Prison vs IB','Prison vs SM','Fine vs IB','Fine vs SM','IB vs SM'],
+    datasets: [
+      { label: 'A preferred (%)', data: [53.5, 67.5, 63.3, 68.3, 65.7, 47.9],
+        backgroundColor: ['#E63946','#E63946','#E63946','#c07a30','#c07a30','#457B9D'], borderRadius: 4 },
+      { label: 'B preferred (%)', data: [46.5, 32.5, 36.7, 31.7, 34.3, 52.1],
+        backgroundColor: ['#c07a30','#457B9D','#2A9D8F','#457B9D','#2A9D8F','#2A9D8F'], borderRadius: 4 }
+    ]
+  },
+  options: {
+    indexAxis: 'y',
+    plugins: {
+      legend: { position: 'bottom', labels: { boxWidth: 12, padding: 10 } },
+      tooltip: { callbacks: { label: ctx => ' ' + ctx.dataset.label + ': ' + ctx.raw + '%' } }
+    },
+    scales: {
+      x: { max: 100, grid: { color: '#eee' },
+           title: { display: true, text: '% of participants', font: { size: 11 } } },
+      y: { grid: { display: false } }
+    }
+  }
+});
+
+// ── 8. Ordering bar lists ──
+function makeOrdList(elId, data) {
+  const ul = document.getElementById(elId);
+  const max = data[0][1];
+  data.forEach(([label, n]) => {
+    const li = document.createElement('li');
+    li.className = 'ord-item';
+    const pct = Math.round(n / max * 100);
+    li.innerHTML = `
+      <div class="ord-bar" style="width:${pct}%;min-width:4px;max-width:180px"></div>
+      <span class="ord-label">${label}</span>
+      <span class="ord-n">n=${n}</span>`;
+    ul.appendChild(li);
+  });
+}
+
+makeOrdList('ordOverall', [
+  ['Prison > Fine > IB > SM ban', 83],
+  ['Prison > Fine > SM ban > IB', 52],
+  ['Fine > Prison > IB > SM ban', 44],
+  ['Fine > SM ban > IB > Prison', 44],
+  ['Fine > Prison > SM ban > IB', 36],
+  ['Prison > SM ban > IB > Fine', 34],
+  ['Prison > IB > SM ban > Fine', 33],
+  ['Fine > IB > SM ban > Prison', 27],
+  ['SM ban > IB > Fine > Prison', 24],
+  ['Fine > SM ban > Prison > IB', 14]
+]);
+
+makeOrdList('ordOffline', [
+  ['Prison > Fine > IB > SM ban', 56],
+  ['Prison > Fine > SM ban > IB', 35],
+  ['Fine > Prison > IB > SM ban', 31],
+  ['Fine > SM ban > IB > Prison', 20],
+  ['Fine > Prison > SM ban > IB', 16],
+  ['Prison > IB > SM ban > Fine', 14],
+  ['Prison > SM ban > IB > Fine', 9],
+  ['Fine > IB > SM ban > Prison', 6]
+]);
+
+makeOrdList('ordOnline', [
+  ['Prison > Fine > IB > SM ban', 27],
+  ['Prison > SM ban > IB > Fine', 25],
+  ['Fine > SM ban > IB > Prison', 24],
+  ['Fine > IB > SM ban > Prison', 21],
+  ['Fine > Prison > SM ban > IB', 20],
+  ['Prison > IB > SM ban > Fine', 19],
+  ['SM ban > IB > Fine > Prison', 19],
+  ['Prison > Fine > SM ban > IB', 17]
+]);
+
+makeOrdList('ordScam', [
+  ['Prison > Fine > IB > SM ban', 41],
+  ['Fine > Prison > IB > SM ban', 33],
+  ['Fine > Prison > SM ban > IB', 22],
+  ['Fine > SM ban > IB > Prison', 19],
+  ['Prison > Fine > SM ban > IB', 16],
+  ['Fine > IB > SM ban > Prison', 13]
+]);
+
+makeOrdList('ordStalking', [
+  ['Fine > SM ban > IB > Prison', 21],
+  ['Prison > Fine > SM ban > IB', 20],
+  ['SM ban > IB > Fine > Prison', 18],
+  ['Fine > IB > SM ban > Prison', 11],
+  ['Fine > Prison > SM ban > IB', 10],
+  ['SM ban > Fine > IB > Prison', 10]
+]);
+
+makeOrdList('ordIncitement', [
+  ['Prison > Fine > IB > SM ban', 33],
+  ['Prison > SM ban > IB > Fine', 25],
+  ['Prison > IB > SM ban > Fine', 24],
+  ['Prison > Fine > SM ban > IB', 16],
+  ['IB > SM ban > Prison > Fine', 10],
+  ['Prison > SM ban > Fine > IB', 9]
+]);
+
+// ── 9. Mean rank heatmap ──
+const heatData = [
+  ['Scam / Offline',      [1.81, 1.51, 3.14, 3.54]],
+  ['Scam / Online',       [2.32, 1.50, 3.07, 3.12]],
+  ['Stalking / Offline',  [2.38, 1.85, 3.09, 2.68]],
+  ['Stalking / Online',   [3.03, 2.51, 2.53, 1.93]],
+  ['Incitement / Offline',[1.52, 2.59, 2.80, 3.09]],
+  ['Incitement / Online', [1.80, 3.11, 2.70, 2.39]]
+];
+const heatBody = document.getElementById('heatmapBody');
+heatData.forEach(([label, vals]) => {
+  const tr = document.createElement('tr');
+  const minV = Math.min(...vals);
+  tr.innerHTML = `<td style="font-family:'Helvetica Neue',sans-serif;font-size:0.83rem">${label}</td>` +
+    vals.map((v, i) => {
+      const alpha = Math.round((4 - v) / 2.5 * 180);
+      const bg = COLORS[i] + alpha.toString(16).padStart(2,'0');
+      const textC = alpha > 100 ? '#fff' : '#222';
+      const bold = v === minV ? 'font-weight:700' : '';
+      return `<td style="background:${bg};color:${textC};${bold}">${v.toFixed(2)}</td>`;
+    }).join('');
+  heatBody.appendChild(tr);
+});
+</script>
+</body>
+</html>
