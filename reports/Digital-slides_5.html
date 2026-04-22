@@ -1,0 +1,1701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Offenses, Digital Sanctions?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #1a2744;
+    --navy-mid: #243560;
+    --navy-light: #3a5080;
+    --blue: #2e4a8f;
+    --blue-light: #e6f0fb;
+    --teal: #0f6e56;
+    --teal-light: #e1f5ee;
+    --amber: #ba7517;
+    --amber-light: #faeeda;
+    --coral: #993c1d;
+    --coral-light: #faece7;
+    --pink: #993556;
+    --pink-light: #fbeaf0;
+    --text: #1a2744;
+    --muted: #5a6e8c;
+    --border: rgba(26,39,68,0.12);
+    --surface: #f7f9fc;
+    --white: #ffffff;
+    --slide-w: min(920px, 96vw);
+    --slide-h: calc(var(--slide-w) * 9 / 16);
+    --fs-title: clamp(16px, 2.8vw, 28px);
+    --fs-head: clamp(12px, 1.8vw, 18px);
+    --fs-sub: clamp(10px, 1.3vw, 13px);
+    --fs-body: clamp(9px, 1.1vw, 11.5px);
+    --fs-small: clamp(8px, 0.95vw, 10px);
+  }
+
+  html, body {
+    height: 100%;
+    background: #0e1628;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  .shell {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem 3rem;
+    gap: 1.5rem;
+  }
+
+  /* top bar */
+  .top-bar {
+    width: var(--slide-w);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .slide-counter {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 0.08em;
+  }
+
+  .slide-title-nav {
+    font-size: 12px;
+    color: rgba(255,255,255,0.35);
+    font-weight: 300;
+    text-align: right;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* slide stage */
+  .stage {
+    width: var(--slide-w);
+    height: var(--slide-h);
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    outline: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+  }
+  .slide.active { display: flex; }
+
+  /* bottom nav */
+  .bottom-nav {
+    width: var(--slide-w);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    border-radius: 40px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.05);
+    color: rgba(255,255,255,0.7);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+    letter-spacing: 0.01em;
+  }
+  .nav-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); color: #fff; }
+  .nav-btn:disabled { opacity: 0.25; pointer-events: none; }
+  .nav-btn svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* dot pagination */
+  .dots {
+    display: flex;
+    gap: 7px;
+    align-items: center;
+  }
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    border: none;
+  }
+  .dot.active { background: #e8a020; transform: scale(1.3); }
+
+  /* thumbnail strip */
+  .thumb-strip {
+    width: var(--slide-w);
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.15) transparent;
+    padding: 4px 2px;
+  }
+  .thumb {
+    flex-shrink: 0;
+    width: 110px;
+    height: 62px;
+    border-radius: 6px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.15s;
+    position: relative;
+    outline: none;
+  }
+  .thumb.active { border-color: #e8a020; }
+  .thumb iframe {
+    width: 920px;
+    height: 518px;
+    transform: scale(0.1195);
+    transform-origin: top left;
+    pointer-events: none;
+    border: none;
+  }
+  .thumb-label {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(10,16,32,0.75);
+    color: rgba(255,255,255,0.7);
+    font-size: 8px;
+    padding: 2px 4px;
+    font-family: 'DM Sans', sans-serif;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* keyboard hint */
+  .hint {
+    font-size: 11px;
+    color: rgba(255,255,255,0.2);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.06em;
+  }
+
+  /* ─── SLIDE INTERNALS ─── */
+
+  /* slide 1 — title */
+  .s1 { background: var(--navy); }
+  .s1-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 7% 6% 7% 7%;
+    position: relative;
+    z-index: 2;
+  }
+  .s1-right {
+    width: 32%;
+    background: var(--navy-mid);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .s1-accent { width: 36px; height: 3px; background: #e8a020; border-radius: 2px; margin-bottom: 6%; }
+  .s1-title {
+    font-family: 'Playfair Display', serif;
+    font-size: var(--fs-title);
+    font-weight: 500;
+    color: #fff;
+    line-height: 1.25;
+    margin-bottom: 4%;
+  }
+  .s1-title em { color: #e8a020; font-style: normal; }
+  .s1-subtitle {
+    font-size: var(--fs-head);
+    color: rgba(168,190,221,0.85);
+    line-height: 1.55;
+    margin-bottom: 5%;
+    font-weight: 300;
+    max-width: 90%;
+  }
+  .s1-authors {
+    font-size: var(--fs-small);
+    color: rgba(168,190,221,0.6);
+    line-height: 1.7;
+    margin-bottom: 4%;
+    font-weight: 300;
+  }
+  .s1-authors strong { color: rgba(168,190,221,0.85); font-weight: 500; }
+  .s1-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .s1-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: var(--fs-small);
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(168,190,221,0.7);
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.03em;
+  }
+  .signal-rings {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .ring {
+    border-radius: 50%;
+    border: 2px solid rgba(232,160,32,0.4);
+  }
+  .dot-center {
+    width: 12px; height: 12px;
+    background: #e8a020;
+    border-radius: 50%;
+  }
+
+  /* slide 2 — motivation */
+  .s2 { background: var(--white); flex-direction: column; padding: 5% 6%; }
+  .slide-head {
+    font-family: 'Playfair Display', serif;
+    font-size: var(--fs-head);
+    font-weight: 500;
+    color: var(--navy);
+    margin-bottom: 4%;
+    padding-bottom: 2.5%;
+    border-bottom: 1px solid var(--border);
+  }
+  .cards3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 3%; flex: 1; }
+  .card3 {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 5% 5%;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    border-top-width: 3px;
+  }
+  .card3-head { font-size: var(--fs-sub); font-weight: 500; color: var(--navy); }
+  .card3-body { font-size: var(--fs-body); color: var(--muted); line-height: 1.55; flex: 1; }
+  .card3-cite { font-family: 'DM Mono', monospace; font-size: var(--fs-small); color: var(--muted); opacity: 0.7; margin-top: auto; }
+  .bottom-banner {
+    margin-top: 4%;
+    background: var(--navy);
+    border-radius: 8px;
+    padding: 2.5% 4%;
+    font-size: var(--fs-body);
+    color: #e8a020;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  /* slide 3 — background */
+  .s3 { background: var(--surface); flex-direction: column; padding: 5% 6%; }
+  .cols2 { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 4%; flex: 1; }
+  .col-head {
+    font-size: var(--fs-sub);
+    font-weight: 500;
+    padding-bottom: 3%;
+    margin-bottom: 3%;
+    border-bottom: 1px solid var(--border);
+  }
+  .theory-item {
+    padding: 5px 8px 5px 10px;
+    border-left: 2px solid;
+    margin-bottom: 5px;
+    border-radius: 0 6px 6px 0;
+  }
+  .ti-head { font-size: var(--fs-body); font-weight: 500; color: var(--navy); margin-bottom: 2px; }
+  .ti-body { font-size: var(--fs-small); color: var(--muted); line-height: 1.5; }
+
+  /* slide 4 — hypotheses */
+  .s4 { background: var(--white); flex-direction: column; padding: 4% 6% 4%; overflow: hidden; }
+  .hyps { display: flex; flex-direction: column; gap: 1.8%; flex: 1; }
+  .hyp {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 2% 3%;
+    flex: 1;
+    min-height: 0;
+  }
+  .hyp-badge {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--fs-small);
+    font-weight: 500;
+    flex-shrink: 0;
+    font-family: 'Playfair Display', serif;
+  }
+  .hyp-content { flex: 1; min-width: 0; }
+  .hyp-label { font-size: var(--fs-small); font-weight: 500; margin-bottom: 2px; }
+  .hyp-text { font-size: var(--fs-small); color: var(--muted); line-height: 1.45; }
+  .hyp-alpha {
+    font-family: 'DM Mono', monospace;
+    font-size: calc(var(--fs-small) * 0.92);
+    color: var(--muted);
+    opacity: 0.7;
+    flex-shrink: 0;
+    text-align: right;
+    white-space: nowrap;
+    align-self: center;
+  }
+
+  /* slide 5 — design */
+  .s5 { background: var(--surface); flex-direction: column; padding: 5% 6%; }
+  .design-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.1fr); gap: 4%; flex: 1; }
+  .fact-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
+  .fact-box {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 8px;
+  }
+  .fact-box-head { font-size: var(--fs-small); font-weight: 500; color: var(--navy); margin-bottom: 3px; }
+  .fact-box-item { font-size: var(--fs-small); color: var(--muted); line-height: 1.5; }
+  .punit-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
+  .punit-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 5px 8px;
+    font-size: var(--fs-small);
+    color: var(--navy);
+  }
+  .pip { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .proc-step {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    margin-bottom: 4px;
+  }
+  .step-num {
+    width: 16px; height: 16px;
+    background: var(--navy);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 7.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .step-text { font-size: var(--fs-small); color: var(--muted); line-height: 1.5; }
+  .step-text strong { color: var(--navy); font-weight: 500; }
+
+  /* slide 6 — analysis */
+  .s6 { background: var(--white); flex-direction: column; padding: 5% 6%; }
+  .analysis-grid { display: grid; grid-template-columns: minmax(0,1.1fr) minmax(0,0.9fr); gap: 4%; flex: 1; }
+  .model-box {
+    background: var(--surface);
+    border-radius: 8px;
+    padding: 7px 10px;
+    margin-bottom: 6px;
+  }
+  .model-box-head { font-size: var(--fs-body); font-weight: 500; color: var(--navy); margin-bottom: 3px; }
+  .model-box-text { font-size: var(--fs-small); color: var(--muted); line-height: 1.5; }
+  .inf-row {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 10px;
+    margin-bottom: 5px;
+  }
+  .inf-head { font-size: var(--fs-small); font-weight: 500; margin-bottom: 3px; }
+  .inf-text { font-size: var(--fs-small); color: var(--muted); line-height: 1.45; }
+  .reg-badge {
+    background: var(--navy);
+    border-radius: 8px;
+    padding: 7px 10px;
+    font-size: var(--fs-small);
+    color: rgba(168,190,221,0.8);
+    line-height: 1.5;
+    margin-top: auto;
+  }
+
+  /* ── result slides shared ── */
+  .s-result { flex-direction: column; padding: 4% 6%; overflow: hidden; }
+  .s-light { background: var(--white); }
+  .s-surf  { background: var(--surface); }
+  .s-dark  { background: var(--navy); }
+
+  .rhead {
+    font-family: 'Playfair Display', serif;
+    font-size: var(--fs-head);
+    font-weight: 500;
+    color: var(--navy);
+    margin-bottom: 2.5%;
+    padding-bottom: 2%;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+  .rhead.light { color: #fff; border-bottom-color: rgba(255,255,255,0.15); }
+  .verdict-pill {
+    font-family: 'DM Mono', monospace;
+    font-size: var(--fs-small);
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-weight: 400;
+  }
+  .vp-sup  { background: #d4edda; color: #155724; }
+  .vp-part { background: #fff3cd; color: #856404; }
+  .vp-no   { background: #f8d7da; color: #721c24; }
+
+  /* worth bar chart */
+  .worth-chart { display: flex; flex-direction: column; gap: 5px; }
+  .worth-row { display: flex; align-items: center; gap: 8px; }
+  .worth-label { font-size: var(--fs-small); color: var(--navy); width: 90px; flex-shrink: 0; font-family: 'DM Mono', monospace; }
+  .worth-track { flex: 1; height: 16px; background: var(--surface); border-radius: 3px; overflow: hidden; position: relative; }
+  .worth-bar   { height: 100%; border-radius: 3px; transition: width 0.4s; }
+  .worth-val   { font-size: var(--fs-small); color: var(--muted); width: 38px; flex-shrink: 0; font-family: 'DM Mono', monospace; text-align: right; }
+  .worth-delta { font-size: var(--fs-small); width: 46px; flex-shrink: 0; font-family: 'DM Mono', monospace; text-align: right; }
+
+  /* stat grid */
+  .stat-grid { display: grid; gap: 8px; }
+  .stat-card {
+    background: var(--surface);
+    border-radius: 8px;
+    padding: 6px 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .stat-val { font-size: var(--fs-head); font-weight: 500; color: var(--navy); line-height: 1.1; }
+  .stat-lbl { font-size: var(--fs-small); color: var(--muted); margin-top: 2px; }
+
+  /* two-col result layout */
+  .rcols { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 4%; flex: 1; min-height: 0; }
+  .rcols3 { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr) minmax(0,1fr); gap: 3%; flex: 1; min-height: 0; }
+
+  /* offense card */
+  .off-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 4% 4%;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    border-top-width: 3px;
+  }
+  .off-card-head { font-size: var(--fs-body); font-weight: 500; color: var(--navy); }
+  .off-winner {
+    font-family: 'DM Mono', monospace;
+    font-size: var(--fs-small);
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 3px;
+  }
+
+  /* cluster diagram */
+  .cluster-wrap { display: flex; gap: 10px; align-items: stretch; flex: 1; min-height: 0; }
+  .cluster-box {
+    flex: 1;
+    border-radius: 8px;
+    padding: 5% 5%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .cluster-title { font-size: var(--fs-body); font-weight: 500; }
+  .cluster-item {
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: var(--fs-small);
+    font-family: 'DM Mono', monospace;
+  }
+  .cluster-vs {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--fs-body);
+    color: var(--muted);
+    font-style: italic;
+    flex-shrink: 0;
+    padding: 0 4px;
+  }
+
+  /* takeaway boxes */
+  .tk-box {
+    border-radius: 8px;
+    padding: 3.5% 4%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    border: 1px solid var(--border);
+  }
+  .tk-num {
+    font-family: 'Playfair Display', serif;
+    font-size: calc(var(--fs-head) * 1.4);
+    font-weight: 500;
+    line-height: 1;
+    opacity: 0.2;
+  }
+  .tk-head { font-size: var(--fs-body); font-weight: 500; color: var(--navy); }
+  .tk-body { font-size: var(--fs-small); color: var(--muted); line-height: 1.5; }
+
+  /* heatmap cell */
+  .hm-table { width: 100%; border-collapse: collapse; }
+  .hm-table th { font-size: var(--fs-small); color: var(--muted); padding: 3px 5px; text-align: center; font-weight: 400; }
+  .hm-table td { font-size: var(--fs-small); font-family: 'DM Mono', monospace; padding: 4px 5px; text-align: center; border-radius: 4px; }
+  .hm-table .row-label { text-align: left; color: var(--muted); font-family: 'DM Sans', sans-serif; padding-right: 8px; }
+
+  /* rationale bars */
+  .rat-group { display: flex; flex-direction: column; gap: 4px; }
+  .rat-row { display: flex; align-items: center; gap: 6px; }
+  .rat-label { font-size: var(--fs-small); color: var(--muted); width: 72px; flex-shrink: 0; }
+  .rat-seg { height: 12px; border-radius: 2px; }
+
+  /* pairwise table */
+  .pw-table { width: 100%; border-collapse: collapse; }
+  .pw-table th { font-size: var(--fs-small); color: var(--muted); padding: 4px 8px; text-align: center; font-weight: 400; border-bottom: 1px solid var(--border); }
+  .pw-table td { font-size: var(--fs-small); font-family: 'DM Mono', monospace; padding: 5px 8px; text-align: center; }
+  .pw-table .rl { text-align: left; color: var(--muted); font-family: 'DM Sans', sans-serif; }
+  .pw-table tr:not(:last-child) td { border-bottom: 1px solid var(--border); }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <div class="top-bar">
+    <div class="slide-counter" id="counter">01 / 06</div>
+    <div class="slide-title-nav" id="slide-nav-title"></div>
+  </div>
+
+  <div class="stage" id="stage">
+
+    <!-- SLIDE 1: TITLE -->
+    <div class="slide s1 active" data-title="Title">
+      <div style="display:flex;height:100%;">
+        <div class="s1-left">
+          <div class="s1-accent"></div>
+          <div class="s1-title">Digital Offenses,<br>Digital <em>Sanctions?</em></div>
+          <div class="s1-subtitle">Context, Offense Type, and Lay Punishment Preferences</div>
+          <div class="s1-authors">
+            <strong>Piotr Bystranowski, Kamil Mamak, Bartosz Janik, Przemysław Pałka,<br>Maciej Próchnicki, Wojciech Ciszewski, Marek Jakubiec, Mikołaj Małecki</strong><br>
+            Jagiellonian University<br><br>
+            <strong>Maciej Juzaszek</strong><br>
+            University of Silesia in Katowice<br><br>
+            <strong>Michał Kłusek</strong><br>
+            Charles University<br><br>
+            <strong>Dawid Juszka</strong><br>
+            AGH University of Kraków
+          </div>
+          <div class="s1-tags">
+            <span class="s1-tag">pre-registered</span>
+            <span class="s1-tag">N = 250</span>
+            <span class="s1-tag">Prolific UK</span>
+            <span class="s1-tag">3 × 2 between-subjects</span>
+          </div>
+        </div>
+        <div class="s1-right">
+          <div class="signal-rings">
+            <div class="ring" style="width:80px;height:80px;opacity:0.3;"></div>
+            <div class="ring" style="width:56px;height:56px;position:absolute;opacity:0.5;"></div>
+            <div class="ring" style="width:34px;height:34px;position:absolute;opacity:0.7;"></div>
+            <div class="dot-center" style="position:absolute;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 2: MOTIVATION -->
+    <div class="slide s2" data-title="Motivation">
+      <div class="slide-head">Why alternative punishments — and why now?</div>
+      <div class="cards3" style="flex:1;">
+        <div class="card3" style="border-top-color:#2e4a8f;">
+          <div class="card3-head">The prison problem</div>
+          <div class="card3-body">Imprisonment dominates criminal justice yet produces severe collateral harms for offenders, families, and communities — and is deployed far beyond what most theorists consider warranted.</div>
+          <div class="card3-cite">Hoskins 2019; Clear &amp; Austin 2009; Krajewski 2016</div>
+        </div>
+        <div class="card3" style="border-top-color:#ba7517;">
+          <div class="card3-head">The mid-level gap</div>
+          <div class="card3-body">Fines, probation, and community service have failed to displace custody. A shortage of credible, proportionate alternatives is especially acute for mid-level offences where calibration is hardest.</div>
+          <div class="card3-cite">Tonry 1996; Gazal-Ayal &amp; Roberts 2019</div>
+        </div>
+        <div class="card3" style="border-top-color:#0f6e56;">
+          <div class="card3-head">Digital life as punishable asset</div>
+          <div class="card3-body">Internet deprivation and cyberbanishment exploit the constitutive role of connectivity in modern life to generate meaningful punitive burden — as hardship comparable to established sanctions.</div>
+          <div class="card3-cite">Bagaric et al. 2018; Mamak 2023</div>
+        </div>
+      </div>
+      <div class="bottom-banner">Key question: Do ordinary people regard digital bans as legitimate, proportionate criminal punishment?</div>
+    </div>
+
+    <!-- SLIDE 3: BACKGROUND -->
+    <div class="slide s3" data-title="Theoretical background">
+      <div class="slide-head">Theoretical background</div>
+      <div class="cols2">
+        <div>
+          <div class="col-head" style="color:#2e4a8f;">Punishment theory</div>
+          <div class="theory-item" style="border-color:#2e4a8f;background:#e6f0fb;">
+            <div class="ti-head">Retributivism</div>
+            <div class="ti-body">Punitive burdens must be deserved and proportionate to the offence. The seriousness of the wrong sets an upper ceiling on severity. (Hart 2008; Ashworth 2010)</div>
+          </div>
+          <div class="theory-item" style="border-color:#2e4a8f;background:#e6f0fb;">
+            <div class="ti-head">Deterrence</div>
+            <div class="ti-body">Burdens justified by expected future benefits — general deterrence, specific deterrence, incapacitation. Proportionality constraints apply within utilitarian frameworks too. (Tonry 2011)</div>
+          </div>
+          <div class="theory-item" style="border-color:#2e4a8f;background:#e6f0fb;">
+            <div class="ti-head">Expressivism</div>
+            <div class="ti-body">Punishment expresses society's condemnation of the wrongdoer and communicates the seriousness of the norm violation. The communicative content of a sanction matters independently of its deterrent or retributive function. (Duff 2001; Feinberg 1970)</div>
+          </div>
+          <div class="theory-item" style="border-color:#2e4a8f;background:#e6f0fb;">
+            <div class="ti-head">Folk psychology over lab psychology</div>
+            <div class="ti-body">Criminal law tracks shared social understandings of desert and responsibility — making lay attitudes legally significant. (Tobia 2022)</div>
+          </div>
+        </div>
+        <div>
+          <div class="col-head" style="color:#ba7517;">Digital punishments</div>
+          <div class="theory-item" style="border-color:#ba7517;background:#faeeda;">
+            <div class="ti-head">Internet deprivation</div>
+            <div class="ti-body">Standalone alternative to short custody; 3 days deprivation ≈ 1 day prison. Suited to non-violent offences. Loss of access constitutes genuine, measurable hardship. (Bagaric et al. 2018)</div>
+          </div>
+          <div class="theory-item" style="border-color:#ba7517;background:#faeeda;">
+            <div class="ti-head">Cyberbanishment</div>
+            <div class="ti-body">Court-ordered exclusion from specific online spaces; preserves essential access while transferring control from platforms to courts. Meets criteria of hardship, moral acceptability, and enforceability. (Mamak 2023)</div>
+          </div>
+          <div class="theory-item" style="border-color:#ba7517;background:#faeeda;">
+            <div class="ti-head">Philosophical grounding</div>
+            <div class="ti-body">Extended mind thesis (Clark &amp; Chalmers 1998), onlife experience (Floridi 2015), and philosophical anthropology (Puzio 2025) position digital access as constitutive of selfhood — not mere convenience.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4: HYPOTHESES -->
+    <div class="slide s4" data-title="Hypotheses">
+      <div class="slide-head">Hypotheses</div>
+      <div class="hyps">
+        <div class="hyp">
+          <div class="hyp-badge" style="background:#e6f0fb;color:#0c447c;">H1</div>
+          <div class="hyp-content">
+            <div class="hyp-label" style="color:#2e4a8f;">Context effect</div>
+            <div class="hyp-text">Online (vs. offline) commission of an offence will increase preference for internet and social media bans relative to other punishments. Directional: ban preferences shift upward, not merely that context matters.</div>
+          </div>
+          <div class="hyp-alpha">LRT χ²(3)<br>+ 2 contrasts<br>α = .025 each</div>
+        </div>
+        <div class="hyp">
+          <div class="hyp-badge" style="background:#e1f5ee;color:#085041;">H2</div>
+          <div class="hyp-content">
+            <div class="hyp-label" style="color:#0f6e56;">Offence type effect</div>
+            <div class="hyp-text">Punishment preferences will differ across the three offence types: financial fraud, stalking, and incitement to suicide. Non-directional omnibus test — the ordering across types is not pre-specified.</div>
+          </div>
+          <div class="hyp-alpha">LRT χ²(6)<br>α = .05</div>
+        </div>
+        <div class="hyp">
+          <div class="hyp-badge" style="background:#faeeda;color:#633806;">H3</div>
+          <div class="hyp-content">
+            <div class="hyp-label" style="color:#ba7517;">Interaction</div>
+            <div class="hyp-text">The effect of offence type on punishment preferences will differ depending on whether the offence was committed online or offline. A significant result triggers exploratory decomposition by worth ratios per offence.</div>
+          </div>
+          <div class="hyp-alpha">LRT χ²(6)<br>α = .05</div>
+        </div>
+        <div class="hyp">
+          <div class="hyp-badge" style="background:#fbeaf0;color:#72243e;">H4</div>
+          <div class="hyp-content">
+            <div class="hyp-label" style="color:#993556;">Individual differences</div>
+            <div class="hyp-text">Higher punitiveness will predict stronger preference for imprisonment and weaker preference for internet and social media bans. Imprisonment contrast is confirmatory; ban contrasts are theoretically motivated exploratory.</div>
+          </div>
+          <div class="hyp-alpha">3 contrasts<br>α = .017 each<br>(Bonferroni)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: DESIGN -->
+    <div class="slide s5" data-title="Study design">
+      <div class="slide-head">Study design</div>
+      <div class="design-grid">
+        <div>
+          <div style="font-size:var(--fs-small);font-weight:500;color:var(--muted);margin-bottom:6px;">3 × 2 between-subjects factorial</div>
+          <div class="fact-row">
+            <div class="fact-box">
+              <div class="fact-box-head">Context (2 levels)</div>
+              <div class="fact-box-item">· Online<br>· Offline</div>
+            </div>
+            <div class="fact-box">
+              <div class="fact-box-head">Offence (3 levels)</div>
+              <div class="fact-box-item">· Financial fraud<br>· Stalking<br>· Incitement to suicide</div>
+            </div>
+          </div>
+          <div style="font-size:var(--fs-small);font-weight:500;color:var(--muted);margin-bottom:5px;margin-top:4px;">Within-subjects: 4 punishment types (primary DV = ranking)</div>
+          <div class="punit-row">
+            <div class="punit-chip"><div class="pip" style="background:#2e4a8f;"></div>Imprisonment</div>
+            <div class="punit-chip"><div class="pip" style="background:#0f6e56;"></div>Monetary fine</div>
+            <div class="punit-chip"><div class="pip" style="background:#ba7517;"></div>Internet ban</div>
+            <div class="punit-chip"><div class="pip" style="background:#993556;"></div>Social media ban</div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:var(--fs-small);font-weight:500;color:var(--muted);margin-bottom:6px;">Procedure (sequential)</div>
+          <div class="proc-step"><div class="step-num">1</div><div class="step-text">Informed consent</div></div>
+          <div class="proc-step"><div class="step-num">2</div><div class="step-text"><strong>Role framing:</strong> participant as judge</div></div>
+          <div class="proc-step"><div class="step-num">3</div><div class="step-text"><strong>Vignette</strong> (assigned condition)</div></div>
+          <div class="proc-step"><div class="step-num">4</div><div class="step-text"><strong>Comprehension check</strong> — fail = redirect out</div></div>
+          <div class="proc-step"><div class="step-num">5</div><div class="step-text"><strong>Severity ratings</strong> (randomised order): imprisonment 1–120 mo · fine £200–£20k · internet ban 1–120 mo · social media ban 1–120 mo</div></div>
+          <div class="proc-step"><div class="step-num">6</div><div class="step-text"><strong>Drag-and-drop ranking</strong> — primary DV (most → least preferred)</div></div>
+          <div class="proc-step"><div class="step-num">7</div><div class="step-text"><strong>Penal rationale ratings:</strong> just deserts · deterrence · expressive (6-pt scale, randomised blocks)</div></div>
+          <div class="proc-step"><div class="step-num">8</div><div class="step-text"><strong>Individual differences:</strong> punitiveness (6 items, 6-pt) · internet reliance (6 items, 7-pt) · political orientation · enforceability · speech restriction</div></div>
+          <div class="proc-step"><div class="step-num">9</div><div class="step-text">Demographics → Prolific redirect</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 6: ANALYSIS -->
+    <div class="slide s6" data-title="Analytical strategy">
+      <div class="slide-head">Analytical strategy</div>
+      <div class="analysis-grid">
+        <div>
+          <div style="font-size:var(--fs-small);font-weight:500;color:#2e4a8f;margin-bottom:5px;">Primary model</div>
+          <div class="model-box">
+            <div class="model-box-head">Plackett-Luce model</div>
+            <div class="model-box-text">Treats each complete ranking as a sequence of choices. Estimates a worth parameter w<sub>i</sub> per punishment type reflecting probability of being chosen as most preferred. Implemented via PlackettLuce package in R.</div>
+          </div>
+          <div class="model-box">
+            <div class="model-box-head">Likelihood ratio tests (H1–H3)</div>
+            <div class="model-box-text">Nested model comparisons: H1 χ²(3) context · H2 χ²(6) offence · H3 χ²(6) interaction. Directional contrasts for H1 via rank-ordered logit (survival::clogit) — one-tailed, Bonferroni-corrected.</div>
+          </div>
+          <div class="model-box">
+            <div class="model-box-head">Individual differences (H4)</div>
+            <div class="model-box-text">Punitiveness as continuous predictor in rank-ordered logit. Fine as reference level. Imprisonment × punitiveness, internet ban × punitiveness, and social media ban × punitiveness interaction coefficients directly interpretable.</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <div style="font-size:var(--fs-small);font-weight:500;color:#ba7517;margin-bottom:0px;">Inference criteria</div>
+          <div class="inf-row">
+            <div class="inf-head" style="color:#2e4a8f;">H1</div>
+            <div class="inf-text">Omnibus LRT α = .05 two-tailed + two directional contrasts α = .025 each. Both omnibus AND both contrasts must reach threshold.</div>
+          </div>
+          <div class="inf-row">
+            <div class="inf-head" style="color:#0f6e56;">H2 &amp; H3</div>
+            <div class="inf-text">LRT α = .05 two-tailed. Non-directional; significant H3 triggers exploratory decomposition (worth ratios per offence, context contrasts within each offence level).</div>
+          </div>
+          <div class="inf-row">
+            <div class="inf-head" style="color:#993556;">H4</div>
+            <div class="inf-text">Three one-tailed contrasts, Bonferroni α = .017 each. Imprisonment contrast confirmatory; ban contrasts exploratory (partial support possible).</div>
+          </div>
+          <div class="reg-badge" style="margin-top:auto;">
+            Pre-registered on OSF · comprehension-check exclusions built into design · R (PlackettLuce, survival) · all data collected post-registration
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <!-- SLIDE 7: SAMPLE & OVERALL PREFERENCES -->
+    <div class="slide s-result s-surf" data-title="Sample &amp; overall preferences">
+      <div class="rhead">Sample &amp; overall punishment preferences</div>
+      <div class="rcols">
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="font-size:var(--fs-small);font-weight:500;color:var(--muted);margin-bottom:2px;">Sample (N = 499)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
+            <div class="stat-card"><div class="stat-val">499</div><div class="stat-lbl">participants</div></div>
+            <div class="stat-card"><div class="stat-val">35.8</div><div class="stat-lbl">mean age (SD 12.2)</div></div>
+            <div class="stat-card"><div class="stat-val">48.5%</div><div class="stat-lbl">female</div></div>
+            <div class="stat-card"><div class="stat-val">4.40</div><div class="stat-lbl">punitiveness (1–6)</div></div>
+            <div class="stat-card"><div class="stat-val">5.61</div><div class="stat-lbl">internet reliance (1–7)</div></div>
+            <div class="stat-card" style="background:#faeeda;"><div class="stat-val" style="color:#633806;">2.71</div><div class="stat-lbl" style="color:#854f0b;">enforceability (1–7)</div></div>
+          </div>
+          <div style="font-size:var(--fs-small);color:#633806;line-height:1.5;background:#faeeda;border-radius:8px;padding:6px 10px;border-left:2px solid #ba7517;">
+            Enforceability mean 2.71 / 7 — well below scale midpoint. The sample is strongly skeptical that digital bans can be practically enforced.
+          </div>
+          <div style="font-size:var(--fs-small);font-weight:500;color:var(--muted);margin-top:4px;">Chosen 1st (most preferred, % of N=499)</div>
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="width:88px;font-size:var(--fs-small);color:var(--navy);flex-shrink:0;">Prison</div>
+              <div style="flex:1;height:14px;background:#e6f0fb;border-radius:3px;overflow:hidden;"><div style="height:100%;width:100%;background:#2e4a8f;border-radius:3px;"></div></div>
+              <div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:36px;text-align:right;">45.1%</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="width:88px;font-size:var(--fs-small);color:var(--navy);flex-shrink:0;">Fine</div>
+              <div style="flex:1;height:14px;background:#e6f0fb;border-radius:3px;overflow:hidden;"><div style="height:100%;width:76%;background:#ba7517;border-radius:3px;"></div></div>
+              <div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:36px;text-align:right;">34.3%</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="width:88px;font-size:var(--fs-small);color:var(--navy);flex-shrink:0;">SM ban</div>
+              <div style="flex:1;height:14px;background:#e6f0fb;border-radius:3px;overflow:hidden;"><div style="height:100%;width:30%;background:#993556;border-radius:3px;"></div></div>
+              <div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:36px;text-align:right;">13.4%</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="width:88px;font-size:var(--fs-small);color:var(--navy);flex-shrink:0;">Internet ban</div>
+              <div style="flex:1;height:14px;background:#e6f0fb;border-radius:3px;overflow:hidden;"><div style="height:100%;width:16%;background:#0f6e56;border-radius:3px;"></div></div>
+              <div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:36px;text-align:right;">7.2%</div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="font-size:var(--fs-small);font-weight:500;color:var(--muted);margin-bottom:2px;">Overall Plackett-Luce worth parameters</div>
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="width:88px;font-size:var(--fs-small);color:var(--navy);flex-shrink:0;">#1 Fine</div>
+              <div style="flex:1;height:14px;background:var(--surface);border-radius:3px;overflow:hidden;"><div style="height:100%;width:100%;background:#ba7517;border-radius:3px;"></div></div>
+              <div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:36px;text-align:right;">0.315</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="width:88px;font-size:var(--fs-small);color:var(--navy);flex-shrink:0;">#2 Prison</div>
+              <div style="flex:1;height:14px;background:var(--surface);border-radius:3px;overflow:hidden;"><div style="height:100%;width:98%;background:#2e4a8f;border-radius:3px;"></div></div>
+              <div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:36px;text-align:right;">0.309</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="width:88px;font-size:var(--fs-small);color:var(--navy);flex-shrink:0;">#3 SM ban</div>
+              <div style="flex:1;height:14px;background:var(--surface);border-radius:3px;overflow:hidden;"><div style="height:100%;width:60%;background:#993556;border-radius:3px;"></div></div>
+              <div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:36px;text-align:right;">0.189</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="width:88px;font-size:var(--fs-small);color:var(--navy);flex-shrink:0;">#4 Internet ban</div>
+              <div style="flex:1;height:14px;background:var(--surface);border-radius:3px;overflow:hidden;"><div style="height:100%;width:59%;background:#0f6e56;border-radius:3px;"></div></div>
+              <div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:36px;text-align:right;">0.187</div>
+            </div>
+          </div>
+          <div style="font-size:var(--fs-small);color:var(--muted);line-height:1.5;background:var(--white);border-radius:8px;padding:6px 10px;border:1px solid var(--border);">
+            Prison and fine are roughly equally preferred overall, together accounting for ~79% of first-choice selections. Digital punishments are substantially less preferred — but this masks strong variation by context and offense type.
+          </div>
+          <div style="font-size:var(--fs-small);font-weight:500;color:var(--muted);margin-top:4px;">Rank-position distribution</div>
+          <table style="width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:var(--fs-small);">
+            <thead><tr>
+              <th style="text-align:left;color:var(--muted);padding:3px 6px;font-weight:400;">Punishment</th>
+              <th style="color:var(--muted);padding:3px 4px;font-weight:400;">1st</th>
+              <th style="color:var(--muted);padding:3px 4px;font-weight:400;">2nd</th>
+              <th style="color:var(--muted);padding:3px 4px;font-weight:400;">3rd</th>
+              <th style="color:var(--muted);padding:3px 4px;font-weight:400;">4th</th>
+            </tr></thead>
+            <tbody>
+              <tr style="border-top:0.5px solid var(--border);">
+                <td style="padding:3px 6px;color:var(--navy);">Prison</td>
+                <td style="padding:3px 4px;text-align:center;background:#e6f0fb;color:#0c447c;">45.1%</td>
+                <td style="padding:3px 4px;text-align:center;">19.2%</td>
+                <td style="padding:3px 4px;text-align:center;">10.6%</td>
+                <td style="padding:3px 4px;text-align:center;">25.1%</td>
+              </tr>
+              <tr style="border-top:0.5px solid var(--border);">
+                <td style="padding:3px 6px;color:var(--navy);">Fine</td>
+                <td style="padding:3px 4px;text-align:center;background:#faeeda;color:#633806;">34.3%</td>
+                <td style="padding:3px 4px;text-align:center;">32.5%</td>
+                <td style="padding:3px 4px;text-align:center;">12.8%</td>
+                <td style="padding:3px 4px;text-align:center;">20.4%</td>
+              </tr>
+              <tr style="border-top:0.5px solid var(--border);">
+                <td style="padding:3px 6px;color:var(--navy);">SM ban</td>
+                <td style="padding:3px 4px;text-align:center;">13.4%</td>
+                <td style="padding:3px 4px;text-align:center;">25.5%</td>
+                <td style="padding:3px 4px;text-align:center;background:#fbeaf0;color:#72243e;">31.9%</td>
+                <td style="padding:3px 4px;text-align:center;">29.3%</td>
+              </tr>
+              <tr style="border-top:0.5px solid var(--border);">
+                <td style="padding:3px 6px;color:var(--navy);">Internet ban</td>
+                <td style="padding:3px 4px;text-align:center;">7.2%</td>
+                <td style="padding:3px 4px;text-align:center;">22.8%</td>
+                <td style="padding:3px 4px;text-align:center;background:#e1f5ee;color:#085041;">44.7%</td>
+                <td style="padding:3px 4px;text-align:center;">25.3%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 8: H1 CONTEXT EFFECT -->
+    <div class="slide s-result s-light" data-title="H1 — context effect">
+      <div class="rhead">H1 — context effect: online vs. offline <span class="verdict-pill vp-sup">Fully supported</span></div>
+      <div class="rcols">
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          <div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:#0c447c;background:#e6f0fb;border-radius:6px;padding:4px 10px;display:inline-block;flex-shrink:0;">LRT χ²(3) = 72.14, p &lt; .0001</div>
+          <div style="font-size:var(--fs-small);font-weight:500;color:var(--muted);flex-shrink:0;">Worth parameters by context — each bar pair shows offline (top) vs. online (bottom)</div>
+          <div style="display:flex;flex-direction:column;gap:8px;flex:1;">
+
+            <div style="background:var(--surface);border-radius:8px;padding:6px 10px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+                <div style="display:flex;align-items:center;gap:6px;"><div style="width:9px;height:9px;border-radius:50%;background:#2e4a8f;"></div><div style="font-size:var(--fs-small);font-weight:500;color:var(--navy);">Prison</div></div>
+                <div style="font-size:var(--fs-small);color:#993c1d;font-family:'DM Mono',monospace;">▼ −34%</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+                <div style="width:52px;font-size:var(--fs-small);color:var(--muted);flex-shrink:0;">offline</div>
+                <div style="flex:1;height:16px;background:#e6f0fb;border-radius:3px;overflow:hidden;"><div style="height:100%;width:100%;background:#2e4a8f;opacity:0.45;border-radius:3px;"></div></div>
+                <div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:#2e4a8f;width:80px;text-align:right;">0.384 · 35.8%</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <div style="width:52px;font-size:var(--fs-small);color:var(--muted);flex-shrink:0;">online</div>
+                <div style="flex:1;height:16px;background:#e6f0fb;border-radius:3px;overflow:hidden;"><div style="height:100%;width:66%;background:#2e4a8f;border-radius:3px;"></div></div>
+                <div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:#2e4a8f;width:80px;text-align:right;">0.252 · 23.5%</div>
+              </div>
+            </div>
+
+            <div style="background:var(--surface);border-radius:8px;padding:6px 10px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+                <div style="display:flex;align-items:center;gap:6px;"><div style="width:9px;height:9px;border-radius:50%;background:#ba7517;"></div><div style="font-size:var(--fs-small);font-weight:500;color:var(--navy);">Fine</div></div>
+                <div style="font-size:var(--fs-small);color:#993c1d;font-family:'DM Mono',monospace;">▼ −25%</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+                <div style="width:52px;font-size:var(--fs-small);color:var(--muted);flex-shrink:0;">offline</div>
+                <div style="flex:1;height:16px;background:#faeeda;border-radius:3px;overflow:hidden;"><div style="height:100%;width:94%;background:#ba7517;opacity:0.45;border-radius:3px;"></div></div>
+                <div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:#ba7517;width:80px;text-align:right;">0.360 · 33.6%</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <div style="width:52px;font-size:var(--fs-small);color:var(--muted);flex-shrink:0;">online</div>
+                <div style="flex:1;height:16px;background:#faeeda;border-radius:3px;overflow:hidden;"><div style="height:100%;width:70%;background:#ba7517;border-radius:3px;"></div></div>
+                <div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:#ba7517;width:80px;text-align:right;">0.269 · 25.1%</div>
+              </div>
+            </div>
+
+            <div style="background:#e1f5ee;border-radius:8px;padding:6px 10px;border:1px solid #9fe1cb;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+                <div style="display:flex;align-items:center;gap:6px;"><div style="width:9px;height:9px;border-radius:50%;background:#0f6e56;"></div><div style="font-size:var(--fs-small);font-weight:500;color:#085041;">Internet ban</div></div>
+                <div style="font-size:var(--fs-small);color:#0f6e56;font-family:'DM Mono',monospace;font-weight:500;">▲ +53%</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+                <div style="width:52px;font-size:var(--fs-small);color:#0f6e56;flex-shrink:0;">offline</div>
+                <div style="flex:1;height:16px;background:rgba(255,255,255,0.6);border-radius:3px;overflow:hidden;"><div style="height:100%;width:37%;background:#0f6e56;opacity:0.45;border-radius:3px;"></div></div>
+                <div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:#0f6e56;width:80px;text-align:right;">0.141 · 13.2%</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <div style="width:52px;font-size:var(--fs-small);color:#0f6e56;flex-shrink:0;">online</div>
+                <div style="flex:1;height:16px;background:rgba(255,255,255,0.6);border-radius:3px;overflow:hidden;"><div style="height:100%;width:56%;background:#0f6e56;border-radius:3px;"></div></div>
+                <div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:#0f6e56;width:80px;text-align:right;">0.216 · 20.2%</div>
+              </div>
+            </div>
+
+            <div style="background:#fbeaf0;border-radius:8px;padding:6px 10px;border:1px solid #f4c0d1;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+                <div style="display:flex;align-items:center;gap:6px;"><div style="width:9px;height:9px;border-radius:50%;background:#993556;"></div><div style="font-size:var(--fs-small);font-weight:500;color:#72243e;">SM ban</div></div>
+                <div style="font-size:var(--fs-small);color:#993556;font-family:'DM Mono',monospace;font-weight:500;">▲ +129%</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+                <div style="width:52px;font-size:var(--fs-small);color:#993556;flex-shrink:0;">offline</div>
+                <div style="flex:1;height:16px;background:rgba(255,255,255,0.6);border-radius:3px;overflow:hidden;"><div style="height:100%;width:30%;background:#993556;opacity:0.45;border-radius:3px;"></div></div>
+                <div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:#993556;width:80px;text-align:right;">0.115 · 10.7%</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <div style="width:52px;font-size:var(--fs-small);color:#993556;flex-shrink:0;">online</div>
+                <div style="flex:1;height:16px;background:rgba(255,255,255,0.6);border-radius:3px;overflow:hidden;"><div style="height:100%;width:68%;background:#993556;border-radius:3px;"></div></div>
+                <div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:#993556;width:80px;text-align:right;">0.263 · 24.6%</div>
+              </div>
+            </div>
+
+          </div>
+          <div style="font-size:var(--fs-small);color:var(--muted);background:var(--surface);border-radius:6px;padding:4px 8px;flex-shrink:0;">Worth = probability of being chosen as most preferred. Percentages are worth × 100 for interpretability. Offline n = 232; online n = 267.</div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="font-size:var(--fs-small);font-weight:500;color:var(--muted);">Directional contrasts (fine as reference, Bonferroni α = .025 each)</div>
+          <div style="border:1px solid var(--border);border-left:3px solid #0f6e56;border-radius:8px;padding:6px 10px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+              <div style="font-size:var(--fs-small);font-weight:500;color:var(--navy);">Internet ban × online</div>
+              <div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:#0f6e56;">OR = 2.06 · p &lt; .001</div>
+            </div>
+            <div style="font-size:var(--fs-small);color:var(--muted);line-height:1.45;">2.06× more likely to prefer internet ban over fine in the online condition. The shift from 13% → 20% of probability mass represents a near-doubling of relative preference.</div>
+          </div>
+          <div style="border:1px solid var(--border);border-left:3px solid #993556;border-radius:8px;padding:6px 10px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+              <div style="font-size:var(--fs-small);font-weight:500;color:var(--navy);">SM ban × online</div>
+              <div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:#993556;">OR = 3.07 · p &lt; .001</div>
+            </div>
+            <div style="font-size:var(--fs-small);color:var(--muted);line-height:1.45;">3.07× more likely to prefer SM ban over fine online. Social media ban more than doubles in worth: 11% → 25% of the probability mass.</div>
+          </div>
+          <div style="border:1px solid var(--border);border-left:3px solid var(--border);border-radius:8px;padding:6px 10px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+              <div style="font-size:var(--fs-small);font-weight:500;color:var(--navy);">Prison × online (not preregistered)</div>
+              <div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);">OR = 0.88 · p = .425</div>
+            </div>
+            <div style="font-size:var(--fs-small);color:var(--muted);line-height:1.45;">No differential context effect — both traditional punishments decline equally when the offense is online. They fall together.</div>
+          </div>
+          <div style="background:var(--navy);border-radius:8px;padding:8px 12px;margin-top:auto;">
+            <div style="font-size:var(--fs-small);color:#a8bedd;font-weight:500;margin-bottom:3px;">Interpretation</div>
+            <div style="font-size:var(--fs-small);color:#a8bedd;line-height:1.5;">In the offline condition, prison + fine dominate with combined worth ≈ 0.74. Online, the distribution equalises — all four punishments converge toward 0.25. The context effect is large, symmetric for traditional punishments, and highly significant.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 9: H2 OFFENSE TYPE -->
+    <div class="slide s-result s-surf" data-title="H2 — offense type effect">
+      <div class="rhead">H2 — offense type: the dominant factor in the study <span class="verdict-pill vp-sup">Strongly supported</span></div>
+      <div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:#0c447c;background:var(--white);border-radius:6px;padding:4px 10px;display:inline-block;margin-bottom:3%;">LRT χ²(6) = 259.28, p &lt; .0001 — largest effect in the study (context χ²(3) = 72 by comparison)</div>
+      <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);gap:3%;flex:1;min-height:0;">
+
+        <div style="border:1px solid var(--border);border-top:3px solid #ba7517;border-radius:8px;padding:4% 4%;display:flex;flex-direction:column;gap:5px;background:var(--white);">
+          <div style="font-size:var(--fs-body);font-weight:500;color:var(--navy);">Financial fraud (scam)</div>
+          <div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);background:#faeeda;color:#633806;padding:2px 8px;border-radius:4px;display:inline-block;margin-bottom:3px;">Fine dominates: 0.595</div>
+          <div style="display:flex;flex-direction:column;gap:3px;">
+            <div style="display:flex;align-items:center;gap:5px;"><div style="width:72px;font-size:var(--fs-small);color:var(--navy);">Fine</div><div style="flex:1;height:11px;background:var(--surface);border-radius:2px;overflow:hidden;"><div style="height:100%;width:100%;background:#ba7517;border-radius:2px;"></div></div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:34px;text-align:right;">0.595</div></div>
+            <div style="display:flex;align-items:center;gap:5px;"><div style="width:72px;font-size:var(--fs-small);color:var(--navy);">Prison</div><div style="flex:1;height:11px;background:var(--surface);border-radius:2px;overflow:hidden;"><div style="height:100%;width:40%;background:#2e4a8f;border-radius:2px;"></div></div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:34px;text-align:right;">0.240</div></div>
+            <div style="display:flex;align-items:center;gap:5px;"><div style="width:72px;font-size:var(--fs-small);color:var(--navy);">Internet ban</div><div style="flex:1;height:11px;background:var(--surface);border-radius:2px;overflow:hidden;"><div style="height:100%;width:16%;background:#0f6e56;border-radius:2px;"></div></div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:34px;text-align:right;">0.097</div></div>
+            <div style="display:flex;align-items:center;gap:5px;"><div style="width:72px;font-size:var(--fs-small);color:var(--navy);">SM ban</div><div style="flex:1;height:11px;background:var(--surface);border-radius:2px;overflow:hidden;"><div style="height:100%;width:11%;background:#993556;border-radius:2px;"></div></div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:34px;text-align:right;">0.068</div></div>
+          </div>
+          <div style="font-size:var(--fs-small);color:var(--muted);line-height:1.45;margin-top:4px;">Fine worth 0.595 is the highest single value for any punishment in any condition across the entire study. Financial crime → financial punishment. Prison distant second. Digital bans very low (combined ≈ 0.165).</div>
+        </div>
+
+        <div style="border:1px solid var(--border);border-top:3px solid #993556;border-radius:8px;padding:4% 4%;display:flex;flex-direction:column;gap:5px;background:var(--white);">
+          <div style="font-size:var(--fs-body);font-weight:500;color:var(--navy);">Stalking</div>
+          <div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);background:#fbeaf0;color:#72243e;padding:2px 8px;border-radius:4px;display:inline-block;margin-bottom:3px;">Most balanced profile</div>
+          <div style="display:flex;flex-direction:column;gap:3px;">
+            <div style="display:flex;align-items:center;gap:5px;"><div style="width:72px;font-size:var(--fs-small);color:var(--navy);">Fine</div><div style="flex:1;height:11px;background:var(--surface);border-radius:2px;overflow:hidden;"><div style="height:100%;width:100%;background:#ba7517;border-radius:2px;"></div></div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:34px;text-align:right;">0.327</div></div>
+            <div style="display:flex;align-items:center;gap:5px;"><div style="width:72px;font-size:var(--fs-small);color:var(--navy);">SM ban</div><div style="flex:1;height:11px;background:var(--surface);border-radius:2px;overflow:hidden;"><div style="height:100%;width:95%;background:#993556;border-radius:2px;"></div></div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:34px;text-align:right;">0.310</div></div>
+            <div style="display:flex;align-items:center;gap:5px;"><div style="width:72px;font-size:var(--fs-small);color:var(--navy);">Internet ban</div><div style="flex:1;height:11px;background:var(--surface);border-radius:2px;overflow:hidden;"><div style="height:100%;width:60%;background:#0f6e56;border-radius:2px;"></div></div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:34px;text-align:right;">0.197</div></div>
+            <div style="display:flex;align-items:center;gap:5px;"><div style="width:72px;font-size:var(--fs-small);color:var(--navy);">Prison</div><div style="flex:1;height:11px;background:var(--surface);border-radius:2px;overflow:hidden;"><div style="height:100%;width:51%;background:#2e4a8f;border-radius:2px;"></div></div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:34px;text-align:right;">0.166</div></div>
+          </div>
+          <div style="font-size:var(--fs-small);color:var(--muted);line-height:1.45;margin-top:4px;">SM ban surges to 0.310 — nearly equal to fine. Intuitive: stalking involves unwanted contact, and a SM ban directly removes the mechanism. Prison is least preferred (0.166).</div>
+        </div>
+
+        <div style="border:1px solid var(--border);border-top:3px solid #2e4a8f;border-radius:8px;padding:4% 4%;display:flex;flex-direction:column;gap:5px;background:var(--white);">
+          <div style="font-size:var(--fs-body);font-weight:500;color:var(--navy);">Incitement to suicide</div>
+          <div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);background:#e6f0fb;color:#0c447c;padding:2px 8px;border-radius:4px;display:inline-block;margin-bottom:3px;">Prison dominates: 0.516</div>
+          <div style="display:flex;flex-direction:column;gap:3px;">
+            <div style="display:flex;align-items:center;gap:5px;"><div style="width:72px;font-size:var(--fs-small);color:var(--navy);">Prison</div><div style="flex:1;height:11px;background:var(--surface);border-radius:2px;overflow:hidden;"><div style="height:100%;width:100%;background:#2e4a8f;border-radius:2px;"></div></div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:34px;text-align:right;">0.516</div></div>
+            <div style="display:flex;align-items:center;gap:5px;"><div style="width:72px;font-size:var(--fs-small);color:var(--navy);">Internet ban</div><div style="flex:1;height:11px;background:var(--surface);border-radius:2px;overflow:hidden;"><div style="height:100%;width:34%;background:#0f6e56;border-radius:2px;"></div></div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:34px;text-align:right;">0.176</div></div>
+            <div style="display:flex;align-items:center;gap:5px;"><div style="width:72px;font-size:var(--fs-small);color:var(--navy);">SM ban</div><div style="flex:1;height:11px;background:var(--surface);border-radius:2px;overflow:hidden;"><div style="height:100%;width:33%;background:#993556;border-radius:2px;"></div></div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:34px;text-align:right;">0.170</div></div>
+            <div style="display:flex;align-items:center;gap:5px;"><div style="width:72px;font-size:var(--fs-small);color:var(--navy);">Fine</div><div style="flex:1;height:11px;background:var(--surface);border-radius:2px;overflow:hidden;"><div style="height:100%;width:27%;background:#ba7517;border-radius:2px;"></div></div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:34px;text-align:right;">0.138</div></div>
+          </div>
+          <div style="font-size:var(--fs-small);color:var(--muted);line-height:1.45;margin-top:4px;">Prison captures over half the probability mass. Fine collapses to the bottom (0.138). When someone repeatedly encourages a vulnerable person toward suicide, participants demand the most serious sanction available.</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SLIDE 10: H3 INTERACTION -->
+    <div class="slide s-result s-surf" data-title="H3 — interaction">
+      <div class="rhead">H3 — context effect differs by offense type <span class="verdict-pill vp-sup">Supported</span></div>
+      <div class="rcols">
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          <div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:#0c447c;background:#e6f0fb;border-radius:6px;padding:4px 10px;">LRT χ²(6) = 25.55, p = .0003</div>
+          <div style="font-size:var(--fs-small);color:var(--muted);line-height:1.5;background:var(--white);border-radius:8px;padding:6px 10px;border:1px solid var(--border);">The way context shifts punishment preferences is not the same across all three offenses. The context effect is significantly moderated by offense type, above and beyond the main effects of context and offense alone.</div>
+          <div style="font-size:var(--fs-small);font-weight:500;color:var(--muted);margin-top:2px;">Mean rank by condition (1 = most preferred, 4 = least preferred)</div>
+          <table style="width:100%;border-collapse:collapse;font-size:var(--fs-small);">
+            <thead><tr>
+              <th style="text-align:left;color:var(--muted);padding:3px 5px;font-weight:400;border-bottom:1px solid var(--border);"></th>
+              <th style="color:#2e4a8f;padding:3px 5px;font-weight:500;text-align:center;border-bottom:1px solid var(--border);">Prison</th>
+              <th style="color:#ba7517;padding:3px 5px;font-weight:500;text-align:center;border-bottom:1px solid var(--border);">Fine</th>
+              <th style="color:#0f6e56;padding:3px 5px;font-weight:500;text-align:center;border-bottom:1px solid var(--border);">IB</th>
+              <th style="color:#993556;padding:3px 5px;font-weight:500;text-align:center;border-bottom:1px solid var(--border);">SM</th>
+            </tr></thead>
+            <tbody>
+              <tr><td style="padding:3px 5px;color:var(--muted);font-style:italic;">Scam offline</td><td style="text-align:center;padding:3px 4px;background:#dce8f8;color:#1a2744;border-radius:3px;">2.2</td><td style="text-align:center;padding:3px 4px;background:#b8d4f2;color:#1a2744;border-radius:3px;">1.5</td><td style="text-align:center;padding:3px 4px;background:#f0ede8;color:#5a6e8c;border-radius:3px;">3.8</td><td style="text-align:center;padding:3px 4px;background:#f0ede8;color:#5a6e8c;border-radius:3px;">3.9</td></tr>
+              <tr><td style="padding:3px 5px;color:var(--muted);font-style:italic;">Scam online</td><td style="text-align:center;padding:3px 4px;background:#dce8f8;color:#1a2744;border-radius:3px;">2.4</td><td style="text-align:center;padding:3px 4px;background:#c4dcf4;color:#1a2744;border-radius:3px;">1.6</td><td style="text-align:center;padding:3px 4px;background:#eceae6;color:#5a6e8c;border-radius:3px;">3.6</td><td style="text-align:center;padding:3px 4px;background:#eceae6;color:#5a6e8c;border-radius:3px;">3.7</td></tr>
+              <tr><td style="padding:3px 5px;color:var(--muted);font-style:italic;">Stalking offline</td><td style="text-align:center;padding:3px 4px;background:#f0ede8;color:#5a6e8c;border-radius:3px;">3.1</td><td style="text-align:center;padding:3px 4px;background:#d4e4f6;color:#1a2744;border-radius:3px;">1.9</td><td style="text-align:center;padding:3px 4px;background:#e4e8f2;color:#5a6e8c;border-radius:3px;">2.9</td><td style="text-align:center;padding:3px 4px;background:#dce8f8;color:#1a2744;border-radius:3px;">2.5</td></tr>
+              <tr><td style="padding:3px 5px;color:var(--muted);font-style:italic;">Stalking online</td><td style="text-align:center;padding:3px 4px;background:#eceae6;color:#5a6e8c;border-radius:3px;">2.8</td><td style="text-align:center;padding:3px 4px;background:#dce8f8;color:#1a2744;border-radius:3px;">2.1</td><td style="text-align:center;padding:3px 4px;background:#e4e8f2;color:#5a6e8c;border-radius:3px;">2.7</td><td style="text-align:center;padding:3px 4px;background:#c4dcf4;color:#1a2744;border-radius:3px;">2.2</td></tr>
+              <tr><td style="padding:3px 5px;color:var(--muted);font-style:italic;">Incitement offline</td><td style="text-align:center;padding:3px 4px;background:#b8d4f2;color:#1a2744;border-radius:3px;">1.4</td><td style="text-align:center;padding:3px 4px;background:#f0ede8;color:#5a6e8c;border-radius:3px;">3.5</td><td style="text-align:center;padding:3px 4px;background:#e8eaf0;color:#5a6e8c;border-radius:3px;">2.8</td><td style="text-align:center;padding:3px 4px;background:#e8eaf0;color:#5a6e8c;border-radius:3px;">2.9</td></tr>
+              <tr><td style="padding:3px 5px;color:var(--muted);font-style:italic;">Incitement online</td><td style="text-align:center;padding:3px 4px;background:#b8d4f2;color:#1a2744;border-radius:3px;">1.5</td><td style="text-align:center;padding:3px 4px;background:#f0ede8;color:#5a6e8c;border-radius:3px;">3.6</td><td style="text-align:center;padding:3px 4px;background:#e4e8f2;color:#5a6e8c;border-radius:3px;">2.7</td><td style="text-align:center;padding:3px 4px;background:#dce8f8;color:#1a2744;border-radius:3px;">2.6</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Key patterns replacing SVG -->
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          <div style="font-size:var(--fs-small);font-weight:500;color:var(--muted);">Key patterns driving the interaction</div>
+          <div style="border:1px solid var(--border);border-left:3px solid #ba7517;border-radius:8px;padding:5px 10px;">
+            <div style="font-size:var(--fs-small);font-weight:500;color:#ba7517;margin-bottom:2px;">Scam — minimal context shift</div>
+            <div style="font-size:var(--fs-small);color:var(--muted);line-height:1.45;">Fine already captures 0.595 of probability mass offline. The context effect has almost nowhere to go — digital bans rise only slightly (0.068 → 0.068 SM; 0.097 → 0.097 IB).</div>
+          </div>
+          <div style="border:1px solid var(--border);border-left:3px solid #993556;border-radius:8px;padding:5px 10px;background:#fbeaf0;">
+            <div style="font-size:var(--fs-small);font-weight:500;color:#72243e;margin-bottom:2px;">Stalking — largest context shift (key signal)</div>
+            <div style="font-size:var(--fs-small);color:#72243e;line-height:1.45;">SM ban nearly doubles (0.115 offline → 0.263 online). When stalking is framed as digital, the punishment that removes the mechanism of harassment becomes clearly preferred. Fine and prison both fall.</div>
+          </div>
+          <div style="border:1px solid var(--border);border-left:3px solid #2e4a8f;border-radius:8px;padding:5px 10px;">
+            <div style="font-size:var(--fs-small);font-weight:500;color:#2e4a8f;margin-bottom:2px;">Incitement to suicide — ceiling effect</div>
+            <div style="font-size:var(--fs-small);color:var(--muted);line-height:1.45;">Prison dominates at 0.516 offline and 0.459 online. The moral gravity of the offense anchors prison preferences so strongly that the online framing cannot dislodge it meaningfully.</div>
+          </div>
+          <div style="background:var(--surface);border-radius:8px;padding:6px 10px;margin-top:auto;">
+            <div style="font-size:var(--fs-small);color:var(--muted);line-height:1.45;">Worth plot on the next slide shows all 12 data points (4 punishments × 3 offenses) with offline→online arrows on a shared scale.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 10c: H3 WORTH PLOT -->
+    <div class="slide" data-title="H3 — worth by context &amp; offense" style="background:#1a2744;flex-direction:column;padding:3% 4% 2%;">
+      <div style="font-family:'Playfair Display',serif;font-size:var(--fs-head);font-weight:500;color:#fff;margin-bottom:1.5%;flex-shrink:0;">
+        Punishment worth by context and offense type
+        <span style="font-family:'DM Sans',sans-serif;font-size:var(--fs-small);color:#a8bedd;font-weight:400;margin-left:16px;">● filled = offline &nbsp;○ open = online &nbsp;bands = quasi-95% CI</span>
+      </div>
+      <div style="flex:1;min-height:0;width:100%;display:flex;">
+        <svg viewBox="0 0 860 360" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;" preserveAspectRatio="xMidYMid meet">
+
+          <!--
+            Three EQUAL panels, each 220px wide. x0: Scam=128, Stalking=388, Incitement=648
+            x-axis 0.0 to 0.65 in each panel. Scale = 220/0.65 = 338.5 px/unit
+            Row y-centres: SM ban=85, IB=155, Fine=225, Prison=295
+
+            Per-cell worth values read from image (filled=offline, open=online):
+
+            SCAM:
+              SM ban:  off=0.050 x=145  on=0.115 x=167   (rises, small)
+              IB:      off=0.050 x=145  on=0.115 x=167   (rises, small)
+              Fine:    off=0.550 x=314  on=0.600 x=331   (rises slightly online)
+              Prison:  off=0.320 x=236  on=0.180 x=189   (big drop online)
+
+            STALKING:
+              SM ban:  off=0.150 x=439  on=0.280 x=483   (big rise)
+              IB:      off=0.150 x=439  on=0.225 x=464   (moderate rise)
+              Fine:    off=0.470 x=547  on=0.380 x=517   (drops online)
+              Prison:  off=0.220 x=462  on=0.150 x=439   (drops online)
+
+            INCITEMENT:
+              SM ban:  off=0.120 x=689  on=0.200 x=716   (rises)
+              IB:      off=0.120 x=689  on=0.200 x=716   (rises)
+              Fine:    off=0.180 x=709  on=0.150 x=699   (slight drop)
+              Prison:  off=0.550 x=814  on=0.480 x=790   (slight drop)
+
+            CI half-widths (from image 2, proportional to band width):
+              SCAM Fine: ±0.085 → ±29px
+              SCAM Prison: ±0.06 → ±20px
+              SCAM SM/IB: ±0.03 → ±10px
+              STALKING SM: ±0.05 → ±17px
+              STALKING IB: ±0.04 → ±14px
+              STALKING Fine: ±0.055 → ±19px
+              STALKING Prison: ±0.04 → ±14px
+              INCITEMENT SM/IB: ±0.04 → ±14px
+              INCITEMENT Fine: ±0.03 → ±10px
+              INCITEMENT Prison: ±0.06 → ±20px
+          -->
+
+          <!-- ── ROW LABELS ── -->
+          <text x="120" y="89"  font-size="12" fill="#a8bedd" font-family="DM Sans,sans-serif" text-anchor="end">SM ban</text>
+          <text x="120" y="159" font-size="12" fill="#a8bedd" font-family="DM Sans,sans-serif" text-anchor="end">Internet ban</text>
+          <text x="120" y="229" font-size="12" fill="#a8bedd" font-family="DM Sans,sans-serif" text-anchor="end">Fine</text>
+          <text x="120" y="299" font-size="12" fill="#a8bedd" font-family="DM Sans,sans-serif" text-anchor="end">Prison</text>
+
+          <!-- ── PANEL HEADERS ── -->
+          <rect x="128" y="28" width="220" height="20" rx="4" fill="#243560"/>
+          <rect x="388" y="28" width="220" height="20" rx="4" fill="#243560"/>
+          <rect x="648" y="28" width="220" height="20" rx="4" fill="#243560"/>
+          <text x="238" y="42" font-size="11" fill="#e8a020" font-family="DM Sans,sans-serif" text-anchor="middle" font-weight="500">scam</text>
+          <text x="498" y="42" font-size="11" fill="#e8a020" font-family="DM Sans,sans-serif" text-anchor="middle" font-weight="500">stalking</text>
+          <text x="758" y="42" font-size="11" fill="#e8a020" font-family="DM Sans,sans-serif" text-anchor="middle" font-weight="500">incitement to suicide</text>
+
+          <!-- ── PANEL DIVIDERS ── -->
+          <line x1="368" y1="25" x2="368" y2="318" stroke="#3a5080" stroke-width="1"/>
+          <line x1="628" y1="25" x2="628" y2="318" stroke="#3a5080" stroke-width="1"/>
+
+          <!-- ── GRID LINES (0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6 per panel) ── -->
+          <line x1="128" y1="55" x2="128" y2="316" stroke="#2a3f65" stroke-width="0.8"/>
+          <line x1="162" y1="55" x2="162" y2="316" stroke="#243060" stroke-width="0.5"/>
+          <line x1="196" y1="55" x2="196" y2="316" stroke="#243060" stroke-width="0.5"/>
+          <line x1="230" y1="55" x2="230" y2="316" stroke="#243060" stroke-width="0.5"/>
+          <line x1="264" y1="55" x2="264" y2="316" stroke="#243060" stroke-width="0.5"/>
+          <line x1="298" y1="55" x2="298" y2="316" stroke="#243060" stroke-width="0.5"/>
+          <line x1="332" y1="55" x2="332" y2="316" stroke="#243060" stroke-width="0.5"/>
+          <line x1="388" y1="55" x2="388" y2="316" stroke="#2a3f65" stroke-width="0.8"/>
+          <line x1="422" y1="55" x2="422" y2="316" stroke="#243060" stroke-width="0.5"/>
+          <line x1="456" y1="55" x2="456" y2="316" stroke="#243060" stroke-width="0.5"/>
+          <line x1="490" y1="55" x2="490" y2="316" stroke="#243060" stroke-width="0.5"/>
+          <line x1="524" y1="55" x2="524" y2="316" stroke="#243060" stroke-width="0.5"/>
+          <line x1="558" y1="55" x2="558" y2="316" stroke="#243060" stroke-width="0.5"/>
+          <line x1="592" y1="55" x2="592" y2="316" stroke="#243060" stroke-width="0.5"/>
+          <line x1="648" y1="55" x2="648" y2="316" stroke="#2a3f65" stroke-width="0.8"/>
+          <line x1="682" y1="55" x2="682" y2="316" stroke="#243060" stroke-width="0.5"/>
+          <line x1="716" y1="55" x2="716" y2="316" stroke="#243060" stroke-width="0.5"/>
+          <line x1="750" y1="55" x2="750" y2="316" stroke="#243060" stroke-width="0.5"/>
+          <line x1="784" y1="55" x2="784" y2="316" stroke="#243060" stroke-width="0.5"/>
+          <line x1="818" y1="55" x2="818" y2="316" stroke="#243060" stroke-width="0.5"/>
+          <line x1="852" y1="55" x2="852" y2="316" stroke="#243060" stroke-width="0.5"/>
+
+          <!-- ── BASELINE + TICKS ── -->
+          <line x1="128" y1="316" x2="868" y2="316" stroke="#3a5080" stroke-width="1"/>
+          <text x="128" y="330" font-size="9" fill="#5a6e8c" font-family="DM Mono,monospace" text-anchor="middle">0.0</text>
+          <text x="196" y="330" font-size="9" fill="#5a6e8c" font-family="DM Mono,monospace" text-anchor="middle">0.2</text>
+          <text x="264" y="330" font-size="9" fill="#5a6e8c" font-family="DM Mono,monospace" text-anchor="middle">0.4</text>
+          <text x="332" y="330" font-size="9" fill="#5a6e8c" font-family="DM Mono,monospace" text-anchor="middle">0.6</text>
+          <text x="388" y="330" font-size="9" fill="#5a6e8c" font-family="DM Mono,monospace" text-anchor="middle">0.0</text>
+          <text x="456" y="330" font-size="9" fill="#5a6e8c" font-family="DM Mono,monospace" text-anchor="middle">0.2</text>
+          <text x="524" y="330" font-size="9" fill="#5a6e8c" font-family="DM Mono,monospace" text-anchor="middle">0.4</text>
+          <text x="592" y="330" font-size="9" fill="#5a6e8c" font-family="DM Mono,monospace" text-anchor="middle">0.6</text>
+          <text x="648" y="330" font-size="9" fill="#5a6e8c" font-family="DM Mono,monospace" text-anchor="middle">0.0</text>
+          <text x="716" y="330" font-size="9" fill="#5a6e8c" font-family="DM Mono,monospace" text-anchor="middle">0.2</text>
+          <text x="784" y="330" font-size="9" fill="#5a6e8c" font-family="DM Mono,monospace" text-anchor="middle">0.4</text>
+          <text x="852" y="330" font-size="9" fill="#5a6e8c" font-family="DM Mono,monospace" text-anchor="middle">0.6</text>
+          <text x="490" y="350" font-size="10" fill="#6e85a8" font-family="DM Sans,sans-serif" text-anchor="middle">Worth</text>
+
+          <!-- ── ROW GUIDES ── -->
+          <line x1="124" y1="120" x2="868" y2="120" stroke="#243060" stroke-width="0.8"/>
+          <line x1="124" y1="190" x2="868" y2="190" stroke="#243060" stroke-width="0.8"/>
+          <line x1="124" y1="260" x2="868" y2="260" stroke="#243060" stroke-width="0.8"/>
+
+          <!--
+            Drawing order per point: CI band → connecting line → filled dot → open dot
+            Dots radius = 4. CI band height = 8 centred on y (y-4 to y+4).
+          -->
+
+          <!-- ════════ SCAM ════════ -->
+
+          <!-- SM ban: off=0.050 x=145, on=0.115 x=167. Rises online. CI ±10px each side -->
+          <rect x="135" y="81" width="42" height="8" rx="2" fill="#2A9D8F" opacity="0.20"/>
+          <line x1="145" y1="85" x2="167" y2="85" stroke="#2A9D8F" stroke-width="1.5"/>
+          <circle cx="145" cy="85" r="4" fill="#2A9D8F"/>
+          <circle cx="167" cy="85" r="4" fill="none" stroke="#2A9D8F" stroke-width="1.8"/>
+
+          <!-- IB: off=0.050 x=145, on=0.115 x=167. Rises online. CI ±10px -->
+          <rect x="135" y="151" width="42" height="8" rx="2" fill="#8ab4d0" opacity="0.22"/>
+          <line x1="145" y1="155" x2="167" y2="155" stroke="#8ab4d0" stroke-width="1.5"/>
+          <circle cx="145" cy="155" r="4" fill="#8ab4d0"/>
+          <circle cx="167" cy="155" r="4" fill="none" stroke="#8ab4d0" stroke-width="1.8"/>
+
+          <!-- Fine: off=0.550 x=314, on=0.600 x=331. Rises slightly online. CI ±29px -->
+          <rect x="285" y="221" width="75" height="8" rx="2" fill="#e07a30" opacity="0.20"/>
+          <line x1="314" y1="225" x2="331" y2="225" stroke="#e07a30" stroke-width="1.5"/>
+          <circle cx="314" cy="225" r="4" fill="#e07a30"/>
+          <circle cx="331" cy="225" r="4" fill="none" stroke="#e07a30" stroke-width="1.8"/>
+
+          <!-- Prison: off=0.320 x=236, on=0.180 x=189. Big drop online. CI ±20px -->
+          <rect x="169" y="291" width="87" height="8" rx="2" fill="#e63946" opacity="0.20"/>
+          <line x1="236" y1="295" x2="189" y2="295" stroke="#e63946" stroke-width="1.5"/>
+          <circle cx="236" cy="295" r="4" fill="#e63946"/>
+          <circle cx="189" cy="295" r="4" fill="none" stroke="#e63946" stroke-width="1.8"/>
+
+          <!-- ════════ STALKING ════════ -->
+
+          <!-- SM ban: off=0.150 x=439, on=0.280 x=483. Big rise. CI ±17px -->
+          <rect x="422" y="81" width="78" height="8" rx="2" fill="#2A9D8F" opacity="0.20"/>
+          <line x1="439" y1="85" x2="483" y2="85" stroke="#2A9D8F" stroke-width="1.5"/>
+          <circle cx="439" cy="85" r="4" fill="#2A9D8F"/>
+          <circle cx="483" cy="85" r="4" fill="none" stroke="#2A9D8F" stroke-width="1.8"/>
+
+          <!-- IB: off=0.150 x=439, on=0.225 x=464. Moderate rise. CI ±14px -->
+          <rect x="425" y="151" width="53" height="8" rx="2" fill="#8ab4d0" opacity="0.22"/>
+          <line x1="439" y1="155" x2="464" y2="155" stroke="#8ab4d0" stroke-width="1.5"/>
+          <circle cx="439" cy="155" r="4" fill="#8ab4d0"/>
+          <circle cx="464" cy="155" r="4" fill="none" stroke="#8ab4d0" stroke-width="1.8"/>
+
+          <!-- Fine: off=0.470 x=547, on=0.380 x=517. Drops online. CI ±19px -->
+          <rect x="498" y="221" width="68" height="8" rx="2" fill="#e07a30" opacity="0.20"/>
+          <line x1="547" y1="225" x2="517" y2="225" stroke="#e07a30" stroke-width="1.5"/>
+          <circle cx="547" cy="225" r="4" fill="#e07a30"/>
+          <circle cx="517" cy="225" r="4" fill="none" stroke="#e07a30" stroke-width="1.8"/>
+
+          <!-- Prison: off=0.220 x=462, on=0.150 x=439. Drops online. CI ±14px -->
+          <rect x="425" y="291" width="51" height="8" rx="2" fill="#e63946" opacity="0.20"/>
+          <line x1="462" y1="295" x2="439" y2="295" stroke="#e63946" stroke-width="1.5"/>
+          <circle cx="462" cy="295" r="4" fill="#e63946"/>
+          <circle cx="439" cy="295" r="4" fill="none" stroke="#e63946" stroke-width="1.8"/>
+
+          <!-- ════════ INCITEMENT ════════ -->
+
+          <!-- SM ban: off=0.120 x=689, on=0.200 x=716. Rises. CI ±14px -->
+          <rect x="675" y="81" width="55" height="8" rx="2" fill="#2A9D8F" opacity="0.20"/>
+          <line x1="689" y1="85" x2="716" y2="85" stroke="#2A9D8F" stroke-width="1.5"/>
+          <circle cx="689" cy="85" r="4" fill="#2A9D8F"/>
+          <circle cx="716" cy="85" r="4" fill="none" stroke="#2A9D8F" stroke-width="1.8"/>
+
+          <!-- IB: off=0.120 x=689, on=0.200 x=716. Rises. CI ±14px -->
+          <rect x="675" y="151" width="55" height="8" rx="2" fill="#8ab4d0" opacity="0.22"/>
+          <line x1="689" y1="155" x2="716" y2="155" stroke="#8ab4d0" stroke-width="1.5"/>
+          <circle cx="689" cy="155" r="4" fill="#8ab4d0"/>
+          <circle cx="716" cy="155" r="4" fill="none" stroke="#8ab4d0" stroke-width="1.8"/>
+
+          <!-- Fine: off=0.180 x=709, on=0.150 x=699. Slight drop. CI ±10px -->
+          <rect x="689" y="221" width="30" height="8" rx="2" fill="#e07a30" opacity="0.20"/>
+          <line x1="709" y1="225" x2="699" y2="225" stroke="#e07a30" stroke-width="1.5"/>
+          <circle cx="709" cy="225" r="4" fill="#e07a30"/>
+          <circle cx="699" cy="225" r="4" fill="none" stroke="#e07a30" stroke-width="1.8"/>
+
+          <!-- Prison: off=0.550 x=814, on=0.480 x=790. Drops. CI ±20px -->
+          <rect x="770" y="291" width="64" height="8" rx="2" fill="#e63946" opacity="0.20"/>
+          <line x1="814" y1="295" x2="790" y2="295" stroke="#e63946" stroke-width="1.5"/>
+          <circle cx="814" cy="295" r="4" fill="#e63946"/>
+          <circle cx="790" cy="295" r="4" fill="none" stroke="#e63946" stroke-width="1.8"/>
+
+          <!-- ── LEGEND ── -->
+          <circle cx="130" cy="344" r="4" fill="#888"/>
+          <text x="138" y="348" font-size="10" fill="#a8bedd" font-family="DM Sans,sans-serif">filled = offline</text>
+          <circle cx="240" cy="344" r="4" fill="none" stroke="#888" stroke-width="1.8"/>
+          <text x="248" y="348" font-size="10" fill="#a8bedd" font-family="DM Sans,sans-serif">open = online</text>
+          <rect x="360" y="340" width="22" height="8" rx="2" fill="#888" opacity="0.3"/>
+          <text x="386" y="348" font-size="10" fill="#a8bedd" font-family="DM Sans,sans-serif">quasi-95% CI</text>
+
+        </svg>
+      </div>
+    </div>
+
+    <!-- SLIDE 10b: H4 PUNITIVENESS -->
+    <div class="slide s-result s-light" data-title="H4 — punitiveness">
+      <div class="rhead">H4 — punitiveness predicts prison preference <span class="verdict-pill vp-part">Partially supported</span></div>
+      <div class="rcols">
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          <div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:#0c447c;background:#e6f0fb;border-radius:6px;padding:4px 10px;">Prison × punitiveness: LRT χ²(1) = 25.01, p &lt; .001</div>
+          <div style="font-size:var(--fs-small);color:var(--muted);line-height:1.5;background:var(--surface);border-radius:8px;padding:6px 10px;">OR = 1.64 per 1-SD increase in punitiveness (z-scored). High-punitiveness participants are 2.28× more likely to choose prison over fine (median-split comparison).</div>
+          <div style="font-size:var(--fs-small);font-weight:500;color:var(--muted);margin-top:2px;">Continuous contrasts (fine as reference, Bonferroni α = .017 each)</div>
+          <div style="border:1px solid var(--border);border-left:3px solid #2e4a8f;border-radius:8px;padding:6px 10px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+              <div style="font-size:var(--fs-small);font-weight:500;color:var(--navy);">Prison × punitiveness <span style="font-size:var(--fs-small);color:#0f6e56;font-weight:400;">(confirmatory)</span></div>
+              <div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:#0f6e56;">OR = 1.64 · p &lt; .001</div>
+            </div>
+            <div style="font-size:var(--fs-small);color:var(--muted);line-height:1.45;">Each SD increase in punitiveness → 64% higher odds of preferring prison over fine. Large, robust effect.</div>
+          </div>
+          <div style="border:1px solid var(--border);border-left:3px solid var(--border);border-radius:8px;padding:6px 10px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+              <div style="font-size:var(--fs-small);font-weight:500;color:var(--navy);">IB × punitiveness <span style="font-size:var(--fs-small);color:var(--muted);font-weight:400;">(exploratory)</span></div>
+              <div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);">OR = 1.08 · p = .336</div>
+            </div>
+            <div style="font-size:var(--fs-small);color:var(--muted);line-height:1.45;">Not significant. Punitiveness does not shift relative preference for internet ban.</div>
+          </div>
+          <div style="border:1px solid var(--border);border-left:3px solid var(--border);border-radius:8px;padding:6px 10px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+              <div style="font-size:var(--fs-small);font-weight:500;color:var(--navy);">SM ban × punitiveness <span style="font-size:var(--fs-small);color:var(--muted);font-weight:400;">(exploratory)</span></div>
+              <div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);">OR = 0.99 · p = .870</div>
+            </div>
+            <div style="font-size:var(--fs-small);color:var(--muted);line-height:1.45;">Not significant. Punitiveness does not shift relative preference for SM ban.</div>
+          </div>
+          <div style="background:#fff3cd;border-radius:8px;padding:6px 10px;border-left:2px solid #856404;">
+            <div style="font-size:var(--fs-small);color:#856404;line-height:1.5;">Punitiveness means wanting liberty-deprivation specifically — digital bans are not perceived as a punitive escalation equivalent to imprisonment, regardless of their duration.</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          <div style="font-size:var(--fs-small);font-weight:500;color:var(--muted);">Worth by punitiveness — median split (low / high)</div>
+          <div style="display:flex;flex-direction:column;gap:7px;flex:1;">
+            <div style="background:var(--surface);border-radius:8px;padding:6px 10px;">
+              <div style="display:flex;align-items:center;gap:5px;margin-bottom:5px;"><div style="width:9px;height:9px;border-radius:50%;background:#2e4a8f;flex-shrink:0;"></div><div style="font-size:var(--fs-small);font-weight:500;color:var(--navy);">Prison</div><div style="margin-left:auto;font-family:'DM Mono',monospace;font-size:var(--fs-small);color:#0f6e56;">▲ +74%</div></div>
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;"><div style="width:28px;font-size:var(--fs-small);color:var(--muted);">low</div><div style="flex:1;height:12px;background:#e6f0fb;border-radius:2px;overflow:hidden;"><div style="height:100%;width:57%;background:#2e4a8f;opacity:0.4;border-radius:2px;"></div></div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:36px;text-align:right;">0.229</div></div>
+              <div style="display:flex;align-items:center;gap:6px;"><div style="width:28px;font-size:var(--fs-small);color:var(--muted);">high</div><div style="flex:1;height:12px;background:#e6f0fb;border-radius:2px;overflow:hidden;"><div style="height:100%;width:100%;background:#2e4a8f;border-radius:2px;"></div></div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:36px;text-align:right;">0.399</div></div>
+            </div>
+            <div style="background:var(--surface);border-radius:8px;padding:6px 10px;">
+              <div style="display:flex;align-items:center;gap:5px;margin-bottom:5px;"><div style="width:9px;height:9px;border-radius:50%;background:#ba7517;flex-shrink:0;"></div><div style="font-size:var(--fs-small);font-weight:500;color:var(--navy);">Fine</div><div style="margin-left:auto;font-family:'DM Mono',monospace;font-size:var(--fs-small);color:#993c1d;">▼ −24%</div></div>
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;"><div style="width:28px;font-size:var(--fs-small);color:var(--muted);">low</div><div style="flex:1;height:12px;background:#faeeda;border-radius:2px;overflow:hidden;"><div style="height:100%;width:89%;background:#ba7517;opacity:0.4;border-radius:2px;"></div></div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:36px;text-align:right;">0.357</div></div>
+              <div style="display:flex;align-items:center;gap:6px;"><div style="width:28px;font-size:var(--fs-small);color:var(--muted);">high</div><div style="flex:1;height:12px;background:#faeeda;border-radius:2px;overflow:hidden;"><div style="height:100%;width:68%;background:#ba7517;border-radius:2px;"></div></div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:36px;text-align:right;">0.273</div></div>
+            </div>
+            <div style="background:var(--surface);border-radius:8px;padding:6px 10px;">
+              <div style="display:flex;align-items:center;gap:5px;margin-bottom:5px;"><div style="width:9px;height:9px;border-radius:50%;background:#0f6e56;flex-shrink:0;"></div><div style="font-size:var(--fs-small);font-weight:500;color:var(--navy);">Internet ban</div><div style="margin-left:auto;font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);">≈ −15%</div></div>
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;"><div style="width:28px;font-size:var(--fs-small);color:var(--muted);">low</div><div style="flex:1;height:12px;background:#e1f5ee;border-radius:2px;overflow:hidden;"><div style="height:100%;width:50%;background:#0f6e56;opacity:0.4;border-radius:2px;"></div></div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:36px;text-align:right;">0.198</div></div>
+              <div style="display:flex;align-items:center;gap:6px;"><div style="width:28px;font-size:var(--fs-small);color:var(--muted);">high</div><div style="flex:1;height:12px;background:#e1f5ee;border-radius:2px;overflow:hidden;"><div style="height:100%;width:42%;background:#0f6e56;border-radius:2px;"></div></div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:36px;text-align:right;">0.169</div></div>
+            </div>
+            <div style="background:var(--surface);border-radius:8px;padding:6px 10px;">
+              <div style="display:flex;align-items:center;gap:5px;margin-bottom:5px;"><div style="width:9px;height:9px;border-radius:50%;background:#993556;flex-shrink:0;"></div><div style="font-size:var(--fs-small);font-weight:500;color:var(--navy);">SM ban</div><div style="margin-left:auto;font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);">≈ −26%</div></div>
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;"><div style="width:28px;font-size:var(--fs-small);color:var(--muted);">low</div><div style="flex:1;height:12px;background:#fbeaf0;border-radius:2px;overflow:hidden;"><div style="height:100%;width:54%;background:#993556;opacity:0.4;border-radius:2px;"></div></div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:36px;text-align:right;">0.216</div></div>
+              <div style="display:flex;align-items:center;gap:6px;"><div style="width:28px;font-size:var(--fs-small);color:var(--muted);">high</div><div style="flex:1;height:12px;background:#fbeaf0;border-radius:2px;overflow:hidden;"><div style="height:100%;width:40%;background:#993556;border-radius:2px;"></div></div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:36px;text-align:right;">0.160</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 11: ENFORCEABILITY & RATIONALES -->
+    <div class="slide s-result s-surf" data-title="Enforceability, rationales &amp; severity">
+      <div class="rhead">Exploratory: enforceability, penal rationales &amp; punishment exchange rates</div>
+      <div class="rcols">
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          <div style="font-size:var(--fs-small);font-weight:500;color:var(--muted);">Enforceability predicts digital ban preference (fine as reference)</div>
+          <div style="background:var(--white);border-radius:8px;padding:7px 10px;border:1px solid var(--border);flex-shrink:0;">
+            <div style="font-size:var(--fs-small);color:var(--muted);margin-bottom:5px;">+1 SD in perceived enforceability (M = 2.71 / 7, strongly skeptical):</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-top:0.5px solid var(--border);"><div style="font-size:var(--fs-small);color:var(--navy);">Internet ban × enforceability</div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:#0f6e56;">OR = 1.42 · p &lt; .001</div></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-top:0.5px solid var(--border);"><div style="font-size:var(--fs-small);color:var(--navy);">SM ban × enforceability</div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:#0f6e56;">OR = 1.46 · p &lt; .001</div></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-top:0.5px solid var(--border);"><div style="font-size:var(--fs-small);color:var(--navy);">Prison × enforceability</div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);">OR = 0.95 · p = .554</div></div>
+            <div style="font-size:var(--fs-small);color:#085041;background:#e1f5ee;border-radius:6px;padding:4px 8px;margin-top:5px;line-height:1.45;">Effect entirely specific to digital punishments. Low overall preference appears driven by practical skepticism, not principled rejection.</div>
+          </div>
+          <div style="font-size:var(--fs-small);font-weight:500;color:var(--muted);margin-top:2px;">Punishment severity exchange rates (median ratios, participant-by-participant)</div>
+          <table style="width:100%;border-collapse:collapse;font-size:var(--fs-small);background:var(--white);border-radius:8px;overflow:hidden;border:1px solid var(--border);">
+            <thead><tr style="background:var(--navy);">
+              <th style="padding:4px 8px;color:#a8bedd;font-weight:400;text-align:left;">1 unit of</th>
+              <th style="padding:4px 8px;color:#a8bedd;font-weight:400;text-align:left;">≈ X units of</th>
+              <th style="padding:4px 8px;color:#a8bedd;font-weight:400;text-align:right;">Median [Q25–Q75]</th>
+            </tr></thead>
+            <tbody>
+              <tr style="border-top:0.5px solid var(--border);"><td style="padding:3px 8px;color:var(--navy);">1 mo Prison</td><td style="padding:3px 8px;color:var(--muted);">Fine (£)</td><td style="padding:3px 8px;font-family:'DM Mono',monospace;color:var(--navy);text-align:right;">£416.8 &nbsp;[£200–£1,000]</td></tr>
+              <tr style="border-top:0.5px solid var(--border);background:var(--surface);"><td style="padding:3px 8px;color:var(--navy);">1 mo Prison</td><td style="padding:3px 8px;color:var(--muted);">SM ban (mo)</td><td style="padding:3px 8px;font-family:'DM Mono',monospace;color:var(--navy);text-align:right;">2.0 mo &nbsp;[1.0–5.0]</td></tr>
+              <tr style="border-top:0.5px solid var(--border);"><td style="padding:3px 8px;color:var(--navy);">1 mo Prison</td><td style="padding:3px 8px;color:var(--muted);">Internet ban (mo)</td><td style="padding:3px 8px;font-family:'DM Mono',monospace;color:var(--navy);text-align:right;">1.5 mo &nbsp;[0.8–3.0]</td></tr>
+              <tr style="border-top:0.5px solid var(--border);background:var(--surface);"><td style="padding:3px 8px;color:var(--navy);">1 mo SM ban</td><td style="padding:3px 8px;color:var(--muted);">Fine (£)</td><td style="padding:3px 8px;font-family:'DM Mono',monospace;color:var(--navy);text-align:right;">£172.4 &nbsp;[£116–£360]</td></tr>
+              <tr style="border-top:0.5px solid var(--border);"><td style="padding:3px 8px;color:var(--navy);">1 mo Internet ban</td><td style="padding:3px 8px;color:var(--muted);">Fine (£)</td><td style="padding:3px 8px;font-family:'DM Mono',monospace;color:var(--navy);text-align:right;">£300.1 &nbsp;[£167–£669]</td></tr>
+              <tr style="border-top:0.5px solid var(--border);background:var(--surface);"><td style="padding:3px 8px;color:var(--navy);">1 mo SM ban</td><td style="padding:3px 8px;color:var(--muted);">Internet ban (mo)</td><td style="padding:3px 8px;font-family:'DM Mono',monospace;color:var(--navy);text-align:right;">0.8 mo &nbsp;[0.5–1.0]</td></tr>
+            </tbody>
+          </table>
+          <div style="font-size:var(--fs-small);color:var(--muted);background:var(--surface);border-radius:6px;padding:4px 8px;line-height:1.45;">Prison is the most costly sanction. Internet ban is valued higher per month than SM ban (£300 vs £172 ≈ fine equivalent). Very wide IQRs throughout — no population consensus on cross-sanction equivalence.</div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div style="font-size:var(--fs-small);font-weight:500;color:var(--muted);">Penal rationale ratings per punishment (1–6, midpoint = 3.5)</div>
+          <div style="background:var(--white);border-radius:8px;padding:7px 10px;border:1px solid var(--border);display:flex;flex-direction:column;gap:9px;flex:1;">
+
+            <div>
+              <div style="display:flex;align-items:center;gap:5px;margin-bottom:4px;"><div style="width:9px;height:9px;border-radius:50%;background:#2e4a8f;flex-shrink:0;"></div><div style="font-size:var(--fs-small);font-weight:500;color:var(--navy);">Prison</div></div>
+              <div style="display:flex;flex-direction:column;gap:2px;">
+                <div style="display:flex;align-items:center;gap:6px;"><div style="width:68px;font-size:var(--fs-small);color:var(--muted);flex-shrink:0;">just deserts</div><div style="flex:1;height:9px;background:var(--surface);border-radius:2px;overflow:hidden;position:relative;"><div style="height:100%;width:70%;background:#2e4a8f;opacity:0.85;border-radius:2px;"></div><div style="position:absolute;top:0;left:58%;height:100%;width:1px;background:#aaa;opacity:0.5;"></div></div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:28px;text-align:right;">4.23</div></div>
+                <div style="display:flex;align-items:center;gap:6px;"><div style="width:68px;font-size:var(--fs-small);color:var(--muted);flex-shrink:0;">deterrence</div><div style="flex:1;height:9px;background:var(--surface);border-radius:2px;overflow:hidden;position:relative;"><div style="height:100%;width:79%;background:#2e4a8f;opacity:0.85;border-radius:2px;"></div><div style="position:absolute;top:0;left:58%;height:100%;width:1px;background:#aaa;opacity:0.5;"></div></div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:28px;text-align:right;">4.77</div></div>
+                <div style="display:flex;align-items:center;gap:6px;"><div style="width:68px;font-size:var(--fs-small);color:var(--muted);flex-shrink:0;">expressive</div><div style="flex:1;height:9px;background:var(--surface);border-radius:2px;overflow:hidden;position:relative;"><div style="height:100%;width:80%;background:#2e4a8f;opacity:0.85;border-radius:2px;"></div><div style="position:absolute;top:0;left:58%;height:100%;width:1px;background:#aaa;opacity:0.5;"></div></div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:28px;text-align:right;">4.78</div></div>
+              </div>
+            </div>
+
+            <div>
+              <div style="display:flex;align-items:center;gap:5px;margin-bottom:4px;"><div style="width:9px;height:9px;border-radius:50%;background:#ba7517;flex-shrink:0;"></div><div style="font-size:var(--fs-small);font-weight:500;color:var(--navy);">Fine</div></div>
+              <div style="display:flex;flex-direction:column;gap:2px;">
+                <div style="display:flex;align-items:center;gap:6px;"><div style="width:68px;font-size:var(--fs-small);color:var(--muted);flex-shrink:0;">just deserts</div><div style="flex:1;height:9px;background:var(--surface);border-radius:2px;overflow:hidden;position:relative;"><div style="height:100%;width:69%;background:#ba7517;opacity:0.85;border-radius:2px;"></div><div style="position:absolute;top:0;left:58%;height:100%;width:1px;background:#aaa;opacity:0.5;"></div></div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:28px;text-align:right;">4.13</div></div>
+                <div style="display:flex;align-items:center;gap:6px;"><div style="width:68px;font-size:var(--fs-small);color:var(--muted);flex-shrink:0;">deterrence</div><div style="flex:1;height:9px;background:var(--surface);border-radius:2px;overflow:hidden;position:relative;"><div style="height:100%;width:67%;background:#ba7517;opacity:0.85;border-radius:2px;"></div><div style="position:absolute;top:0;left:58%;height:100%;width:1px;background:#aaa;opacity:0.5;"></div></div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:28px;text-align:right;">4.01</div></div>
+                <div style="display:flex;align-items:center;gap:6px;"><div style="width:68px;font-size:var(--fs-small);color:var(--muted);flex-shrink:0;">expressive</div><div style="flex:1;height:9px;background:var(--surface);border-radius:2px;overflow:hidden;position:relative;"><div style="height:100%;width:67%;background:#ba7517;opacity:0.85;border-radius:2px;"></div><div style="position:absolute;top:0;left:58%;height:100%;width:1px;background:#aaa;opacity:0.5;"></div></div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:28px;text-align:right;">4.00</div></div>
+              </div>
+            </div>
+
+            <div>
+              <div style="display:flex;align-items:center;gap:5px;margin-bottom:4px;"><div style="width:9px;height:9px;border-radius:50%;background:#0f6e56;flex-shrink:0;"></div><div style="font-size:var(--fs-small);font-weight:500;color:var(--navy);">Internet ban</div></div>
+              <div style="display:flex;flex-direction:column;gap:2px;">
+                <div style="display:flex;align-items:center;gap:6px;"><div style="width:68px;font-size:var(--fs-small);color:var(--muted);flex-shrink:0;">just deserts</div><div style="flex:1;height:9px;background:var(--surface);border-radius:2px;overflow:hidden;position:relative;"><div style="height:100%;width:58%;background:#0f6e56;opacity:0.85;border-radius:2px;"></div><div style="position:absolute;top:0;left:58%;height:100%;width:1px;background:#aaa;opacity:0.5;"></div></div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:28px;text-align:right;">3.49</div></div>
+                <div style="display:flex;align-items:center;gap:6px;"><div style="width:68px;font-size:var(--fs-small);color:var(--muted);flex-shrink:0;">deterrence</div><div style="flex:1;height:9px;background:var(--surface);border-radius:2px;overflow:hidden;position:relative;"><div style="height:100%;width:60%;background:#0f6e56;opacity:0.85;border-radius:2px;"></div><div style="position:absolute;top:0;left:58%;height:100%;width:1px;background:#aaa;opacity:0.5;"></div></div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:28px;text-align:right;">3.61</div></div>
+                <div style="display:flex;align-items:center;gap:6px;"><div style="width:68px;font-size:var(--fs-small);color:var(--muted);flex-shrink:0;">expressive</div><div style="flex:1;height:9px;background:var(--surface);border-radius:2px;overflow:hidden;position:relative;"><div style="height:100%;width:58%;background:#0f6e56;opacity:0.85;border-radius:2px;"></div><div style="position:absolute;top:0;left:58%;height:100%;width:1px;background:#aaa;opacity:0.5;"></div></div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:28px;text-align:right;">3.49</div></div>
+              </div>
+            </div>
+
+            <div>
+              <div style="display:flex;align-items:center;gap:5px;margin-bottom:4px;"><div style="width:9px;height:9px;border-radius:50%;background:#993556;flex-shrink:0;"></div><div style="font-size:var(--fs-small);font-weight:500;color:var(--navy);">SM ban</div></div>
+              <div style="display:flex;flex-direction:column;gap:2px;">
+                <div style="display:flex;align-items:center;gap:6px;"><div style="width:68px;font-size:var(--fs-small);color:var(--muted);flex-shrink:0;">just deserts</div><div style="flex:1;height:9px;background:var(--surface);border-radius:2px;overflow:hidden;position:relative;"><div style="height:100%;width:59%;background:#993556;opacity:0.85;border-radius:2px;"></div><div style="position:absolute;top:0;left:58%;height:100%;width:1px;background:#aaa;opacity:0.5;"></div></div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:28px;text-align:right;">3.55</div></div>
+                <div style="display:flex;align-items:center;gap:6px;"><div style="width:68px;font-size:var(--fs-small);color:var(--muted);flex-shrink:0;">deterrence</div><div style="flex:1;height:9px;background:var(--surface);border-radius:2px;overflow:hidden;position:relative;"><div style="height:100%;width:56%;background:#993556;opacity:0.85;border-radius:2px;"></div><div style="position:absolute;top:0;left:58%;height:100%;width:1px;background:#aaa;opacity:0.5;"></div></div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:28px;text-align:right;">3.34</div></div>
+                <div style="display:flex;align-items:center;gap:6px;"><div style="width:68px;font-size:var(--fs-small);color:var(--muted);flex-shrink:0;">expressive</div><div style="flex:1;height:9px;background:var(--surface);border-radius:2px;overflow:hidden;position:relative;"><div style="height:100%;width:57%;background:#993556;opacity:0.85;border-radius:2px;"></div><div style="position:absolute;top:0;left:58%;height:100%;width:1px;background:#aaa;opacity:0.5;"></div></div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:28px;text-align:right;">3.41</div></div>
+              </div>
+            </div>
+
+          </div>
+          <div style="background:#faeeda;border-radius:8px;padding:5px 10px;border-left:2px solid #ba7517;flex-shrink:0;">
+            <div style="font-size:var(--fs-small);color:#633806;line-height:1.45;">Digital bans score near or below scale midpoint on all three rationales. Prison leads on every dimension, especially deterrence and expressive function. The vertical line marks the midpoint (3.5).</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 12: QUALITATIVE - INAPPROPRIATENESS -->
+    <div class="slide s-result s-surf" data-title="Exploratory: qualitative analysis">
+      <div class="rhead">Exploratory: why participants flagged punishments as inappropriate <span style="font-family:'DM Mono',monospace;font-size:var(--fs-small);background:#fff3cd;color:#856404;padding:2px 8px;border-radius:4px;font-weight:400;">LLM-assisted coding</span></div>
+      <div class="rcols">
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          <div style="background:var(--white);border-radius:8px;padding:6px 10px;border:1px solid var(--border);flex-shrink:0;">
+            <div style="font-size:var(--fs-small);font-weight:500;color:var(--navy);margin-bottom:3px;">Flagging rates (N = 499, multiple flags possible)</div>
+            <div style="display:flex;flex-direction:column;gap:3px;">
+              <div style="display:flex;align-items:center;gap:6px;"><div style="width:90px;font-size:var(--fs-small);color:var(--navy);flex-shrink:0;">Internet ban</div><div style="flex:1;height:11px;background:var(--surface);border-radius:2px;overflow:hidden;"><div style="height:100%;width:100%;background:#0f6e56;opacity:0.7;border-radius:2px;"></div></div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:32px;text-align:right;">35.5%</div></div>
+              <div style="display:flex;align-items:center;gap:6px;"><div style="width:90px;font-size:var(--fs-small);color:var(--navy);flex-shrink:0;">SM ban</div><div style="flex:1;height:11px;background:var(--surface);border-radius:2px;overflow:hidden;"><div style="height:100%;width:92%;background:#993556;opacity:0.7;border-radius:2px;"></div></div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:32px;text-align:right;">32.7%</div></div>
+              <div style="display:flex;align-items:center;gap:6px;"><div style="width:90px;font-size:var(--fs-small);color:var(--navy);flex-shrink:0;">Prison</div><div style="flex:1;height:11px;background:var(--surface);border-radius:2px;overflow:hidden;"><div style="height:100%;width:61%;background:#2e4a8f;opacity:0.7;border-radius:2px;"></div></div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:32px;text-align:right;">21.8%</div></div>
+              <div style="display:flex;align-items:center;gap:6px;"><div style="width:90px;font-size:var(--fs-small);color:var(--navy);flex-shrink:0;">Fine</div><div style="flex:1;height:11px;background:var(--surface);border-radius:2px;overflow:hidden;"><div style="height:100%;width:50%;background:#ba7517;opacity:0.7;border-radius:2px;"></div></div><div style="font-family:'DM Mono',monospace;font-size:var(--fs-small);color:var(--muted);width:32px;text-align:right;">17.8%</div></div>
+            </div>
+          </div>
+          <div style="font-size:var(--fs-small);font-weight:500;color:var(--muted);">Top qualitative themes (345 free-text explanations, LLM-coded into 11 categories)</div>
+          <div style="display:flex;flex-direction:column;gap:3px;flex:1;">
+            <div style="background:var(--white);border-radius:6px;padding:4px 8px;border:1px solid var(--border);border-left:3px solid #0f6e56;">
+              <div style="font-size:var(--fs-small);font-weight:500;color:var(--navy);">A. Crime-punishment mismatch (n = 69)</div>
+              <div style="font-size:var(--fs-small);color:var(--muted);line-height:1.4;">Digital ban irrelevant to offline offense. Concentrated in offline conditions (56 offline vs 13 online) — directly explains the H1 context effect from the participants' own perspective.</div>
+            </div>
+            <div style="background:var(--white);border-radius:6px;padding:4px 8px;border:1px solid var(--border);border-left:3px solid #0f6e56;">
+              <div style="font-size:var(--fs-small);font-weight:500;color:var(--navy);">B. Internet ban too disruptive (n = 57)</div>
+              <div style="font-size:var(--fs-small);color:var(--muted);line-height:1.4;">Essential to daily life — banking, healthcare, employment. Explains why internet ban has lower worth than SM ban even in online conditions: a narrow ban is more acceptable than total prohibition.</div>
+            </div>
+            <div style="background:var(--white);border-radius:6px;padding:4px 8px;border:1px solid var(--border);border-left:3px solid #993556;">
+              <div style="font-size:var(--fs-small);font-weight:500;color:var(--navy);">C. Digital bans too lenient (n = 48)</div>
+              <div style="font-size:var(--fs-small);color:var(--muted);line-height:1.4;">Insufficient for the gravity of the crime, especially incitement to suicide. Themes B and C pull in opposite directions — both reduce digital ban worth.</div>
+            </div>
+            <div style="background:var(--white);border-radius:6px;padding:4px 8px;border:1px solid var(--border);border-left:3px solid #2e4a8f;">
+              <div style="font-size:var(--fs-small);font-weight:500;color:var(--navy);">G. Prison disproportionate (n = 42)</div>
+              <div style="font-size:var(--fs-small);color:var(--muted);line-height:1.4;">Strongest for stalking and scam — no physical harm, first offense. Explains prison's lowest worth (0.166) for stalking.</div>
+            </div>
+            <div style="background:var(--white);border-radius:6px;padding:4px 8px;border:1px solid var(--border);border-left:3px solid #ba7517;">
+              <div style="font-size:var(--fs-small);font-weight:500;color:var(--navy);">F. Fine morally inappropriate (n = 22)</div>
+              <div style="font-size:var(--fs-small);color:var(--muted);line-height:1.4;">Cannot price a human life. 19/22 entries from incitement to suicide condition — explains fine's lowest worth (0.138) for that offense.</div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          <div style="background:#fff3cd;border-radius:8px;padding:6px 10px;border-left:3px solid #856404;flex-shrink:0;">
+            <div style="font-size:var(--fs-small);font-weight:500;color:#856404;margin-bottom:3px;">Methodological note</div>
+            <div style="font-size:var(--fs-small);color:#856404;line-height:1.5;">Free-text responses (N = 345) were coded using keyword-assisted LLM analysis into 11 thematic categories. Coding is exploratory and not subject to formal inter-rater reliability checks. Treat as qualitative triangulation of the quantitative findings, not as independent confirmation.</div>
+          </div>
+          <div style="font-size:var(--fs-small);font-weight:500;color:var(--muted);">Convergence with quantitative results</div>
+          <div style="display:flex;flex-direction:column;gap:5px;flex:1;">
+            <div style="background:var(--white);border-radius:8px;padding:6px 10px;border:1px solid var(--border);">
+              <div style="font-size:var(--fs-small);font-weight:500;color:var(--navy);margin-bottom:3px;">The qualitative data validate the quantitative patterns</div>
+              <div style="font-size:var(--fs-small);color:var(--muted);line-height:1.5;">Every major statistical result in H1–H2 has a corresponding qualitative rationale identifiable in the free-text data. Theme A explains H1. Fine's collapse for incitement (H2) is explained by Themes F, E, I. Prison's low worth for stalking is explained by Themes G, H.</div>
+            </div>
+            <div style="background:var(--white);border-radius:8px;padding:6px 10px;border:1px solid var(--border);">
+              <div style="font-size:var(--fs-small);font-weight:500;color:var(--navy);margin-bottom:3px;">The internet ban contradiction</div>
+              <div style="font-size:var(--fs-small);color:var(--muted);line-height:1.5;">Themes B and C co-exist for the internet ban — simultaneously "too much" (disrupts essential life) and "too little" (insufficient for grave crimes). These opposing objections explain why the internet ban has lower worth than the more targeted social media ban even in online conditions.</div>
+            </div>
+            <div style="background:var(--white);border-radius:8px;padding:6px 10px;border:1px solid var(--border);">
+              <div style="font-size:var(--fs-small);font-weight:500;color:var(--navy);margin-bottom:3px;">Intuitive retributivism confirmed</div>
+              <div style="font-size:var(--fs-small);color:var(--muted);line-height:1.5;">The ranking model tells us <em>what</em> people prefer; the free-text explains <em>why</em>. The punishment-crime matching logic found in Theme A directly mirrors the statistical interaction in H2 and H3. Both converge on the same underlying folk theory of justice.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 13: PREFERENCE STRUCTURE -->
+    <div class="slide s-result s-light" data-title="Preference structure">
+      <div class="rhead">Preference structure: two distinct clusters</div>
+      <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:4%;flex:1;min-height:0;overflow:hidden;">
+        <div style="display:flex;flex-direction:column;gap:6px;min-height:0;">
+          <div style="font-size:var(--fs-small);font-weight:500;color:var(--muted);flex-shrink:0;">Two-cluster structure revealed by conditional rank-2 analysis</div>
+          <div style="display:flex;gap:6px;flex-shrink:0;">
+            <div style="flex:1;background:#e6f0fb;border-radius:8px;padding:4% 4%;display:flex;flex-direction:column;gap:4px;">
+              <div style="font-size:var(--fs-small);font-weight:500;color:#0c447c;">Traditional cluster</div>
+              <div style="background:#2e4a8f;color:#e6f0fb;border-radius:4px;padding:2px 8px;font-size:var(--fs-small);font-family:'DM Mono',monospace;">Prison</div>
+              <div style="background:#ba7517;color:#faeeda;border-radius:4px;padding:2px 8px;font-size:var(--fs-small);font-family:'DM Mono',monospace;">Fine</div>
+              <div style="font-size:var(--fs-small);color:#0c447c;line-height:1.35;">60% of prison-first pick fine 2nd. Near-exclusive pairing at top ranks.</div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:center;font-size:var(--fs-small);color:var(--muted);font-style:italic;flex-shrink:0;padding:0 4px;">vs.</div>
+            <div style="flex:1;background:#e1f5ee;border-radius:8px;padding:4% 4%;display:flex;flex-direction:column;gap:4px;">
+              <div style="font-size:var(--fs-small);font-weight:500;color:#085041;">Digital cluster</div>
+              <div style="background:#0f6e56;color:#e1f5ee;border-radius:4px;padding:2px 8px;font-size:var(--fs-small);font-family:'DM Mono',monospace;">Internet ban</div>
+              <div style="background:#993556;color:#fbeaf0;border-radius:4px;padding:2px 8px;font-size:var(--fs-small);font-family:'DM Mono',monospace;">SM ban</div>
+              <div style="font-size:var(--fs-small);color:#085041;line-height:1.35;">61% of IB-first pick SM ban 2nd; 57% vice versa.</div>
+            </div>
+          </div>
+          <div style="font-size:var(--fs-small);font-weight:500;color:var(--muted);flex-shrink:0;">Pairwise preferences (% who prefer A over B)</div>
+          <table style="width:100%;border-collapse:collapse;font-size:var(--fs-small);flex-shrink:0;">
+            <thead><tr>
+              <th style="text-align:left;color:var(--muted);padding:2px 6px;font-weight:400;border-bottom:1px solid var(--border);">Pair</th>
+              <th style="color:var(--muted);padding:2px 6px;font-weight:400;border-bottom:1px solid var(--border);text-align:center;">A wins</th>
+              <th style="color:var(--muted);padding:2px 6px;font-weight:400;border-bottom:1px solid var(--border);text-align:center;">B wins</th>
+            </tr></thead>
+            <tbody>
+              <tr style="border-top:0.5px solid var(--border);"><td style="padding:2px 6px;color:var(--navy);">Prison vs Fine</td><td style="text-align:center;padding:2px 6px;font-family:'DM Mono',monospace;">53.5%</td><td style="text-align:center;padding:2px 6px;font-family:'DM Mono',monospace;">46.5%</td></tr>
+              <tr style="border-top:0.5px solid var(--border);"><td style="padding:2px 6px;color:var(--navy);">Prison vs Internet ban</td><td style="text-align:center;padding:2px 6px;font-family:'DM Mono',monospace;background:#e6f0fb;color:#0c447c;">67.5%</td><td style="text-align:center;padding:2px 6px;font-family:'DM Mono',monospace;">32.5%</td></tr>
+              <tr style="border-top:0.5px solid var(--border);"><td style="padding:2px 6px;color:var(--navy);">Prison vs SM ban</td><td style="text-align:center;padding:2px 6px;font-family:'DM Mono',monospace;background:#e6f0fb;color:#0c447c;">63.3%</td><td style="text-align:center;padding:2px 6px;font-family:'DM Mono',monospace;">36.7%</td></tr>
+              <tr style="border-top:0.5px solid var(--border);"><td style="padding:2px 6px;color:var(--navy);">Fine vs Internet ban</td><td style="text-align:center;padding:2px 6px;font-family:'DM Mono',monospace;background:#faeeda;color:#633806;">68.3%</td><td style="text-align:center;padding:2px 6px;font-family:'DM Mono',monospace;">31.7%</td></tr>
+              <tr style="border-top:0.5px solid var(--border);"><td style="padding:2px 6px;color:var(--navy);">Fine vs SM ban</td><td style="text-align:center;padding:2px 6px;font-family:'DM Mono',monospace;background:#faeeda;color:#633806;">65.7%</td><td style="text-align:center;padding:2px 6px;font-family:'DM Mono',monospace;">34.3%</td></tr>
+              <tr style="border-top:0.5px solid var(--border);"><td style="padding:2px 6px;color:var(--navy);">Internet ban vs SM ban</td><td style="text-align:center;padding:2px 6px;font-family:'DM Mono',monospace;">47.9%</td><td style="text-align:center;padding:2px 6px;font-family:'DM Mono',monospace;">52.1%</td></tr>
+            </tbody>
+          </table>
+          <div style="font-size:var(--fs-small);color:var(--muted);background:var(--surface);border-radius:6px;padding:4px 8px;flex-shrink:0;">Within-cluster: ~even. Across-cluster: traditional preferred ~2:1. Context and offense type shift this balance without dissolving the underlying two-cluster structure.</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;min-height:0;">
+          <div style="font-size:var(--fs-small);font-weight:500;color:var(--muted);">Rank-position distribution (% at each position)</div>
+          <table style="width:100%;border-collapse:collapse;font-size:var(--fs-small);">
+            <thead><tr>
+              <th style="text-align:left;color:var(--muted);padding:3px 6px;font-weight:400;border-bottom:1px solid var(--border);">Punishment</th>
+              <th style="color:var(--muted);padding:3px 4px;font-weight:400;border-bottom:1px solid var(--border);text-align:center;">1st</th>
+              <th style="color:var(--muted);padding:3px 4px;font-weight:400;border-bottom:1px solid var(--border);text-align:center;">2nd</th>
+              <th style="color:var(--muted);padding:3px 4px;font-weight:400;border-bottom:1px solid var(--border);text-align:center;">3rd</th>
+              <th style="color:var(--muted);padding:3px 4px;font-weight:400;border-bottom:1px solid var(--border);text-align:center;">4th</th>
+            </tr></thead>
+            <tbody>
+              <tr style="border-top:0.5px solid var(--border);"><td style="padding:3px 6px;color:var(--navy);">Prison</td><td style="text-align:center;padding:3px 4px;background:#e6f0fb;color:#0c447c;font-family:'DM Mono',monospace;">45.1%</td><td style="text-align:center;padding:3px 4px;font-family:'DM Mono',monospace;">19.2%</td><td style="text-align:center;padding:3px 4px;font-family:'DM Mono',monospace;">10.6%</td><td style="text-align:center;padding:3px 4px;font-family:'DM Mono',monospace;">25.1%</td></tr>
+              <tr style="border-top:0.5px solid var(--border);"><td style="padding:3px 6px;color:var(--navy);">Fine</td><td style="text-align:center;padding:3px 4px;background:#faeeda;color:#633806;font-family:'DM Mono',monospace;">34.3%</td><td style="text-align:center;padding:3px 4px;font-family:'DM Mono',monospace;">32.5%</td><td style="text-align:center;padding:3px 4px;font-family:'DM Mono',monospace;">12.8%</td><td style="text-align:center;padding:3px 4px;font-family:'DM Mono',monospace;">20.4%</td></tr>
+              <tr style="border-top:0.5px solid var(--border);"><td style="padding:3px 6px;color:var(--navy);">SM ban</td><td style="text-align:center;padding:3px 4px;font-family:'DM Mono',monospace;">13.4%</td><td style="text-align:center;padding:3px 4px;font-family:'DM Mono',monospace;">25.5%</td><td style="text-align:center;padding:3px 4px;background:#fbeaf0;color:#72243e;font-family:'DM Mono',monospace;">31.9%</td><td style="text-align:center;padding:3px 4px;font-family:'DM Mono',monospace;">29.3%</td></tr>
+              <tr style="border-top:0.5px solid var(--border);"><td style="padding:3px 6px;color:var(--navy);">Internet ban</td><td style="text-align:center;padding:3px 4px;font-family:'DM Mono',monospace;">7.2%</td><td style="text-align:center;padding:3px 4px;font-family:'DM Mono',monospace;">22.8%</td><td style="text-align:center;padding:3px 4px;background:#e1f5ee;color:#085041;font-family:'DM Mono',monospace;">44.7%</td><td style="text-align:center;padding:3px 4px;font-family:'DM Mono',monospace;">25.3%</td></tr>
+            </tbody>
+          </table>
+          <div style="font-size:var(--fs-small);color:var(--muted);background:var(--surface);border-radius:6px;padding:4px 8px;flex-shrink:0;">Prison and fine attract extreme positions (1st or 4th). Digital bans cluster in the middle — IB most often 3rd, SM ban more evenly distributed. This asymmetry is the structural signature of the two-cluster solution.</div>
+          <div style="font-size:var(--fs-small);font-weight:500;color:var(--muted);margin-top:2px;">Conditional rank-2: given your top choice, what comes second?</div>
+          <table style="width:100%;border-collapse:collapse;font-size:var(--fs-small);">
+            <thead><tr>
+              <th style="text-align:left;color:var(--muted);padding:2px 6px;font-weight:400;border-bottom:1px solid var(--border);">If rank-1 is…</th>
+              <th style="color:var(--muted);padding:2px 6px;font-weight:400;border-bottom:1px solid var(--border);text-align:center;">Most common rank-2</th>
+              <th style="color:var(--muted);padding:2px 6px;font-weight:400;border-bottom:1px solid var(--border);text-align:center;">%</th>
+            </tr></thead>
+            <tbody>
+              <tr style="border-top:0.5px solid var(--border);"><td style="padding:2px 6px;color:var(--navy);">Prison (n=225)</td><td style="text-align:center;padding:2px 6px;color:var(--navy);">Fine</td><td style="text-align:center;padding:2px 6px;font-family:'DM Mono',monospace;background:#e6f0fb;color:#0c447c;">60.0%</td></tr>
+              <tr style="border-top:0.5px solid var(--border);"><td style="padding:2px 6px;color:var(--navy);">Fine (n=171)</td><td style="text-align:center;padding:2px 6px;color:var(--navy);">Prison</td><td style="text-align:center;padding:2px 6px;font-family:'DM Mono',monospace;background:#faeeda;color:#633806;">46.8%</td></tr>
+              <tr style="border-top:0.5px solid var(--border);"><td style="padding:2px 6px;color:var(--navy);">IB (n=36)</td><td style="text-align:center;padding:2px 6px;color:var(--navy);">SM ban</td><td style="text-align:center;padding:2px 6px;font-family:'DM Mono',monospace;background:#e1f5ee;color:#085041;">61.1%</td></tr>
+              <tr style="border-top:0.5px solid var(--border);"><td style="padding:2px 6px;color:var(--navy);">SM ban (n=67)</td><td style="text-align:center;padding:2px 6px;color:var(--navy);">IB</td><td style="text-align:center;padding:2px 6px;font-family:'DM Mono',monospace;background:#fbeaf0;color:#72243e;">56.7%</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 14: KEY TAKEAWAYS -->
+    <div class="slide s-result s-light" data-title="Key takeaways">
+      <div class="rhead">Key takeaways</div>
+      <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr) minmax(0,1fr);gap:3%;flex:1;min-height:0;overflow:hidden;">
+        <div style="border:1px solid var(--border);border-left:3px solid #2e4a8f;border-radius:8px;padding:3% 4%;display:flex;flex-direction:column;gap:5px;min-height:0;overflow:hidden;">
+          <div style="font-size:var(--fs-head);font-weight:500;color:var(--navy);">Context matters, on a strong traditional baseline</div>
+          <div style="font-size:var(--fs-body);color:var(--muted);line-height:1.5;">Online offense shifts preferences toward digital bans (H1, both contrasts p &lt; .001, OR = 2.06 and 3.07). But prison + fine still account for ~79% of first choices overall. Context shifts the distribution without overturning it.</div>
+        </div>
+        <div style="border:1px solid var(--border);border-left:3px solid #ba7517;border-radius:8px;padding:3% 4%;display:flex;flex-direction:column;gap:5px;min-height:0;overflow:hidden;">
+          <div style="font-size:var(--fs-head);font-weight:500;color:var(--navy);">Offense type is the dominant factor</div>
+          <div style="font-size:var(--fs-body);color:var(--muted);line-height:1.5;">χ²(6) = 259 dwarfs context χ²(3) = 72. Participants engage in intuitive retributivism: financial crime → fine; harassment → SM ban; severe moral harm → prison. Qualitative data confirm this is an active matching logic.</div>
+        </div>
+        <div style="border:1px solid var(--border);border-left:3px solid #0f6e56;border-radius:8px;padding:3% 4%;display:flex;flex-direction:column;gap:5px;min-height:0;overflow:hidden;">
+          <div style="font-size:var(--fs-head);font-weight:500;color:var(--navy);">The enforceability bottleneck</div>
+          <div style="font-size:var(--fs-body);color:var(--muted);line-height:1.5;">Low digital ban preference is driven by practical skepticism (M = 2.71/7), not principled rejection. Participants who believe bans can be enforced are ~1.44× more likely to prefer them. This is a testable, addressable policy lever — not an immovable attitude.</div>
+        </div>
+        <div style="border:1px solid var(--border);border-left:3px solid #993556;border-radius:8px;padding:3% 4%;display:flex;flex-direction:column;gap:5px;min-height:0;overflow:hidden;">
+          <div style="font-size:var(--fs-head);font-weight:500;color:var(--navy);">Punitiveness means imprisonment specifically</div>
+          <div style="font-size:var(--fs-body);color:var(--muted);line-height:1.5;">More punitive people want more of every sanction in severity ratings, but only prison rises relative to fine in the ranking model (OR = 1.64, p &lt; .001). Digital bans are not perceived as a punitive escalation — they are a qualitatively different category of sanction.</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /stage -->
+
+  <div class="bottom-nav">
+    <button class="nav-btn" id="prev-btn" disabled>
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      Previous
+    </button>
+    <div class="dots" id="dots"></div>
+    <button class="nav-btn" id="next-btn">
+      Next
+      <svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg>
+    </button>
+  </div>
+
+  <div class="hint">← → arrow keys to navigate</div>
+
+</div><!-- /shell -->
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  const counter = document.getElementById('counter');
+  const navTitle = document.getElementById('slide-nav-title');
+  const prevBtn = document.getElementById('prev-btn');
+  const nextBtn = document.getElementById('next-btn');
+  const dotsEl = document.getElementById('dots');
+
+  slides.forEach((_, i) => {
+    const d = document.createElement('button');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.setAttribute('aria-label', 'Go to slide ' + (i+1));
+    d.addEventListener('click', () => goTo(i));
+    dotsEl.appendChild(d);
+  });
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    dotsEl.children[current].classList.remove('active');
+    current = Math.max(0, Math.min(n, total - 1));
+    slides[current].classList.add('active');
+    dotsEl.children[current].classList.add('active');
+    counter.textContent = String(current + 1).padStart(2,'0') + ' / ' + String(total).padStart(2,'0');
+    navTitle.textContent = slides[current].dataset.title || '';
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === total - 1;
+  }
+
+  prevBtn.addEventListener('click', () => goTo(current - 1));
+  nextBtn.addEventListener('click', () => goTo(current + 1));
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
+  });
+
+  goTo(0);
+</script>
+</body>
+</html>
