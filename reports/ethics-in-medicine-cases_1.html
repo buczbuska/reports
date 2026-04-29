@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cases for Ethics in Medicine</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1410;
+    --paper: #f5f0e8;
+    --paper-dark: #ede8d8;
+    --accent: #8b1a1a;
+    --accent-soft: #c45c3a;
+    --rule: #c9bfa8;
+    --muted: #7a6f60;
+    --gold: #b8962e;
+    --slide-w: 100vw;
+    --slide-h: 100vh;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    background: var(--ink);
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    color: var(--ink);
+  }
+
+  /* ── SLIDESHOW WRAPPER ── */
+  #deck {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 80px;
+    opacity: 0;
+    transform: translateX(60px);
+    transition: opacity .55s cubic-bezier(.4,0,.2,1), transform .55s cubic-bezier(.4,0,.2,1);
+    pointer-events: none;
+    overflow-y: auto;
+  }
+
+  .slide.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: all;
+  }
+
+  .slide.exit {
+    opacity: 0;
+    transform: translateX(-60px);
+    pointer-events: none;
+  }
+
+  /* ── TITLE SLIDE ── */
+  .slide-title {
+    background: var(--ink);
+    color: var(--paper);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .slide-title::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 48px,
+        rgba(200,190,170,.07) 48px,
+        rgba(200,190,170,.07) 49px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 48px,
+        rgba(200,190,170,.04) 48px,
+        rgba(200,190,170,.04) 49px
+      );
+    pointer-events: none;
+  }
+
+  .slide-title .inner {
+    position: relative;
+    z-index: 1;
+  }
+
+  .slide-title .kicker {
+    font-family: 'DM Mono', monospace;
+    font-size: .75rem;
+    letter-spacing: .25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 32px;
+    opacity: .9;
+  }
+
+  .slide-title h1 {
+    font-size: clamp(2.8rem, 6vw, 5.5rem);
+    font-weight: 300;
+    line-height: 1.1;
+    letter-spacing: -.01em;
+    color: var(--paper);
+    margin-bottom: 24px;
+  }
+
+  .slide-title h1 em {
+    font-style: italic;
+    color: var(--accent-soft);
+  }
+
+  .slide-title .rule-line {
+    width: 80px;
+    height: 1px;
+    background: var(--gold);
+    margin: 28px auto;
+    opacity: .6;
+  }
+
+  .slide-title .subtitle {
+    font-size: 1.15rem;
+    color: rgba(245,240,232,.5);
+    font-weight: 300;
+    letter-spacing: .05em;
+  }
+
+  .slide-title .corner-deco {
+    position: absolute;
+    font-family: 'DM Mono', monospace;
+    font-size: .65rem;
+    letter-spacing: .15em;
+    color: rgba(245,240,232,.2);
+    text-transform: uppercase;
+  }
+  .corner-deco.tl { top: 32px; left: 40px; }
+  .corner-deco.tr { top: 32px; right: 40px; }
+  .corner-deco.bl { bottom: 32px; left: 40px; }
+  .corner-deco.br { bottom: 32px; right: 40px; }
+
+  /* ── TOPIC DIVIDER SLIDE ── */
+  .slide-topic {
+    background: var(--accent);
+    color: var(--paper);
+    text-align: left;
+    align-items: flex-start;
+  }
+
+  .topic-inner {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+  }
+
+  .slide-topic .topic-num {
+    font-family: 'DM Mono', monospace;
+    font-size: .7rem;
+    letter-spacing: .3em;
+    text-transform: uppercase;
+    color: rgba(245,240,232,.5);
+    margin-bottom: 20px;
+  }
+
+  .slide-topic h2 {
+    font-size: clamp(2.4rem, 5vw, 4.5rem);
+    font-weight: 300;
+    line-height: 1.05;
+    color: var(--paper);
+    max-width: 700px;
+  }
+
+  .slide-topic .topic-bar {
+    width: 60px;
+    height: 3px;
+    background: rgba(245,240,232,.4);
+    margin: 32px 0 20px;
+  }
+
+  .slide-topic .topic-desc {
+    font-size: 1.05rem;
+    color: rgba(245,240,232,.65);
+    font-weight: 300;
+    font-style: italic;
+    max-width: 560px;
+    line-height: 1.6;
+  }
+
+  /* ── CASE SLIDE ── */
+  .slide-case {
+    background: var(--paper);
+    justify-content: flex-start;
+    padding-top: 52px;
+    padding-bottom: 90px;
+    overflow-y: auto;
+  }
+
+  .slide-case .case-header {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    gap: 28px;
+    margin-bottom: 28px;
+    flex-shrink: 0;
+  }
+
+  .case-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: .68rem;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--paper);
+    background: var(--accent);
+    padding: 5px 12px;
+    white-space: nowrap;
+    margin-top: 6px;
+  }
+
+  .case-name-block { flex: 1; }
+
+  .case-name-block .topic-label {
+    font-family: 'DM Mono', monospace;
+    font-size: .65rem;
+    letter-spacing: .25em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .case-name-block h3 {
+    font-size: clamp(1.9rem, 3.5vw, 3rem);
+    font-weight: 300;
+    line-height: 1.1;
+    color: var(--ink);
+    letter-spacing: -.01em;
+  }
+
+  .case-name-block h3 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .case-divider {
+    width: 100%;
+    height: 1px;
+    background: var(--rule);
+    margin-bottom: 26px;
+    flex-shrink: 0;
+  }
+
+  .case-body {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    align-items: start;
+  }
+
+  .case-vignette {
+    padding: 24px 28px;
+    background: var(--paper-dark);
+    border-left: 3px solid var(--accent-soft);
+    position: relative;
+  }
+
+  .case-vignette::before {
+    content: '❝';
+    position: absolute;
+    top: -10px;
+    left: 18px;
+    font-size: 2.5rem;
+    color: var(--accent-soft);
+    opacity: .3;
+    line-height: 1;
+  }
+
+  .case-vignette p {
+    font-size: .97rem;
+    line-height: 1.75;
+    color: #2e2620;
+    font-weight: 300;
+  }
+
+  .case-questions { }
+
+  .question-item {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .question-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .q-label {
+    font-family: 'DM Mono', monospace;
+    font-size: .65rem;
+    letter-spacing: .2em;
+    color: var(--accent);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+
+  .q-text {
+    font-size: .92rem;
+    line-height: 1.65;
+    color: var(--ink);
+    font-weight: 400;
+  }
+
+  /* ── NAVIGATION ── */
+  #nav {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    z-index: 100;
+    background: rgba(26,20,16,.85);
+    backdrop-filter: blur(12px);
+    padding: 10px 20px;
+    border-radius: 40px;
+    border: 1px solid rgba(200,190,168,.1);
+  }
+
+  #nav button {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    border: 1px solid rgba(200,190,168,.25);
+    background: transparent;
+    color: var(--paper);
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s, border-color .2s;
+  }
+
+  #nav button:hover { background: rgba(200,190,168,.15); border-color: rgba(200,190,168,.5); }
+  #nav button:disabled { opacity: .25; cursor: not-allowed; }
+
+  #nav .counter {
+    font-family: 'DM Mono', monospace;
+    font-size: .7rem;
+    color: rgba(245,240,232,.5);
+    letter-spacing: .1em;
+    min-width: 54px;
+    text-align: center;
+  }
+
+  #progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    background: var(--accent-soft);
+    transition: width .4s ease;
+    z-index: 100;
+  }
+
+  /* keyboard hint */
+  #kb-hint {
+    position: fixed;
+    bottom: 88px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'DM Mono', monospace;
+    font-size: .6rem;
+    letter-spacing: .15em;
+    color: rgba(245,240,232,.25);
+    pointer-events: none;
+  }
+
+  /* scrollbar styling for case slides */
+  .slide-case::-webkit-scrollbar { width: 4px; }
+  .slide-case::-webkit-scrollbar-track { background: transparent; }
+  .slide-case::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 2px; }
+
+  @media (max-width: 800px) {
+    .slide { padding: 40px 28px; padding-bottom: 100px; }
+    .case-body { grid-template-columns: 1fr; }
+    .slide-title h1 { font-size: 2.4rem; }
+    .slide-topic h2 { font-size: 2.2rem; }
+    .corner-deco { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<div id="deck">
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 0 — MAIN TITLE
+  ══════════════════════════════════════════ -->
+  <div class="slide slide-title active" id="s0">
+    <span class="corner-deco tl">Bioethics · Law · Medicine</span>
+    <span class="corner-deco tr">Case Materials</span>
+    <span class="corner-deco bl">Jagiellonian University</span>
+    <span class="corner-deco br">2024 / 2025</span>
+    <div class="inner">
+      <div class="kicker">Discussion Case Materials</div>
+      <h1>Cases for<br><em>Ethics in Medicine</em></h1>
+      <div class="rule-line"></div>
+      <p class="subtitle">Personhood · Autonomy · Consent · Public Health · Transplantation</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 1 — TOPIC: PERSONHOOD & DIGNITY
+  ══════════════════════════════════════════ -->
+  <div class="slide slide-topic" id="s1">
+    <div class="topic-inner">
+      <div class="topic-num">Topic I</div>
+      <h2>Personhood<br>&amp; Dignity</h2>
+      <div class="topic-bar"></div>
+      <p class="topic-desc">Three cases probing the boundaries of moral status, personal identity across time, and the limits of surrogate authority over lives on the threshold of personhood.</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 2 — CASE: MARIA
+  ══════════════════════════════════════════ -->
+  <div class="slide slide-case" id="s2">
+    <div class="case-header">
+      <span class="case-tag">Case 1</span>
+      <div class="case-name-block">
+        <div class="topic-label">Personhood &amp; Dignity</div>
+        <h3><em>Maria</em>, 38 — Persistent Vegetative State</h3>
+      </div>
+    </div>
+    <div class="case-divider"></div>
+    <div class="case-body">
+      <div class="case-vignette">
+        <p>Maria, 38, suffered a severe hypoxic brain injury after cardiac arrest. For two years she has been classified as in a persistent vegetative state. Her husband has been her legal surrogate decision-maker and has consistently refused further aggressive intervention, requesting comfort care only. A new neurologist requests an fMRI as part of a research protocol. The scan reveals that Maria can follow commands and correctly answer yes/no questions. When asked "are you in pain?" she responds yes. When asked "do you want to continue living?" she responds yes. Her husband is not informed of the results immediately — the research team debates whether and how to disclose. Meanwhile, her comfort care plan does not include pain management adequate for a conscious patient.</p>
+      </div>
+      <div class="case-questions">
+        <div class="question-item">
+          <div class="q-label">Q1 — Moral &amp; Legal Status</div>
+          <p class="q-text">Does the fMRI finding change Maria's moral and legal status? Did she ever stop being a person with full moral status, or did our epistemic failure constitute a kind of moral failure?</p>
+        </div>
+        <div class="question-item">
+          <div class="q-label">Q2 — Disclosure Obligations</div>
+          <p class="q-text">What are the team's obligations regarding disclosure — to her husband, to Maria herself, and to the treating physicians managing her comfort care?</p>
+        </div>
+        <div class="question-item">
+          <div class="q-label">Q3 — Moral Responsibility</div>
+          <p class="q-text">Her husband made decisions in good faith based on best available information. Is he morally responsible for inadequate pain management? Who is?</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 3 — CASE: THOMAS
+  ══════════════════════════════════════════ -->
+  <div class="slide slide-case" id="s3">
+    <div class="case-header">
+      <span class="case-tag">Case 2</span>
+      <div class="case-name-block">
+        <div class="topic-label">Personhood &amp; Dignity</div>
+        <h3><em>Thomas</em>, 74 — Advance Directive &amp; Dementia</h3>
+      </div>
+    </div>
+    <div class="case-divider"></div>
+    <div class="case-body">
+      <div class="case-vignette">
+        <p>Thomas, 74, was a prominent physician who, at age 65, made a detailed advance directive explicitly refusing all life-sustaining treatment in the event of severe dementia, writing: "the person I will become will not be me in any meaningful sense — do not prolong that person's life on my behalf." Thomas now has advanced Alzheimer's. He does not recognize his family, cannot communicate propositionally, and has no recollection of his advance directive. However, he is observed to be consistently cheerful — he enjoys music, laughs with carers, responds warmly to physical affection, and shows no signs of suffering. He develops aspiration pneumonia. His family, unable to bear losing him, requests full treatment. His daughter, also a physician, invokes the advance directive to refuse treatment.</p>
+      </div>
+      <div class="case-questions">
+        <div class="question-item">
+          <div class="q-label">Q1 — Personal Identity</div>
+          <p class="q-text">Is the Thomas who wrote the directive the same person as the Thomas who now enjoys music and responds to affection? Does your answer to that question determine what should be done?</p>
+        </div>
+        <div class="question-item">
+          <div class="q-label">Q2 — Critical vs. Experiential Interests</div>
+          <p class="q-text">Dworkin distinguishes "critical interests" (what matters to us reflectively) from "experiential interests" (immediate pleasure and pain). Which should take precedence — and who decides?</p>
+        </div>
+        <div class="question-item">
+          <div class="q-label">Q3 — Binding Future Selves</div>
+          <p class="q-text">Does a person have the right to bind their future self — even a future self who appears to have different interests and no access to the prior self's reasoning?</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 4 — CASE: 23-WEEK NEONATE
+  ══════════════════════════════════════════ -->
+  <div class="slide slide-case" id="s4">
+    <div class="case-header">
+      <span class="case-tag">Case 3</span>
+      <div class="case-name-block">
+        <div class="topic-label">Personhood &amp; Dignity</div>
+        <h3>The <em>23-Week Neonate</em> — Threshold of Personhood</h3>
+      </div>
+    </div>
+    <div class="case-divider"></div>
+    <div class="case-body">
+      <div class="case-vignette">
+        <p>A neonate is born at 23 weeks and 1 day gestation — one day below the threshold at which the hospital's protocol mandates resuscitation attempts. The infant is breathing weakly and has a heartbeat. The parents, both present, are in acute distress and disagree: the mother is begging the team to do everything possible; the father, aware of the statistics, is asking the team to provide comfort care only and allow a natural death. The neonatologist knows that survival at 23 weeks carries roughly a 25% chance, with approximately 50% of survivors experiencing significant neurodevelopmental disability. The hospital protocol says comfort care. The mother says: "she is a person, she is my daughter, you cannot let her die."</p>
+      </div>
+      <div class="case-questions">
+        <div class="question-item">
+          <div class="q-label">Q1 — Moral Personhood</div>
+          <p class="q-text">Does the 23-week neonate have full moral personhood? Does your answer depend on her current capacities, her future potential, or something else entirely?</p>
+        </div>
+        <div class="question-item">
+          <div class="q-label">Q2 — Moral Authority</div>
+          <p class="q-text">The parents are the legal surrogates but they disagree. The protocol gives a default. Who has moral authority here — and on what grounds?</p>
+        </div>
+        <div class="question-item">
+          <div class="q-label">Q3 — The Clinician's Ethics</div>
+          <p class="q-text">Is the neonatologist who follows the protocol and provides comfort care acting ethically? Is the one who overrides the protocol to attempt resuscitation at the mother's request acting ethically? Can both be true?</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 5 — TOPIC: AUTONOMY
+  ══════════════════════════════════════════ -->
+  <div class="slide slide-topic" id="s5">
+    <div class="topic-inner">
+      <div class="topic-num">Topic II</div>
+      <h2>Autonomy</h2>
+      <div class="topic-bar"></div>
+      <p class="topic-desc">Three cases testing the limits of self-determination: cultural deference, lifestyle choices under public health pressure, and trauma-shaped refusal of compulsory treatment.</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 6 — CASE: AMARA
+  ══════════════════════════════════════════ -->
+  <div class="slide slide-case" id="s6">
+    <div class="case-header">
+      <span class="case-tag">Case 4</span>
+      <div class="case-name-block">
+        <div class="topic-label">Autonomy</div>
+        <h3><em>Amara</em>, 58 — Delegated Decision-Making</h3>
+      </div>
+    </div>
+    <div class="case-divider"></div>
+    <div class="case-body">
+      <div class="case-vignette">
+        <p>Amara, 58, originally from West Africa, is diagnosed with early-stage colon cancer requiring surgery and chemotherapy. When the oncologist discusses treatment options directly with her, she repeatedly redirects: "Please speak to my son — he will decide. In our family, these decisions are made together, and my son is the head of the household." Her son, present at every appointment, is clearly engaged, asks informed questions, and appears to have Amara's welfare at heart. When the oncologist asks Amara privately whether she is comfortable with this arrangement, she says warmly: "Yes — this is how we do things. I trust him completely. This is my choice." Her son ultimately authorizes the recommended treatment.</p>
+      </div>
+      <div class="case-questions">
+        <div class="question-item">
+          <div class="q-label">Q1 — Delegated Autonomy</div>
+          <p class="q-text">Amara has explicitly and privately endorsed her son's decision-making authority. Is this an autonomous exercise of her autonomy — choosing to delegate — or a culturally conditioned adaptive preference that undermines the autonomy it appears to express?</p>
+        </div>
+        <div class="question-item">
+          <div class="q-label">Q2 — Relational Autonomy &amp; Cultural Paternalism</div>
+          <p class="q-text">The relational autonomy framework asks whether the conditions of Amara's life enable genuine self-governance. Does a Western bioethicist have the standing to judge that her family structure compromises her autonomy — or is that a form of cultural paternalism?</p>
+        </div>
+        <div class="question-item">
+          <div class="q-label">Q3 — Clinical Intervention Threshold</div>
+          <p class="q-text">If her son had refused the recommended treatment against what appeared to be Amara's own wishes, at what point and on what grounds would the clinical team be justified in intervening — and how would you establish whose preference was authentic?</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 7 — CASE: MARCIN
+  ══════════════════════════════════════════ -->
+  <div class="slide slide-case" id="s7">
+    <div class="case-header">
+      <span class="case-tag">Case 5</span>
+      <div class="case-name-block">
+        <div class="topic-label">Autonomy</div>
+        <h3><em>Marcin</em>, 32 — Lifestyle Autonomy &amp; Soft Paternalism</h3>
+      </div>
+    </div>
+    <div class="case-divider"></div>
+    <div class="case-body">
+      <div class="case-vignette">
+        <p>Marcin, 32, has a BMI of 42 and type 2 diabetes with early signs of nephropathy. His GP has repeatedly advised weight loss, dietary change, and has referred him to a bariatric program. Marcin declines every intervention: "I know the risks. I've read everything. I enjoy my life, I enjoy food, I have good friends, I'm happy. I don't experience my weight as a problem — you do. I'm not in denial, I'm not depressed, I'm not uninformed. This is simply how I want to live." He takes his diabetes medication reliably, attends all check-ups, and is cooperative in every other respect. He asks the GP to stop raising the topic.</p>
+      </div>
+      <div class="case-questions">
+        <div class="question-item">
+          <div class="q-label">Q1 — Frankfurt &amp; Adaptive Preference</div>
+          <p class="q-text">Marcin is informed, consistent, and explicitly endorses his lifestyle at the second-order level — he has reflected on it and affirmed it. Does Frankfurt's framework support treating this as fully autonomous? Or is there a residual concern about adaptive preference that justifies continued engagement?</p>
+        </div>
+        <div class="question-item">
+          <div class="q-label">Q2 — Soft vs. Hard Paternalism</div>
+          <p class="q-text">The GP finds it professionally and personally difficult to stop raising the issue. Is her continued pressure legitimate soft paternalism — checking that his choice remains genuinely voluntary — or has it crossed into hard paternalism that she is not entitled to exercise?</p>
+        </div>
+        <div class="question-item">
+          <div class="q-label">Q3 — Public Financing &amp; Third-Party Interests</div>
+          <p class="q-text">Marcin's future nephropathy will likely create significant costs for the public health system. Does the existence of collective healthcare financing generate third-party interests that limit the scope of his self-regarding lifestyle choices — and if so, where does that logic stop?</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 8 — CASE: DMITRI
+  ══════════════════════════════════════════ -->
+  <div class="slide slide-case" id="s8">
+    <div class="case-header">
+      <span class="case-tag">Case 6</span>
+      <div class="case-name-block">
+        <div class="topic-label">Autonomy</div>
+        <h3><em>Dmitri</em>, 44 — TB, Trauma &amp; Compulsory Detention</h3>
+      </div>
+    </div>
+    <div class="case-divider"></div>
+    <div class="case-body">
+      <div class="case-vignette">
+        <p>Dmitri, 44, is diagnosed with drug-resistant tuberculosis following a period of homelessness. He is infectious and requires 18–24 months of directly observed therapy in isolation. He refuses: "I have spent three years without a home and two in prison. I will not be locked up again — not even in a hospital. I will take my medication, I will wear a mask in public, and I will avoid crowded spaces. But I will not be isolated." The public health authority estimates that in his social environment — a dense urban area, frequent use of shelters — his proposed precautions reduce but do not eliminate transmission risk. Compulsory detention is legally available. Dmitri has full capacity. His refusal is informed, consistent, and clearly connected to genuine psychological trauma around confinement.</p>
+      </div>
+      <div class="case-questions">
+        <div class="question-item">
+          <div class="q-label">Q1 — Trauma-Shaped Preference</div>
+          <p class="q-text">Dmitri's refusal is grounded in severe psychological trauma — his aversion to confinement is not irrational but is shaped by experiences of profound injustice. Does this history bear on how his autonomy should be weighed — does trauma-shaped preference deserve less, equal, or more deference than ordinary preference?</p>
+        </div>
+        <div class="question-item">
+          <div class="q-label">Q2 — Mill's Harm Principle</div>
+          <p class="q-text">Mill's harm principle requires that restrictions be justified by harm to others. Dmitri's proposed precautions reduce but do not eliminate risk. What probability and magnitude of third-party harm is sufficient to override a competent adult's autonomous refusal of detention?</p>
+        </div>
+        <div class="question-item">
+          <div class="q-label">Q3 — Ethics of Non-Detention</div>
+          <p class="q-text">Is a public health authority that chooses not to use compulsory detention — accepting residual transmission risk out of respect for Dmitri's autonomy and history — acting ethically? Or does the obligation to protect third parties make non-detention indefensible regardless of the personal cost to Dmitri?</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 9 — TOPIC: INFORMED CONSENT
+  ══════════════════════════════════════════ -->
+  <div class="slide slide-topic" id="s9">
+    <div class="topic-inner">
+      <div class="topic-num">Topic III</div>
+      <h2>Informed<br>Consent</h2>
+      <div class="topic-bar"></div>
+      <p class="topic-desc">Three cases examining disclosure standards, systemic accountability, cultural non-disclosure, and the conditions under which silence can — or cannot — constitute valid consent.</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 10 — CASE: PIOTR
+  ══════════════════════════════════════════ -->
+  <div class="slide slide-case" id="s10">
+    <div class="case-header">
+      <span class="case-tag">Case 7</span>
+      <div class="case-name-block">
+        <div class="topic-label">Informed Consent</div>
+        <h3><em>Piotr</em>, 67 — Montgomery &amp; Disclosure Failure</h3>
+      </div>
+    </div>
+    <div class="case-divider"></div>
+    <div class="case-body">
+      <div class="case-vignette">
+        <p>Piotr, 67, is admitted the evening before elective hip replacement surgery. A junior doctor arrives at his bedside at 10pm — tired, running behind — and spends four minutes obtaining consent. She mentions infection and blood clot as risks but does not mention nerve damage (1–2% risk) or leg length discrepancy. Piotr, who has waited two years for this surgery, signs without asking questions. He had previously told his GP — whose notes the junior doctor did not read — that he was a keen cyclist and that walking ability was his primary concern. He suffers a nerve injury causing permanent foot drop. His lawyer argues consent was invalid under Montgomery. The hospital argues all risks meeting the professional standard were disclosed.</p>
+      </div>
+      <div class="case-questions">
+        <div class="question-item">
+          <div class="q-label">Q1 — Montgomery Standard</div>
+          <p class="q-text">Apply the Montgomery subjective standard: the junior doctor did not know Piotr was a cyclist. Does the disclosure obligation attach to risks that were objectively material to this patient — or only to risks the physician actually knew were material to him? Who bears the burden of finding out?</p>
+        </div>
+        <div class="question-item">
+          <div class="q-label">Q2 — Distributed Responsibility</div>
+          <p class="q-text">The junior doctor was operating within a system that allocated four minutes for pre-operative consent before major surgery. Distribute moral responsibility: between the junior doctor, the surgical team, the hospital administration, and the system that produced this process. Is the doctor culpable for a systemic failure?</p>
+        </div>
+        <div class="question-item">
+          <div class="q-label">Q3 — Silence as Consent</div>
+          <p class="q-text">Piotr signed the form and asked no questions. From the autonomy framework — does silence following disclosure constitute consent? What would comprehension-based consent, rather than disclosure-based consent, have required here?</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 11 — CASE: KONSTANTINOS
+  ══════════════════════════════════════════ -->
+  <div class="slide slide-case" id="s11">
+    <div class="case-header">
+      <span class="case-tag">Case 8</span>
+      <div class="case-name-block">
+        <div class="topic-label">Informed Consent</div>
+        <h3><em>Konstantinos</em>, 71 — Cultural Non-Disclosure</h3>
+      </div>
+    </div>
+    <div class="case-divider"></div>
+    <div class="case-body">
+      <div class="case-vignette">
+        <p>Konstantinos, 71, Greek-born, is admitted with a newly diagnosed advanced pancreatic cancer. Before the oncologist can speak to him, his three adult children intercept the team in the corridor: "In our family we do not tell bad news directly. He will lose all hope and die faster. We know him — please tell us first, and we will manage the information." The oncologist, aware that non-disclosure to the patient is standard practice in parts of Southern Europe, agrees to speak to the family first. When she later meets Konstantinos alone, she describes his condition as "a serious illness requiring treatment" without mentioning cancer or prognosis. Konstantinos asks no direct questions. He later discovers his diagnosis from a discharge letter and is devastated — not by the diagnosis, but by the deception.</p>
+      </div>
+      <div class="case-questions">
+        <div class="question-item">
+          <div class="q-label">Q1 — Therapeutic Privilege or Deception?</div>
+          <p class="q-text">Was the oncologist practicing therapeutic privilege, respecting a culturally embedded right not to know, or colluding in a deception that violated Konstantinos's autonomy? Can cultural context transform what is otherwise a consent violation into an autonomy-respecting act?</p>
+        </div>
+        <div class="question-item">
+          <div class="q-label">Q2 — The Right Not to Know</div>
+          <p class="q-text">Konstantinos asked no direct questions during the consultation. Does his silence constitute a tacit invocation of the right not to know — or does the right not to know require explicit, autonomous invocation by the patient himself?</p>
+        </div>
+        <div class="question-item">
+          <div class="q-label">Q3 — Kant on Lying</div>
+          <p class="q-text">Konstantinos says he was devastated by the deception, not the diagnosis. Apply Kant's prohibition on lying: was the oncologist's formulation — "a serious illness requiring treatment" — a lie, a misleading truth, or a defensible omission? Does the distinction matter morally?</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 12 — CASE: HELENA
+  ══════════════════════════════════════════ -->
+  <div class="slide slide-case" id="s12">
+    <div class="case-header">
+      <span class="case-tag">Case 9</span>
+      <div class="case-name-block">
+        <div class="topic-label">Informed Consent</div>
+        <h3><em>Helena</em>, 58 — Contested Surrogate Authority</h3>
+      </div>
+    </div>
+    <div class="case-divider"></div>
+    <div class="case-body">
+      <div class="case-vignette">
+        <p>Helena, 58, suffered a severe stroke leaving her without decision-making capacity. She has no advance directive. Her husband Tadeusz is appointed surrogate decision-maker. The medical team recommends a PEG feeding tube — without it Helena will not survive. Tadeusz refuses: "I know my wife. She spent thirty years as a nurse. She watched patients live for years on tubes and always said she would never want that — she told me this many times. She would rather die." The team has no written evidence of Helena's wishes. Her sister, also present, disputes Tadeusz's account: "Helena never said that to me. She fought for everything in her life. Tadeusz is the one who cannot cope — he wants this to end." The team is uncertain whom to believe. Helena shows some inconsistent responses to stimuli but has not been formally assessed for residual capacity.</p>
+      </div>
+      <div class="case-questions">
+        <div class="question-item">
+          <div class="q-label">Q1 — Evidentiary Threshold for Substituted Judgment</div>
+          <p class="q-text">Tadeusz is applying the substituted judgment standard — "what would Helena have wanted." But the evidence for her prior wishes is contested, oral, and filtered through a person with his own emotional stake in the outcome. At what evidentiary threshold should unverified verbal accounts of prior wishes govern life-or-death surrogate decisions — and who should bear the burden of proof?</p>
+        </div>
+        <div class="question-item">
+          <div class="q-label">Q2 — Obligation to Assess Residual Capacity</div>
+          <p class="q-text">Helena has not been formally assessed for residual capacity. She shows some inconsistent stimulus responses. Before the surrogate decision proceeds, does the team have an obligation to attempt a capacity assessment — even if the probability of finding meaningful residual capacity is low?</p>
+        </div>
+        <div class="question-item">
+          <div class="q-label">Q3 — Epistemic Uncertainty &amp; Moral Cover</div>
+          <p class="q-text">If the team proceeds with the PEG tube against Tadeusz's refusal — acting on best interests rather than substituted judgment — they override the legally appointed surrogate. If they follow Tadeusz's refusal and Helena dies, and it later emerges he fabricated her prior wishes, who bears moral responsibility? Does the team's epistemic uncertainty provide moral cover — or does uncertainty itself generate an obligation to err toward life?</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 13 — TOPIC: PUBLIC HEALTH
+  ══════════════════════════════════════════ -->
+  <div class="slide slide-topic" id="s13">
+    <div class="topic-inner">
+      <div class="topic-num">Topic IV</div>
+      <h2>Public Health<br>Ethics</h2>
+      <div class="topic-bar"></div>
+      <p class="topic-desc">Three cases examining professional duties in vaccine hesitancy, the ethics of compulsory treatment for structurally vulnerable patients, and the justice of fiscal nudges targeting unhealthy consumption.</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 14 — CASE: DR. MONIKA
+  ══════════════════════════════════════════ -->
+  <div class="slide slide-case" id="s14">
+    <div class="case-header">
+      <span class="case-tag">Case 10</span>
+      <div class="case-name-block">
+        <div class="topic-label">Public Health</div>
+        <h3><em>Dr. Monika</em> — Vaccine Hesitancy &amp; Professional Speech</h3>
+      </div>
+    </div>
+    <div class="case-divider"></div>
+    <div class="case-body">
+      <div class="case-vignette">
+        <p>Dr. Monika, a general practitioner in a rural Polish community, has publicly expressed doubts about childhood vaccine safety on social media, citing studies she believes are credible but which are rejected by the mainstream medical consensus. She does not actively discourage vaccination but answers patient questions in ways that leave significant uncertainty — "the science isn't fully settled" and "it's your choice as a parent." Over eighteen months her registered patient population has vaccination rates 30% below the national average. A measles outbreak occurs in her catchment area: 47 children are infected, three are hospitalized, one — a 4-year-old with an undetected immune deficiency — dies. An epidemiological investigation traces the outbreak to the low vaccination cluster in her practice. Dr. Monika has broken no law. Her medical license is under review.</p>
+      </div>
+      <div class="case-questions">
+        <div class="question-item">
+          <div class="q-label">Q1 — Professional Obligation to Communicate Consensus</div>
+          <p class="q-text">Dr. Monika never told a single patient not to vaccinate. She communicated uncertainty about a topic where she holds heterodox views. Is there a professional ethical obligation for physicians to communicate public health consensus even when they personally dissent from it — and if so, on what grounds?</p>
+        </div>
+        <div class="question-item">
+          <div class="q-label">Q2 — Parental Autonomy vs. Child Welfare</div>
+          <p class="q-text">The parents who declined vaccination exercised formal autonomy — they were not coerced. The child who died had no agency in the decision. How should public health ethics weigh the autonomous choices of parents against the welfare of children who bear the consequences — and third parties harmed by reduced herd immunity?</p>
+        </div>
+        <div class="question-item">
+          <div class="q-label">Q3 — Accountability for Population-Level Harm</div>
+          <p class="q-text">Dr. Monika's license review raises the question of professional accountability for population-level harm caused by speech rather than action. Should physicians face professional sanction for public communication that foreseeably undermines population health — even when that communication does not breach any individual patient's rights?</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 15 — CASE: ANDREI
+  ══════════════════════════════════════════ -->
+  <div class="slide slide-case" id="s15">
+    <div class="case-header">
+      <span class="case-tag">Case 11</span>
+      <div class="case-name-block">
+        <div class="topic-label">Public Health</div>
+        <h3><em>Andrei</em>, 38 — XDR-TB, Structural Vulnerability &amp; Detention</h3>
+      </div>
+    </div>
+    <div class="case-divider"></div>
+    <div class="case-body">
+      <div class="case-vignette">
+        <p>Andrei, 38, has been diagnosed with extensively drug-resistant tuberculosis (XDR-TB). Treatment requires 18–24 months of directly observed therapy. He has repeatedly failed to attend clinic appointments, taken medication inconsistently, and on two occasions was found working in a crowded food processing facility — a direct transmission risk. Public health authorities have documented six secondary cases plausibly linked to him. He is not malicious: he is a precarious migrant worker who cannot afford to lose his job, does not fully understand the transmission risk despite repeated explanation, and has deep distrust of medical institutions rooted in past experiences of discrimination. Compulsory treatment and detention are legally available. His legal representative argues that detention would be disproportionate and discriminatory.</p>
+      </div>
+      <div class="case-questions">
+        <div class="question-item">
+          <div class="q-label">Q1 — Structural Non-Compliance &amp; Responsibility</div>
+          <p class="q-text">Andrei's non-compliance is not wilful defiance but a product of economic precarity, health literacy limitations, and institutional distrust — structural conditions he did not choose. Does the moral analysis of compulsory detention change depending on whether non-compliance is voluntary or structurally determined? And who bears responsibility for the secondary cases?</p>
+        </div>
+        <div class="question-item">
+          <div class="q-label">Q2 — Gostin's Proportionality Framework</div>
+          <p class="q-text">Apply Gostin's proportionality framework: is compulsory detention necessary, effective, proportional, and the least restrictive means available? What less coercive alternatives exist — supported housing, income replacement, culturally appropriate community health workers — and why have they apparently not been tried first?</p>
+        </div>
+        <div class="question-item">
+          <div class="q-label">Q3 — Discrimination Claim</div>
+          <p class="q-text">His legal representative argues that migrant workers with XDR-TB are disproportionately subject to compulsory detention compared to native-born patients with equivalent non-compliance — making this a discrimination case as much as a public health case. How should public health authorities respond to an argument that their coercive powers are being applied unequally across ethnic or immigration-status lines?</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 16 — CASE: SUGAR TAX
+  ══════════════════════════════════════════ -->
+  <div class="slide slide-case" id="s16">
+    <div class="case-header">
+      <span class="case-tag">Case 12</span>
+      <div class="case-name-block">
+        <div class="topic-label">Public Health</div>
+        <h3>The <em>Sugar Levy</em> — Fiscal Nudge &amp; Distributive Justice</h3>
+      </div>
+    </div>
+    <div class="case-divider"></div>
+    <div class="case-body">
+      <div class="case-vignette">
+        <p>A large Polish city introduces a municipal levy on sugar-sweetened beverages following a public health campaign documenting rising childhood obesity rates. The levy adds 50 groszy per 250ml to all sugary drinks. Revenue is ringfenced for school nutrition programs and subsidized sports facilities in low-income districts. Evaluation at 18 months shows: overall consumption falls 18%, but the reduction is concentrated in higher-income households; lower-income households reduce consumption by only 6%. Childhood obesity rates in low-income districts are unchanged. The food and beverage industry runs a campaign arguing the tax is regressive — it takes a higher proportion of low-income budgets. A city councillor from a low-income district supports the industry campaign, arguing her constituents are being targeted while wealthy residents barely notice the levy.</p>
+      </div>
+      <div class="case-questions">
+        <div class="question-item">
+          <div class="q-label">Q1 — Regressive Incidence &amp; Distributive Justice</div>
+          <p class="q-text">The tax is formally a nudge — it preserves choice while making one option costlier. But for poor households it is a meaningful financial burden. Does the regressive incidence of the tax — taking proportionally more from those it is intended to help — make it an unjust public health intervention regardless of its aggregate effectiveness?</p>
+        </div>
+        <div class="question-item">
+          <div class="q-label">Q2 — Utilitarian Evaluation</div>
+          <p class="q-text">The evaluation shows the tax is not reaching the population with the worst outcomes — childhood obesity in low-income districts is unchanged. From a utilitarian perspective: should a public health intervention that fails its target population be extended, reformed, or abandoned? And who bears responsibility for the 18-month gap between introduction and evaluation?</p>
+        </div>
+        <div class="question-item">
+          <div class="q-label">Q3 — Autonomy Against Nudges</div>
+          <p class="q-text">The industry argument — that the council has no mandate to "dictate what families drink" — invokes autonomy against a nudge, not a mandate. Is this a principled autonomy objection or a commercial interest dressed in liberal language? How should public health officials respond to autonomy arguments invoked against health interventions but never against commercial food marketing practices that shape the same choices?</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 17 — TOPIC: ORGAN TRANSPLANTATION
+  ══════════════════════════════════════════ -->
+  <div class="slide slide-topic" id="s17">
+    <div class="topic-inner">
+      <div class="topic-num">Topic V</div>
+      <h2>Organ<br>Transplantation</h2>
+      <div class="topic-bar"></div>
+      <p class="topic-desc">Three cases at the intersection of allocation justice, conditional donation, bodily autonomy post-mortem, and the weight of identifiable lives against policy principles.</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 18 — CASE: WOJCIECH
+  ══════════════════════════════════════════ -->
+  <div class="slide slide-case" id="s18">
+    <div class="case-header">
+      <span class="case-tag">Case 13</span>
+      <div class="case-name-block">
+        <div class="topic-label">Organ Transplantation</div>
+        <h3><em>Wojciech</em>, 48 — Re-listing After Relapse</h3>
+      </div>
+    </div>
+    <div class="case-divider"></div>
+    <div class="case-body">
+      <div class="case-vignette">
+        <p>Wojciech, 48, received a cadaveric liver transplant five years ago for alcohol-related cirrhosis after completing a mandatory six-month abstinence program. He remained abstinent for three years post-transplant before relapsing. He is now in acute liver failure from alcohol-related graft damage and requires a second transplant to survive. He is currently sober, cooperative, has entered a residential rehabilitation program, and has strong family support. His transplant team is divided: two members support re-listing, citing his current sobriety, rehabilitation engagement, and the absence of any policy explicitly prohibiting re-listing; two oppose, citing the scarcity of livers, the availability of other patients who have never received a transplant, and concerns about resource stewardship.</p>
+      </div>
+      <div class="case-questions">
+        <div class="question-item">
+          <div class="q-label">Q1 — Desert, Stewardship &amp; Equal Dignity</div>
+          <p class="q-text">Should prior receipt of a transplant — and subsequent relapse — affect priority for a second organ? Identify the ethical principle doing the work in your answer: is it desert, resource stewardship, equal dignity, or something else — and is that principle consistently applied across other conditions that involve lifestyle factors and recurrence?</p>
+        </div>
+        <div class="question-item">
+          <div class="q-label">Q2 — Behavioral Conditionality in Allocation</div>
+          <p class="q-text">The six-month abstinence rule was designed to predict post-transplant sobriety — but its predictive validity is disputed and it is applied more rigorously to alcohol-related disease than to other behavioral conditions. Is behavioral conditionality in organ allocation a defensible expression of justice — or a form of stigma-driven discrimination that would not survive scrutiny if applied to other lifestyle-related conditions?</p>
+        </div>
+        <div class="question-item">
+          <div class="q-label">Q3 — Retrospective Responsibility</div>
+          <p class="q-text">If Wojciech is not re-listed and dies, and it later emerges that his relapse was substantially driven by undertreated depression that the transplant team failed to diagnose — who bears moral responsibility for the outcome, and does retrospective information change the ethics of the original decision?</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 19 — CASE: RENATA
+  ══════════════════════════════════════════ -->
+  <div class="slide slide-case" id="s19">
+    <div class="case-header">
+      <span class="case-tag">Case 14</span>
+      <div class="case-name-block">
+        <div class="topic-label">Organ Transplantation</div>
+        <h3><em>Renata</em>, 34 — Conditional Living Donation</h3>
+      </div>
+    </div>
+    <div class="case-divider"></div>
+    <div class="case-body">
+      <div class="case-vignette">
+        <p>Renata, 34, a healthy non-directed living kidney donor, contacts a transplant center wishing to donate one kidney. During the evaluation process she states that she is willing to donate but has one condition: she does not wish her kidney to go to a patient who has previously refused a transplant for religious reasons and then changed their mind, or to a patient currently on a methadone maintenance program. She is explicit: "I respect their choices, but I want my kidney to go to someone who I feel has made different choices. This is my kidney and I should have some say in who receives it." The transplant coordinator is uncertain how to proceed — directed donation to a named recipient is permitted; directed donation with exclusionary social criteria is not addressed in the center's protocol.</p>
+      </div>
+      <div class="case-questions">
+        <div class="question-item">
+          <div class="q-label">Q1 — Bodily Sovereignty &amp; Donation</div>
+          <p class="q-text">Renata has bodily sovereignty over her kidney until donation. Does that sovereignty include the right to attach social conditions to its use — or does the act of donation transfer full allocation authority to the medical system, which must apply its own justice criteria?</p>
+        </div>
+        <div class="question-item">
+          <div class="q-label">Q2 — Complicity in Discrimination</div>
+          <p class="q-text">Her exclusion criteria target patients on methadone maintenance — a group already subject to significant stigma and systematic disadvantage in organ allocation. If the transplant center accepts her conditional donation, is it complicit in discrimination? If it refuses her conditional donation entirely, it loses an organ that would otherwise save a life. How should it navigate this?</p>
+        </div>
+        <div class="question-item">
+          <div class="q-label">Q3 — Policy Design</div>
+          <p class="q-text">Design a policy that the transplant center could adopt for handling conditional living donations. What conditions, if any, should be permissible — and on what principled basis do you distinguish permissible from impermissible conditions?</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 20 — CASE: TOMASZ
+  ══════════════════════════════════════════ -->
+  <div class="slide slide-case" id="s20">
+    <div class="case-header">
+      <span class="case-tag">Case 15</span>
+      <div class="case-name-block">
+        <div class="topic-label">Organ Transplantation</div>
+        <h3><em>Tomasz</em>, 29 — Donor Registry vs. Family Refusal</h3>
+      </div>
+    </div>
+    <div class="case-divider"></div>
+    <div class="case-body">
+      <div class="case-vignette">
+        <p>Tomasz, 29, dies in a road traffic accident. He is registered on the national organ donor registry — an explicit, voluntary registration made three years before his death. His parents, who are his next of kin, refuse to permit organ retrieval: "He was our son. We cannot allow his body to be cut up. He was young — he didn't understand what it meant. We are his family and we say no." His partner of four years, who knew about his registration and fully supported it, is present but has no legal standing as next of kin. The transplant coordinator knows that in practice most European centers defer to family refusal even when the deceased was registered — but that in England the opt-out legislation gives donor registration explicit primacy. In this jurisdiction, the law is silent on the conflict. Three patients on the national waiting list are compatible matches. One — a 7-year-old with heart failure — has been waiting 18 months and is deteriorating.</p>
+      </div>
+      <div class="case-questions">
+        <div class="question-item">
+          <div class="q-label">Q1 — Autonomy Post-Mortem</div>
+          <p class="q-text">Tomasz made an explicit, voluntary, adult decision to donate his organs. His parents' refusal substitutes their judgment for his on a matter he already decided. On what ethical basis — if any — does next-of-kin authority override a competent adult's prior autonomous decision about their own body after death? Does the answer change if the jurisdiction has opt-out legislation?</p>
+        </div>
+        <div class="question-item">
+          <div class="q-label">Q2 — Relational &amp; Institutional Consequences</div>
+          <p class="q-text">The transplant coordinator faces a real-time decision under acute family distress. Even if Tomasz's registered wishes should legally prevail, proceeding over his parents' explicit, grief-stricken refusal has relational and institutional consequences — for the family's wellbeing, for public trust in transplant medicine, and for future donation rates. How should these non-legal considerations factor into an ethically defensible decision?</p>
+        </div>
+        <div class="question-item">
+          <div class="q-label">Q3 — The Identifiable Child</div>
+          <p class="q-text">The 7-year-old waiting for a heart is an identifiable third party whose life depends on this decision. Most allocation ethics brackets the identity of potential recipients from donation decisions — but in this case the coordinator knows. Does the presence of an identifiable, deteriorating child change the ethical weight of proceeding against the family's wishes — or does introducing the recipient constitute a form of emotional manipulation that good policy should exclude?</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<!-- ── NAVIGATION ── -->
+<nav id="nav">
+  <button id="btn-prev" aria-label="Previous slide">&#8592;</button>
+  <span class="counter" id="counter">1 / 21</span>
+  <button id="btn-next" aria-label="Next slide">&#8594;</button>
+</nav>
+
+<div id="kb-hint">← → arrow keys to navigate</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  const progressBar = document.getElementById('progress');
+  const counter = document.getElementById('counter');
+  const btnPrev = document.getElementById('btn-prev');
+  const btnNext = document.getElementById('btn-next');
+
+  function goTo(idx) {
+    if (idx < 0 || idx >= total) return;
+    slides[current].classList.remove('active');
+    slides[current].classList.add('exit');
+    const prev = current;
+    current = idx;
+    slides[current].classList.add('active');
+    slides[current].scrollTop = 0;
+
+    setTimeout(() => {
+      slides[prev].classList.remove('exit');
+    }, 600);
+
+    counter.textContent = `${current + 1} / ${total}`;
+    progressBar.style.width = ((current + 1) / total * 100) + '%';
+    btnPrev.disabled = current === 0;
+    btnNext.disabled = current === total - 1;
+  }
+
+  btnPrev.addEventListener('click', () => goTo(current - 1));
+  btnNext.addEventListener('click', () => goTo(current + 1));
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
+  });
+
+  // Touch / swipe
+  let touchStartX = 0;
+  document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 50) dx < 0 ? goTo(current + 1) : goTo(current - 1);
+  });
+
+  goTo(0);
+</script>
+</body>
+</html>
