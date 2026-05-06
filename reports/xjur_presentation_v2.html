@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Experimental Philosophy of Law & Analytical Jurisprudence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Jost:wght@300;400;500&family=Jost:ital,wght@1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --stone:    #3B3830;
+    --stone-mid:#6B6457;
+    --stone-lt: #A09585;
+    --parchment:#F4F0E8;
+    --parchment-d:#EAE4D8;
+    --sage:     #5C6B5A;
+    --sage-lt:  #8FA48D;
+    --rust:     #8B4A3A;
+    --rust-lt:  #B8755E;
+    --ink:      #2A2420;
+    --paper:    #F8F5EF;
+    --warm-white: #FDFBF7;
+    --slide-w: 960px;
+    --slide-h: 600px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Jost', sans-serif;
+    background: #1E1C18;
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px 80px;
+  }
+
+  #deck { width: var(--slide-w); max-width: 100%; }
+
+  .slide {
+    width: var(--slide-w);
+    max-width: 100%;
+    min-height: var(--slide-h);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+    display: none;
+    flex-direction: column;
+    box-shadow: 0 24px 72px rgba(0,0,0,.6), 0 2px 8px rgba(0,0,0,.3);
+  }
+  .slide.active { display: flex; }
+
+  /* slide number */
+  .sn {
+    position: absolute; top: 20px; right: 26px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; letter-spacing: .18em;
+    z-index: 10;
+  }
+  .sn-dark  { color: rgba(255,255,255,.3); }
+  .sn-light { color: rgba(58,51,40,.3); }
+
+  /* ── SECTION LABEL ── */
+  .label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9.5px; letter-spacing: .22em;
+    text-transform: uppercase;
+  }
+  .label-sage  { color: var(--sage); }
+  .label-rust  { color: var(--rust); }
+  .label-lt    { color: var(--stone-lt); }
+  .label-pale  { color: rgba(255,255,255,.4); }
+
+  /* ── SLIDE TITLE ── */
+  .h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 700;
+    line-height: 1.08;
+  }
+  .h1-xl  { font-size: 48px; }
+  .h1-lg  { font-size: 38px; }
+  .h1-md  { font-size: 32px; }
+  .h1-ink { color: var(--ink); }
+  .h1-parch { color: var(--parchment); }
+  .h1-sage  { color: var(--sage); }
+  .h1-rust  { color: var(--rust-lt); }
+
+  /* ── BODY TEXT ── */
+  .body {
+    font-size: 14px;
+    line-height: 1.72;
+    font-weight: 300;
+    color: var(--stone);
+  }
+  .body-pale { color: rgba(255,255,255,.72); }
+  .body strong { font-weight: 500; color: var(--ink); }
+  .body-pale strong { color: rgba(255,255,255,.95); font-weight: 400; }
+  .body em { font-style: italic; }
+
+  /* ── RULE / DIVIDER ── */
+  .rule {
+    height: 1px;
+    background: linear-gradient(to right, var(--stone-lt), transparent);
+  }
+  .rule-dark { background: linear-gradient(to right, rgba(255,255,255,.2), transparent); }
+
+  /* ── BULLET LIST ── */
+  .blist { display: flex; flex-direction: column; gap: 10px; }
+  .bi {
+    display: flex; gap: 14px; align-items: flex-start;
+    font-size: 14px; line-height: 1.68; font-weight: 300; color: var(--stone);
+  }
+  .bi-dark { color: rgba(255,255,255,.72); }
+  .bdot {
+    flex-shrink: 0; margin-top: 8px;
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--stone-lt);
+  }
+  .bdot-sage  { background: var(--sage-lt); }
+  .bdot-rust  { background: var(--rust-lt); }
+  .bdot-pale  { background: rgba(255,255,255,.3); }
+
+  /* ── QUOTE BLOCK ── */
+  .qblock {
+    background: var(--stone);
+    border-radius: 3px;
+    padding: 24px 28px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .qblock::before {
+    content: '\201C';
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 110px;
+    color: rgba(255,255,255,.07);
+    position: absolute;
+    top: -18px; left: 12px;
+    line-height: 1;
+    pointer-events: none;
+  }
+  .qtext {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    font-style: italic;
+    line-height: 1.72;
+    color: rgba(255,255,255,.82);
+    position: relative;
+  }
+  .qsource {
+    margin-top: 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 9.5px; letter-spacing: .1em;
+    color: var(--sage-lt);
+    position: relative;
+  }
+
+  /* ── CARD / COL-BOX ── */
+  .cbox {
+    background: rgba(255,255,255,.55);
+    border: 1px solid rgba(58,51,40,.1);
+    border-radius: 3px;
+    padding: 18px 20px;
+    display: flex; flex-direction: column; gap: 7px;
+  }
+  .cbox-dark {
+    background: rgba(255,255,255,.06);
+    border-color: rgba(255,255,255,.09);
+  }
+  .cbox-sage  { background: rgba(92,107,90,.1); border-color: rgba(92,107,90,.25); }
+  .cbox-rust  { background: rgba(139,74,58,.08); border-color: rgba(139,74,58,.2); }
+  .cbox h4 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px; font-weight: 600;
+    color: var(--ink);
+  }
+  .cbox-dark h4 { color: rgba(255,255,255,.88); }
+  .cbox p {
+    font-size: 12.5px; line-height: 1.65;
+    font-weight: 300; color: var(--stone-mid);
+  }
+  .cbox-dark p { color: rgba(255,255,255,.62); }
+
+  /* ── TAG PILL ── */
+  .pill {
+    display: inline-block;
+    border: 1px solid var(--stone-lt);
+    color: var(--stone-mid);
+    font-family: 'DM Mono', monospace;
+    font-size: 9px; letter-spacing: .1em;
+    padding: 2px 9px; border-radius: 100px;
+  }
+
+  /* ── GRID HELPERS ── */
+  .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+  /* ────────────────────────────────────────
+     SLIDE-SPECIFIC BACKGROUNDS
+  ──────────────────────────────────────── */
+
+  /* S1 – title: dark stone */
+  .s1 { background: var(--stone); padding: 60px 68px 52px; justify-content: center; gap: 0; }
+  .s1::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 70% at 85% 50%, rgba(92,107,90,.22) 0%, transparent 65%),
+      radial-gradient(ellipse 35% 50% at 5% 100%, rgba(139,74,58,.14) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .s1-circle {
+    position: absolute; right: 54px; top: 50%; transform: translateY(-50%);
+    width: 220px; height: 220px; border-radius: 50%;
+    border: 1px solid rgba(255,255,255,.1);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .s1-circle::after {
+    content: ''; position: absolute;
+    width: 160px; height: 160px; border-radius: 50%;
+    border: 1px solid rgba(92,107,90,.3);
+  }
+  .s1-xjur {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 62px; font-weight: 700;
+    color: rgba(255,255,255,.1); letter-spacing: .05em;
+  }
+  .s1-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; letter-spacing: .22em; text-transform: uppercase;
+    color: var(--sage-lt); margin-bottom: 30px; position: relative;
+  }
+  .s1-divider {
+    width: 40px; height: 1px;
+    background: var(--rust-lt); opacity: .7;
+    margin: 28px 0 22px; position: relative;
+  }
+  .s1-authors { font-size: 14px; color: rgba(255,255,255,.58); line-height: 1.9; position: relative; }
+  .s1-authors strong { color: rgba(255,255,255,.82); font-weight: 400; }
+  .s1-uni {
+    font-family: 'DM Mono', monospace;
+    font-size: 9.5px; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--sage-lt); margin-top: 6px; position: relative;
+  }
+
+  /* S2 outline: warm paper */
+  .s2 { background: var(--warm-white); padding: 52px 68px; gap: 32px; }
+  .s2-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 38px; font-weight: 700; color: var(--ink);
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--stone-lt);
+  }
+  .s2-items { display: flex; flex-direction: column; gap: 18px; }
+  .s2-item { display: flex; align-items: flex-start; gap: 16px; font-size: 15px; line-height: 1.6; color: var(--stone); font-weight: 300; }
+  .s2-n {
+    flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%;
+    background: var(--stone); color: rgba(255,255,255,.75);
+    font-family: 'DM Mono', monospace; font-size: 11px;
+    display: flex; align-items: center; justify-content: center; margin-top: 2px;
+  }
+
+  /* Light content slides */
+  .s-lt { background: var(--paper); padding: 46px 60px 42px; gap: 20px; }
+  .s-parchment { background: var(--parchment); padding: 46px 60px 42px; gap: 20px; }
+
+  /* Dark content slides */
+  .s-dk { background: var(--stone); padding: 46px 60px 42px; gap: 20px; }
+  .s-ink { background: var(--ink); padding: 46px 60px 42px; gap: 20px; }
+
+  /* ── CONCLUSION ── */
+  .s-conc { background: var(--ink); padding: 48px 58px 42px; gap: 22px; }
+  .c-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; flex: 1; }
+  .cpoint {
+    background: rgba(255,255,255,.05);
+    border-left: 2px solid var(--sage-lt);
+    border-radius: 0 3px 3px 0;
+    padding: 13px 16px;
+    font-size: 12.5px; line-height: 1.65; font-weight: 300;
+    color: rgba(255,255,255,.7);
+  }
+  .cpoint strong { color: rgba(255,255,255,.88); font-weight: 500; display: block; margin-bottom: 3px; font-family: 'Cormorant Garamond', serif; font-size: 14px; }
+
+  /* ── NAV ── */
+  #nav {
+    display: flex; align-items: center; gap: 18px;
+    margin-top: 28px;
+    font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .1em;
+    color: rgba(255,255,255,.35);
+  }
+  #nav button {
+    width: 40px; height: 40px; border-radius: 50%;
+    border: 1px solid rgba(255,255,255,.15);
+    background: rgba(255,255,255,.04);
+    color: rgba(255,255,255,.6); font-size: 16px;
+    cursor: pointer; transition: all .2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  #nav button:hover { border-color: var(--sage-lt); color: var(--sage-lt); }
+  #nav button:disabled { opacity: .2; cursor: default; }
+  #dots {
+    display: flex; gap: 5px; flex-wrap: wrap;
+    justify-content: center; max-width: 300px; margin-top: 14px;
+  }
+  .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: rgba(255,255,255,.15); cursor: pointer;
+    transition: background .2s, transform .2s;
+  }
+  .dot.on { background: var(--sage-lt); transform: scale(1.35); }
+</style>
+</head>
+<body>
+<div id="deck">
+
+  <!-- 01 TITLE -->
+  <div class="slide s1 active">
+    <span class="sn sn-dark">01 / 18</span>
+    <div class="s1-tag">Jagiellonian University · Kraków</div>
+    <div class="h1 h1-xl h1-parch" style="max-width:620px; position:relative;">
+      Experimental Philosophy of Law and Analytical Jurisprudence:
+      <span style="font-style:italic; color:var(--sage-lt);"> A Methodological Taxonomy</span>
+    </div>
+    <div class="s1-divider"></div>
+    <div class="s1-authors"><strong>Wojciech Ciszewski · Bartosz Janik · Bartłomiej Brzozowski</strong></div>
+    <div class="s1-uni">Jagiellonian University</div>
+    <div class="s1-circle"><span class="s1-xjur">X-Jur</span></div>
+  </div>
+
+  <!-- 02 OUTLINE -->
+  <div class="slide s2">
+    <span class="sn sn-light">02 / 18</span>
+    <div class="s2-title">Outline</div>
+    <div class="s2-items">
+      <div class="s2-item"><div class="s2-n">01</div><div>What is <strong>conceptual analysis</strong> and how can we use it in jurisprudence?</div></div>
+      <div class="s2-item"><div class="s2-n">02</div><div>What is <strong>experimental jurisprudence</strong> and how can it be used by legal scholars?</div></div>
+      <div class="s2-item"><div class="s2-n">03</div><div>What possible <strong>relations</strong> could exist between analytical philosophy of law and X-Jur?</div></div>
+    </div>
+  </div>
+
+  <!-- 03 GENERAL JURISPRUDENCE -->
+  <div class="slide s-lt">
+    <span class="sn sn-light">03 / 18</span>
+    <div class="label label-sage">Context</div>
+    <div class="h1 h1-lg h1-ink">General Jurisprudence</div>
+    <div class="rule"></div>
+    <div class="body">Methodological changes in general jurisprudence are driven by the <strong>interdisciplinary orientation of the humanities and social sciences</strong>. Experimental methods are entering interpretative disciplines, transforming how foundational questions are posed and answered.</div>
+    <div class="blist" style="margin-top:4px;">
+      <div class="bi"><div class="bdot bdot-sage"></div><div>Influence of the interdisciplinary orientation of the humanities and social sciences</div></div>
+      <div class="bi"><div class="bdot bdot-sage"></div><div>Experimental methods entering interpretative disciplines</div></div>
+      <div class="bi"><div class="bdot bdot-sage"></div><div>Focus on one key feature: the <strong>use of conceptual analysis</strong> in the research process</div></div>
+    </div>
+  </div>
+
+  <!-- 04 WHAT IS CA -->
+  <div class="slide s-parchment">
+    <span class="sn sn-light">04 / 18</span>
+    <div class="label label-rust">Conceptual Analysis</div>
+    <div class="h1 h1-lg h1-ink">What is Conceptual Analysis?</div>
+    <div class="rule"></div>
+    <div class="body">Conceptual analysis takes <strong>concepts themselves</strong> as its primary subject matter. The analysis of a concept is treated as a crucial step toward understanding the <em>nature of real objects</em> it picks out — not merely the words we use.</div>
+    <div class="g2" style="margin-top:6px;">
+      <div class="cbox">
+        <h4>Subject</h4>
+        <p>Concepts — not things directly — are the object of inquiry. The word "law" picks out something; the question is what.</p>
+      </div>
+      <div class="cbox">
+        <h4>Purpose</h4>
+        <p>Conceptual analysis is a crucial step toward understanding the nature of real objects. It precedes and guides empirical inquiry.</p>
+      </div>
+    </div>
+    <div class="cbox" style="margin-top:0">
+      <h4>Forms</h4>
+      <p>Various forms exist — reductive analysis, connective analysis, Canberra-style analysis — each reflecting different assumptions about what "analysis" consists in and what its outputs should look like.</p>
+    </div>
+  </div>
+
+  <!-- 05 CA IN JURISPRUDENCE -->
+  <div class="slide s-lt">
+    <span class="sn sn-light">05 / 18</span>
+    <div class="label label-sage">Taxonomy</div>
+    <div class="h1 h1-lg h1-ink">Conceptual Analysis in Jurisprudence</div>
+    <div class="rule"></div>
+    <div class="body">Three major approaches structure the field, differing in their assumptions about analysis and its outputs.</div>
+    <div class="g3" style="margin-top:6px;">
+      <div class="cbox cbox-sage">
+        <h4>Reductive Analysis</h4>
+        <p>Reductionism: reduce legal concepts to more fundamental — typically social or natural — facts, eliminating irreducible normativity.</p>
+      </div>
+      <div class="cbox">
+        <h4>Connective Analysis</h4>
+        <p>Maps the conceptual landscape: how legal concepts connect to and constrain each other, without reduction to non-legal terms.</p>
+      </div>
+      <div class="cbox cbox-rust">
+        <h4>Canberra-Style</h4>
+        <p>Combines folk usage data with philosophical elucidation — explicitly incorporates empirical claims about shared usage into the methodology. <span class="pill">Gizbert-Studnicki 2020</span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 06 CRITIQUE -->
+  <div class="slide s-dk">
+    <span class="sn sn-dark">06 / 18</span>
+    <div class="label label-pale">Critique</div>
+    <div class="h1 h1-lg" style="color:var(--parchment);">Critique of Conceptual Analysis in Jurisprudence</div>
+    <div class="rule rule-dark"></div>
+    <div class="body body-pale">Michael Giudice (2012) divides critiques of conceptual analysis into three distinct groups, attacking different features of the analytical program:</div>
+    <div class="blist" style="margin-top:4px;">
+      <div class="bi bi-dark"><div class="bdot bdot-pale"></div><div><strong>Argument from plurality of sources</strong> — the sheer diversity of law makes any single concept untenable; Brian Tamanaha, William Twining</div></div>
+      <div class="bi bi-dark"><div class="bdot bdot-pale"></div><div><strong>Argument from irresolvability</strong> — persistent disagreement over the concept of law cannot be resolved by conceptual means; Dan Priel, Liam Murphy</div></div>
+      <div class="bi bi-dark"><div class="bdot bdot-pale"></div><div><strong>Argument from naturalization</strong> — empirical inquiry should replace armchair conceptual analysis; Brian Leiter</div></div>
+    </div>
+  </div>
+
+  <!-- 07 PLURALITY (FULL QUOTE) -->
+  <div class="slide s-lt">
+    <span class="sn sn-light">07 / 18</span>
+    <div class="label label-rust">Critique I</div>
+    <div class="h1 h1-md h1-ink" style="margin-bottom:4px;">Argument from Plurality of Sources</div>
+    <div class="rule"></div>
+    <div class="qblock">
+      <div class="qtext">"The first category of challenges to conceptual analysis is found in the works of those who argue that the sheer diversity of types of law makes pursuit of a single concept of law, which identifies necessary or essential features of law, deeply wrong headed. This group of critics, which is comprised for the most part of legal pluralists, criticizes analytical legal theorists for being unduly narrow and especially state-centric in the range of phenomena chosen from which to elucidate a concept of law. They argue that once the various manifestations and levels of law are acknowledged, it will be clear why there cannot be any single concept or essence of law."</div>
+      <div class="qsource">Giudice (2012), pp. 5 — Tamanaha, Twining</div>
+    </div>
+  </div>
+
+  <!-- 08 IRRESOLVABILITY (FULL QUOTE) -->
+  <div class="slide s-lt">
+    <span class="sn sn-light">08 / 18</span>
+    <div class="label label-rust">Critique II</div>
+    <div class="h1 h1-md h1-ink" style="margin-bottom:4px;">Argument from Irresolvability</div>
+    <div class="rule"></div>
+    <div class="qblock">
+      <div class="qtext">"As Priel contends, there is no way of resolving the disagreement between the two societies and their views about law, and the reason is simple. If it is part of the task of conceptual analysis to explicate the self-understanding of a particular community's view of law, in other words, to explain its concept of law, then if two societies or cultures have different views or concepts of law, which leads them to treat different things as law, at a pre-theoretical or at least pre-reflective level, the best conceptual analysis can do is report that there are multiple, and conflicting concepts of law. This in turn means that any purported necessary or essential features of law are not really necessary or essential features of law at all, but only necessary or essential features of particular, culturally or socially relative self-understandings."</div>
+      <div class="qsource">Giudice (2012), pp. 11 — Priel</div>
+    </div>
+  </div>
+
+  <!-- 09 LEITER -->
+  <div class="slide s-ink">
+    <span class="sn sn-dark">09 / 18</span>
+    <div class="label label-pale">Critique III</div>
+    <div class="h1 h1-lg" style="color:var(--parchment);">Leiter's Replacement Naturalism</div>
+    <div class="rule rule-dark"></div>
+    <div class="g2">
+      <div class="cbox cbox-dark">
+        <h4>Core Claim</h4>
+        <p>Law is fundamentally a social institution and therefore requires the methods of social science, not armchair conceptual analysis. Modeled on Quine's move in epistemology: just as epistemology should "fall into place as a chapter of psychology," jurisprudence should fall into place as a chapter of sociology or anthropology.</p>
+      </div>
+      <div class="cbox cbox-dark">
+        <h4>The MCA / ICA Dilemma</h4>
+        <p><em>Modest conceptual analysis (MCA)</em> — explicating what our shared linguistic conventions tell us about law — produces only glorified lexicography: interesting facts about our concept, not about law itself.<br><br><em>Immodest conceptual analysis (ICA)</em> — inferring law's mind-independent nature from folk intuitions — faces a large and undefended metaphysical investment: what licenses the move from shared usage to real-world nature?</p>
+      </div>
+    </div>
+    <div class="body body-pale" style="font-size:13px; margin-top:2px;">Replacement naturalism is often cited as the theoretical foundation of X-Jur — though this is only partly accurate; it provides motivation for empirical methods without specifying how they should work.</div>
+  </div>
+
+  <!-- 10 X-JUR -->
+  <div class="slide s-parchment">
+    <span class="sn sn-light">10 / 18</span>
+    <div class="label label-sage">Movement</div>
+    <div class="h1 h1-lg h1-ink">Experimental Jurisprudence (X-Jur)</div>
+    <div class="rule"></div>
+    <div class="body">X-Jur is a research movement applying the empirical and experimental methods of experimental philosophy to traditional questions in the philosophy of law. Its core motivation: jurisprudence — both general and particular — routinely invokes claims about folk intuitions and ordinary understanding, but traditionally <em>without any empirical verification</em> of those claims.</div>
+    <div class="g2" style="margin-top:4px;">
+      <div class="cbox cbox-sage">
+        <h4>Central Question</h4>
+        <p>What do ordinary people <em>and</em> legal experts actually think about law? How stable, coherent, and universal are the intuitions jurisprudence presupposes?</p>
+      </div>
+      <div class="cbox">
+        <h4>Scope</h4>
+        <p>Covers both <strong>general jurisprudence</strong> (the nature of law as such) and <strong>particular jurisprudence</strong> (specific legal concepts such as causation, consent, intention, or reasonableness).</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 11 HIMMA -->
+  <div class="slide s-lt">
+    <span class="sn sn-light">11 / 18</span>
+    <div class="label label-rust">Debate</div>
+    <div class="h1 h1-lg h1-ink">Himma's Objection</div>
+    <div class="rule"></div>
+    <div class="g2">
+      <div class="cbox cbox-rust" style="border-top: 2px solid var(--rust-lt);">
+        <h4>The Serious Objection</h4>
+        <p>Folk respondents in X-Jur experiments are unaware of the theoretical implications of their answers and the philosophical assumptions embedded in the questions. For experimental data to bear on conceptual disputes, participants would need to be fully informed of the theoretical stakes — otherwise their responses <em>underdetermine</em> any philosophical conclusion. Connects to an expertise argument: resolving hard cases requires conceptually sophisticated reasoning only legal experts possess.</p>
+      </div>
+      <div class="cbox" style="border-top: 2px solid var(--stone-lt);">
+        <h4>The Weak Objection <span class="pill">Straw Man</span></h4>
+        <p>Himma interprets X-Jur as attempting to <em>replace</em> traditional analytical methods entirely — and then argues this cannot work. This misrepresents what X-Jur practitioners actually claim. His critique of specific experiments is also selective: he criticizes individual studies in isolation rather than engaging with research programs and series of converging findings.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 12 FLANAGAN -->
+  <div class="slide s-dk">
+    <span class="sn sn-dark">12 / 18</span>
+    <div class="label label-pale">Reply</div>
+    <div class="h1 h1-lg" style="color:var(--parchment);">Flanagan's Reply</div>
+    <div class="rule rule-dark"></div>
+    <div class="body body-pale" style="margin-bottom:6px;">Flanagan's response targets both the serious and weak versions of Himma's objection, arguing that the critique consistently misidentifies what X-Jur is doing.</div>
+    <div class="blist">
+      <div class="bi bi-dark"><div class="bdot bdot-sage"></div><div>The claim that intuitions and vignettes are unnecessary or theoretically idle is a mischaracterization — legal theorists <em>themselves</em> routinely invoke folk understandings of law and appeal directly to the intuitions X-Jur investigates.</div></div>
+      <div class="bi bi-dark"><div class="bdot bdot-sage"></div><div>When jurisprudents use thought experiments and hypotheticals, they are explicitly relying on the very intuitions X-Jur studies systematically and under <strong>controlled conditions</strong>.</div></div>
+      <div class="bi bi-dark"><div class="bdot bdot-sage"></div><div>Himma's critique targets <strong>what X-Jur is not doing</strong>, not what it is actually doing — the target is largely self-constructed.</div></div>
+    </div>
+  </div>
+
+  <!-- 13 DONELSON -->
+  <div class="slide s-parchment">
+    <span class="sn sn-light">13 / 18</span>
+    <div class="label label-sage">Framework</div>
+    <div class="h1 h1-lg h1-ink">Donelson's Positive Framework</div>
+    <div class="rule"></div>
+    <div class="body" style="margin-bottom:6px;">Donelson distinguishes three levels of X-Jur activity, each with different epistemic requirements and different degrees of vulnerability to Himma's objection.</div>
+    <div class="g3">
+      <div class="cbox cbox-sage">
+        <h4>Experimental Analysis</h4>
+        <p>Systematic, controlled investigation of folk intuitions on jurisprudential topics — the level Himma primarily engages, where questions about theoretical inference remain live.</p>
+      </div>
+      <div class="cbox">
+        <h4>Experimental Descriptivism</h4>
+        <p>Investigation of the psychological mechanisms and cognitive processes that generate intuitions (e.g., dual-character concept research by Almeida, Hannikainen, Struchiner). <em>Largely untouched</em> by Himma's objection.</p>
+      </div>
+      <div class="cbox cbox-rust">
+        <h4>Experimental Restrictionism</h4>
+        <p>Shows that certain methods and assumptions used by legal theorists are undermined by experimental findings (e.g., cross-cultural variation in rule-following intuitions). Does not require folk responses to carry direct philosophical weight.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 14 REPLACEMENT -->
+  <div class="slide s-lt">
+    <span class="sn sn-light">14 / 18</span>
+    <div class="label label-rust">Model I</div>
+    <div class="h1 h1-lg h1-ink">Replacement</div>
+    <div class="rule"></div>
+    <div class="body" style="margin-bottom:6px;">The most radical model: X-Jur's long-term aim is to replace conceptual jurisprudence, rendering its traditional questions either better formulated or simply obsolete. Analogy: the transition from <em>alchemy to modern chemistry</em> — the newer discipline did not merely supplement but discredited its predecessor.</div>
+    <div class="g2">
+      <div class="cbox">
+        <h4>Weak Reading <span class="pill">Himma</span></h4>
+        <p>X-Jur attempts to resolve conceptual dilemmas by experimental means. Himma argues this cannot succeed because a method cannot dissolve problems generated by a different method.</p>
+      </div>
+      <div class="cbox cbox-rust">
+        <h4>Strong Reading <span class="pill">Leiter</span></h4>
+        <p>Conceptual jurisprudence is methodologically <em>inappropriate</em> for studying law as a social institution. Just as astronomy introduced frameworks that rendered astrological questions unanswerable rather than answering them, experimental jurisprudence can make the old questions disappear. Critical tension: the strong reading raises the question of whether law's normativity can be touched by any empirical method.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 15 INTEGRATION -->
+  <div class="slide s-dk">
+    <span class="sn sn-dark">15 / 18</span>
+    <div class="label label-pale">Model II</div>
+    <div class="h1 h1-lg" style="color:var(--parchment);">Integration</div>
+    <div class="rule rule-dark"></div>
+    <div class="body body-pale" style="margin-bottom:6px;">Conceptual and experimental jurisprudence are compatible and can form a unified discipline. Analogy: <em>cognitive science</em> — integrating epistemology, psychology, linguistics, and neuroscience without discrediting any of them, by focusing on a shared object of inquiry. The integration thesis rests on a diagnosis: conceptual jurisprudence operates with assumptions about shared concepts and stable intuitions that it has no internal tools to verify.</div>
+    <div class="g3">
+      <div class="cbox cbox-dark"><h4>Empirical Grounding</h4><p>Transforms hypothetical claims about intuitions into empirically tested ones.</p></div>
+      <div class="cbox cbox-dark"><h4>Intuition Mapping</h4><p>Identifies which intuitions are actually shared across populations, how stable they are, and which vary by culture, expertise, or context.</p></div>
+      <div class="cbox cbox-dark"><h4>Bias Detection</h4><p>Identifies intuitions that are artifacts of cognitive bias or framing effects — allowing conceptual jurisprudence to refine, not abandon, its intuitive resources.</p></div>
+    </div>
+    <div class="body body-pale" style="font-size:12.5px;">X-Jur under this model is not a rival but a <strong>quality-control mechanism</strong> for conceptual jurisprudence's empirical presuppositions.</div>
+  </div>
+
+  <!-- 16 INDEPENDENCE -->
+  <div class="slide s-lt">
+    <span class="sn sn-light">16 / 18</span>
+    <div class="label label-sage">Model III</div>
+    <div class="h1 h1-lg h1-ink">Independence</div>
+    <div class="rule"></div>
+    <div class="body" style="margin-bottom:6px;">The two disciplines are fundamentally different in kind and operate on separate planes — productive cooperation is possible but neither determines nor constrains the other. Analogy: <em>normative ethics and the sociology of morality</em> — both study moral rules, but ask entirely different questions.</div>
+    <div class="g2">
+      <div class="cbox cbox-sage">
+        <h4>The Methodological Divide</h4>
+        <p><strong>Conceptual jurisprudence</strong> is a normative discipline — it seeks the correct understanding of concepts and the most adequate account of law's nature.<br><br><strong>Experimental jurisprudence</strong> is an empirical discipline — it describes patterns in legal cognition, folk concepts, and social behavior.</p>
+      </div>
+      <div class="cbox">
+        <h4>The Strongest Challenge to Integration</h4>
+        <p>Even if folk intuitions are relevant to conceptual jurisprudence, the inference from "people believe X" to "X is the correct conceptual claim" requires a <em>normative bridge premise</em> that empirical methods alone cannot supply. Independence ≠ isolation: the disciplines can inspire each other and share vocabulary — but cannot adjudicate each other's central claims.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 17 TRANSFORMATION -->
+  <div class="slide s-parchment">
+    <span class="sn sn-light">17 / 18</span>
+    <div class="label label-rust">Model IV</div>
+    <div class="h1 h1-lg h1-ink">Transformation</div>
+    <div class="rule"></div>
+    <div class="body" style="margin-bottom:6px;">X-Jur does not replace, integrate with, or operate independently of conceptual jurisprudence — instead, it <em>gradually transforms</em> the questions conceptual jurisprudence asks and the sensibility with which it asks them. The influence is indirect and cumulative. Analogy: <em>literary studies and cultural studies</em> — cultural studies permanently expanded the discipline's interpretive toolkit without replacing literary criticism.</div>
+    <div class="g2">
+      <div class="cbox">
+        <h4>Mechanisms of Transformation</h4>
+        <p><strong>Cognitive humility:</strong> experimental findings sensitize jurisprudence to the cognitive constraints of non-expert legal subjects.<br><strong>Agenda-setting:</strong> X-Jur shifts emphasis toward questions with greater social salience or empirical tractability.<br><strong>Democratization:</strong> focus on ordinary citizens pushes jurisprudence from a strongly expert-centered to a more egalitarian orientation.</p>
+      </div>
+      <div class="cbox cbox-rust">
+        <h4>Distinct from Integration</h4>
+        <p>Transformation is not about X-Jur resolving conceptual problems but about <em>reframing how those problems are perceived</em> and which are worth pursuing. The cumulative result: conceptual jurisprudence becomes more attentive to context-dependence, cognitive variability, and social embeddedness — without abandoning its normative aspirations.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 18 CONCLUSIONS -->
+  <div class="slide s-conc">
+    <span class="sn sn-dark">18 / 18</span>
+    <div class="label label-pale">Conclusions</div>
+    <div class="h1 h1-lg" style="color:var(--parchment);">Conclusions</div>
+    <div class="rule rule-dark"></div>
+    <div class="c-grid">
+      <div class="cpoint"><strong>Methodological thesis</strong>The correct relation between analytical jurisprudence and X-Jur is not fixed in advance but is a direct consequence of the method of analysis one adopts.</div>
+      <div class="cpoint"><strong>Four live models</strong>Replacement, Integration, Independence, Transformation are not competitors for a single truth — they are live options whose appropriateness is keyed to how one understands the aims and methods of jurisprudence.</div>
+      <div class="cpoint"><strong>Canberra-plan caveat</strong>Canberra-style analysis explicitly builds empirical claims about folk usage into its methodology — which means the integration model has special prima facie plausibility for anyone working within that framework.</div>
+      <div class="cpoint"><strong>Core question</strong>Before asking "what is the right relation between X-Jur and conceptual jurisprudence?", one must ask: <em>"What is conceptual jurisprudence for?"</em> The answer to the second question determines which model governs the first.</div>
+      <div class="cpoint" style="grid-column: 1 / -1; border-left-color: var(--rust-lt);"><strong>Methodological transparency required</strong>The Himma–Flanagan debate illustrates that the real disagreement is not primarily about X-Jur's empirical findings but about the methodological presuppositions that determine whether those findings count as evidence for jurisprudential conclusions. Researchers in both traditions must be explicit about what kind of claim they are making and what kind of evidence could bear on it.</div>
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<div id="nav">
+  <button id="prev" onclick="go(-1)" disabled>&#8592;</button>
+  <span id="counter">01 / 18</span>
+  <button id="next" onclick="go(1)">&#8594;</button>
+</div>
+<div id="dots"></div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let cur = 0;
+  const dotsEl = document.getElementById('dots');
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' on' : '');
+    d.onclick = () => goto(i);
+    dotsEl.appendChild(d);
+  });
+  function goto(n) {
+    slides[cur].classList.remove('active');
+    dotsEl.children[cur].classList.remove('on');
+    cur = Math.max(0, Math.min(n, total - 1));
+    slides[cur].classList.add('active');
+    dotsEl.children[cur].classList.add('on');
+    document.getElementById('counter').textContent = String(cur+1).padStart(2,'0') + ' / ' + String(total).padStart(2,'0');
+    document.getElementById('prev').disabled = cur === 0;
+    document.getElementById('next').disabled = cur === total - 1;
+  }
+  function go(d) { goto(cur + d); }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   go(-1);
+  });
+</script>
+</body>
+</html>
