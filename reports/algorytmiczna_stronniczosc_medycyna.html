@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Algorytmiczna stronniczość w medycynie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --slate-50: #f8f7f5;
+    --slate-100: #eeece8;
+    --slate-200: #dedad3;
+    --slate-400: #a8a39a;
+    --slate-600: #6b6660;
+    --slate-800: #3a3733;
+    --slate-900: #1e1c1a;
+    --warm-50: #faf7f2;
+    --warm-100: #f0e9dc;
+    --warm-200: #ddd0bc;
+    --accent: #5c6b5a;
+    --accent-light: #e8ede8;
+    --accent-dark: #3a4439;
+    --rust: #8b4a3a;
+    --rust-light: #f5ece9;
+    --gold: #7a6540;
+    --gold-light: #f5f0e8;
+    --body: 'Source Sans 3', sans-serif;
+    --serif: 'Lora', Georgia, serif;
+  }
+
+  html { font-size: 16px; scroll-behavior: smooth; }
+  body {
+    font-family: var(--body);
+    background: var(--slate-50);
+    color: var(--slate-800);
+    line-height: 1.65;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(248,247,245,0.96);
+    border-bottom: 1px solid var(--slate-200);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.6rem 2rem;
+    backdrop-filter: blur(4px);
+  }
+  .nav-title {
+    font-family: var(--serif);
+    font-size: 0.85rem;
+    color: var(--slate-600);
+    font-style: italic;
+  }
+  .nav-controls { display: flex; align-items: center; gap: 0.5rem; }
+  .nav-btn {
+    background: none; border: 1px solid var(--slate-200);
+    border-radius: 4px; padding: 0.3rem 0.75rem;
+    font-family: var(--body); font-size: 0.8rem;
+    color: var(--slate-600); cursor: pointer; transition: all 0.15s;
+  }
+  .nav-btn:hover { background: var(--slate-100); color: var(--slate-800); }
+  .nav-counter { font-size: 0.8rem; color: var(--slate-400); min-width: 60px; text-align: center; }
+  .progress-bar {
+    position: fixed; top: 44px; left: 0; right: 0; height: 2px;
+    background: var(--slate-100); z-index: 99;
+  }
+  .progress-fill {
+    height: 100%; background: var(--accent);
+    transition: width 0.3s ease;
+  }
+
+  /* SLIDES CONTAINER */
+  main { padding-top: 56px; }
+  .slide {
+    display: none;
+    min-height: calc(100vh - 56px);
+    padding: 3rem 0;
+  }
+  .slide.active { display: flex; flex-direction: column; justify-content: center; }
+
+  .container { max-width: 820px; margin: 0 auto; padding: 0 2.5rem; width: 100%; }
+
+  /* SLIDE TYPES */
+
+  /* TITLE SLIDE */
+  .slide-title {
+    background: var(--accent-dark);
+    color: var(--slate-50);
+  }
+  .slide-title .container { text-align: center; }
+  .slide-title .eyebrow {
+    font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--slate-400); margin-bottom: 2rem;
+  }
+  .slide-title h1 {
+    font-family: var(--serif);
+    font-size: 2.8rem; font-weight: 400; line-height: 1.25;
+    color: var(--warm-50); margin-bottom: 1.5rem;
+  }
+  .slide-title .subtitle {
+    font-size: 1rem; color: var(--slate-400); margin-bottom: 2.5rem;
+  }
+  .source-chips { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+  .chip {
+    font-size: 0.75rem; padding: 0.3rem 0.8rem;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 20px; color: var(--slate-400);
+    font-style: italic;
+  }
+
+  /* QUESTION SLIDE */
+  .slide-question { background: var(--warm-50); }
+  .question-box {
+    border-left: 3px solid var(--rust);
+    background: var(--rust-light);
+    padding: 1.5rem 2rem; border-radius: 0 8px 8px 0;
+    margin: 2rem 0;
+  }
+  .question-box p {
+    font-family: var(--serif); font-size: 1.2rem; font-style: italic;
+    color: var(--rust); line-height: 1.6;
+  }
+  .discussion-badge {
+    display: inline-block;
+    background: var(--accent-light); color: var(--accent-dark);
+    font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; padding: 0.25rem 0.75rem;
+    border-radius: 3px; margin-top: 1.5rem;
+  }
+
+  /* STANDARD SLIDE */
+  .slide-standard { background: white; }
+  .slide-number {
+    font-size: 0.7rem; color: var(--slate-400); letter-spacing: 0.1em;
+    text-transform: uppercase; margin-bottom: 1.25rem;
+  }
+  .slide h2 {
+    font-family: var(--serif); font-size: 1.75rem; font-weight: 400;
+    color: var(--slate-900); line-height: 1.3; margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--slate-100); padding-bottom: 1rem;
+  }
+  .slide h3 {
+    font-size: 0.85rem; font-weight: 600; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--accent-dark);
+    margin: 1.5rem 0 0.5rem;
+  }
+  .slide p { color: var(--slate-700, #4a4744); margin-bottom: 0.75rem; font-size: 0.975rem; }
+  .slide ul { margin: 0.5rem 0 0.75rem 0; padding: 0; list-style: none; }
+  .slide ul li {
+    padding: 0.35rem 0 0.35rem 1.25rem; position: relative;
+    font-size: 0.975rem; color: var(--slate-800);
+  }
+  .slide ul li::before {
+    content: '–'; position: absolute; left: 0;
+    color: var(--accent); font-weight: 500;
+  }
+
+  /* CASE SLIDE */
+  .slide-case { background: var(--warm-50); }
+  .case-label {
+    display: inline-block; font-size: 0.68rem; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    background: var(--rust); color: white;
+    padding: 0.2rem 0.65rem; border-radius: 3px; margin-bottom: 1.25rem;
+  }
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+  .stat-card {
+    background: white; border: 1px solid var(--slate-100);
+    border-radius: 8px; padding: 1rem 1.25rem;
+  }
+  .stat-card .stat-label { font-size: 0.75rem; color: var(--slate-600); margin-bottom: 0.25rem; }
+  .stat-card .stat-value {
+    font-family: var(--serif); font-size: 1.8rem; font-weight: 500;
+    color: var(--rust); line-height: 1;
+  }
+  .stat-card .stat-desc { font-size: 0.75rem; color: var(--slate-400); margin-top: 0.25rem; }
+
+  /* KEY CONCEPT */
+  .concept-box {
+    background: var(--accent-light); border-left: 3px solid var(--accent);
+    padding: 1rem 1.5rem; border-radius: 0 8px 8px 0; margin: 1.25rem 0;
+  }
+  .concept-box .concept-label {
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--accent-dark); margin-bottom: 0.4rem;
+  }
+  .concept-box p { color: var(--accent-dark); margin: 0; font-size: 0.9rem; }
+
+  /* TWO COLUMN */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1.25rem 0; }
+  .col-card {
+    background: var(--slate-50); border: 1px solid var(--slate-100);
+    border-radius: 8px; padding: 1.1rem 1.25rem;
+  }
+  .col-card .col-label {
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; margin-bottom: 0.6rem;
+  }
+  .col-card.green .col-label { color: var(--accent-dark); }
+  .col-card.rust .col-label { color: var(--rust); }
+  .col-card p { font-size: 0.88rem; color: var(--slate-700, #4a4744); margin: 0; }
+
+  /* SOURCES */
+  .source-block { background: var(--gold-light); border: 1px solid var(--warm-200); border-radius: 8px; padding: 1rem 1.25rem; margin: 0.75rem 0; }
+  .source-block .source-type { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.35rem; }
+  .source-block .source-ref { font-family: var(--serif); font-size: 0.88rem; font-style: italic; color: var(--slate-800); }
+
+  /* SUMMARY */
+  .slide-summary { background: var(--accent-dark); color: var(--slate-50); }
+  .slide-summary h2 { color: var(--warm-50); border-color: rgba(255,255,255,0.15); }
+  .slide-summary .slide-number { color: rgba(255,255,255,0.35); }
+  .summary-item { display: flex; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .summary-item:last-child { border-bottom: none; }
+  .summary-num { font-family: var(--serif); font-size: 2rem; color: rgba(255,255,255,0.2); line-height: 1; flex-shrink: 0; width: 2rem; }
+  .summary-text strong { display: block; font-size: 0.95rem; font-weight: 600; color: var(--warm-50); margin-bottom: 0.25rem; }
+  .summary-text p { color: rgba(255,255,255,0.65); font-size: 0.88rem; margin: 0; }
+
+  /* DISCUSSION */
+  .slide-discussion { background: var(--warm-50); }
+  .discussion-q { 
+    border: 1px solid var(--slate-200); border-radius: 8px;
+    padding: 1rem 1.25rem; margin: 0.75rem 0; background: white;
+    display: flex; gap: 1rem; align-items: flex-start;
+  }
+  .q-num { 
+    font-family: var(--serif); font-size: 1.4rem; color: var(--slate-200);
+    line-height: 1; flex-shrink: 0;
+  }
+  .q-text { font-size: 0.95rem; color: var(--slate-800); }
+  .q-text em { color: var(--slate-600); font-size: 0.85rem; display: block; margin-top: 0.35rem; }
+
+  /* TERM TAG */
+  .en { font-style: italic; color: var(--slate-400); font-size: 0.88em; }
+
+  /* THREE SOURCE CAUSES */
+  .cause-list { margin: 1rem 0; }
+  .cause-item { display: flex; gap: 1rem; padding: 0.85rem 0; border-bottom: 1px solid var(--slate-100); }
+  .cause-item:last-child { border-bottom: none; }
+  .cause-num { 
+    flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
+    background: var(--accent-light); color: var(--accent-dark);
+    font-size: 0.8rem; font-weight: 700; display: flex;
+    align-items: center; justify-content: center;
+  }
+  .cause-body strong { display: block; font-size: 0.9rem; font-weight: 600; color: var(--slate-900); margin-bottom: 0.2rem; }
+  .cause-body p { font-size: 0.88rem; color: var(--slate-600); margin: 0; }
+
+  /* KEYBOARD HINT */
+  .kbd-hint { 
+    position: fixed; bottom: 1rem; right: 1.5rem;
+    font-size: 0.7rem; color: var(--slate-400);
+    background: rgba(248,247,245,0.9); padding: 0.25rem 0.5rem;
+    border-radius: 3px; border: 1px solid var(--slate-200);
+  }
+
+  /* SLIDE NAV BUTTONS */
+  .slide-nav {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 1rem;
+    z-index: 100;
+  }
+  .slide-nav-btn {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    border: 1px solid var(--slate-200);
+    background: rgba(248,247,245,0.96);
+    color: var(--slate-800);
+    font-size: 1.3rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+    transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  .slide-nav-btn:hover:not(:disabled) {
+    background: var(--slate-100);
+    border-color: var(--slate-400);
+    transform: scale(1.06);
+  }
+  .slide-nav-btn:active:not(:disabled) { transform: scale(0.96); }
+  .slide-nav-btn:disabled { opacity: 0.25; cursor: default; }
+
+  .slide-title .slide-nav-btn,
+  .slide-summary .slide-nav-btn {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.25);
+    color: white;
+  }
+  .slide-title .slide-nav-btn:hover:not(:disabled),
+  .slide-summary .slide-nav-btn:hover:not(:disabled) {
+    background: rgba(255,255,255,0.22);
+  }
+
+  @media (max-width: 640px) {
+    .two-col { grid-template-columns: 1fr; }
+    .slide-title h1 { font-size: 2rem; }
+    nav { padding: 0.6rem 1rem; }
+    .container { padding: 0 1.25rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-title">Algorytmiczna stronniczość w medycynie</span>
+  <div class="nav-controls">
+    <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">← Wstecz</button>
+    <span class="nav-counter" id="counter">1 / 20</span>
+    <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Dalej →</button>
+  </div>
+</nav>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<main>
+
+<!-- SLIDE 1: TITLE -->
+<section class="slide slide-title active" id="slide-1">
+  <div class="container">
+    <p class="eyebrow">Bioetyka · Rok I · Wykład 30 minut</p>
+    <h1>Algorytmy w medycynie:<br>kiedy maszyny są niesprawiedliwe?</h1>
+    <p class="subtitle">Stronniczość algorytmiczna i sprawiedliwość w praktyce klinicznej</p>
+    <div class="source-chips">
+      <span class="chip">Grote & Keeling (2022)</span>
+      <span class="chip">Obermeyer i in. (2019, Science)</span>
+      <span class="chip">Hellman (2020) · Broome (1990)</span>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 2: OPENING QUESTION -->
+<section class="slide slide-question" id="slide-2">
+  <div class="container">
+    <p class="slide-number">Pytanie otwierające</p>
+    <h2>Zanim zaczniemy</h2>
+    <div class="question-box">
+      <p>Jesteś pacjentem w szpitalu. Lekarz korzysta z programu komputerowego, który oblicza, czy powinieneś trafić na intensywną terapię. Program mówi: „nie". Ale gdybyś był innej płci albo innego koloru skóry – powiedziałby „tak".</p>
+    </div>
+    <p>Czy coś jest tu nie tak? Dlaczego? Kto jest odpowiedzialny?</p>
+    <span class="discussion-badge">⟶ dyskusja 2 minuty</span>
+  </div>
+</section>
+
+<!-- SLIDE 3: PO CO ALGORYTMY -->
+<section class="slide slide-standard" id="slide-3">
+  <div class="container">
+    <p class="slide-number">Kontekst · 01</p>
+    <h2>Po co algorytmy w medycynie?</h2>
+    <p>Uczenie maszynowe <span class="en">(machine learning)</span> ma dwa główne zastosowania kliniczne:</p>
+    <h3>1. Diagnostyka obrazowa <span class="en">(image recognition)</span></h3>
+    <ul>
+      <li>Rozpoznawanie nowotworów na zdjęciach dermatologicznych, radiologicznych, histologicznych</li>
+      <li>Wykrywanie retinopatii cukrzycowej, raka piersi, czerniaka skóry</li>
+      <li>W wielu badaniach dorównują lub przewyższają ekspertów klinicznych (radiologów, dermatologów)</li>
+    </ul>
+    <h3>2. Przewidywanie ryzyka zdrowotnego <span class="en">(health risk prediction)</span></h3>
+    <ul>
+      <li>Identyfikowanie pacjentów wymagających intensywniejszej opieki – triage, OIOM, opieka koordynowana</li>
+      <li>Monitorowanie chorób przewlekłych i prognozowanie hospitalizacji</li>
+    </ul>
+    <div class="concept-box">
+      <p class="concept-label">Kluczowe pytanie</p>
+      <p>Jeśli algorytm „działa dobrze" średnio – czy to znaczy, że działa sprawiedliwie dla wszystkich pacjentów?</p>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 4: DEFINICJA FORMALNA -->
+<section class="slide slide-standard" id="slide-4">
+  <div class="container">
+    <p class="slide-number">Pojęcia podstawowe · 02</p>
+    <h2>Czym jest stronniczość algorytmiczna?</h2>
+    <p>Definicja formalna <span class="en">(formal notion of algorithmic bias)</span> wg Grote & Keeling:</p>
+    <div class="concept-box">
+      <p class="concept-label">Definicja</p>
+      <p>Algorytm jest <strong>stronniczy</strong>, jeżeli istnieje jakaś właściwość P, taka że algorytm przewiduje gorzej dla pacjentów posiadających cechę P niż dla tych, którzy jej nie posiadają.</p>
+    </div>
+    <h3>Przykład prosty</h3>
+    <ul>
+      <li>Algorytm wykrywa czerniaka ze skutecznością 90% u białych pacjentów</li>
+      <li>U czarnoskórych pacjentów: skuteczność tylko 70%</li>
+      <li>→ Algorytm jest formalnie stronniczy względem rasy / koloru skóry</li>
+    </ul>
+    <h3>Kluczowe pojęcie techniczne</h3>
+    <p><em>Underfitting</em> – model „nie dopasowuje się" wystarczająco dobrze dla danej podgrupy pacjentów, bo w danych treningowych <span class="en">(training data)</span> tej grupy było za mało lub była reprezentowana w zniekształcony sposób.</p>
+  </div>
+</section>
+
+<!-- SLIDE 5: PRZYKŁAD KLINICZNY 1 -->
+<section class="slide slide-case" id="slide-5">
+  <div class="container">
+    <span class="case-label">Przykład kliniczny nr 1</span>
+    <h2>Diagnostyka czerniaka skóry</h2>
+    <p>Grote & Keeling przytaczają przypadek szpitala, który wdrożył algorytm analizujący zdjęcia dermatologiczne pod kątem czerniaka:</p>
+    <div class="stat-grid">
+      <div class="stat-card">
+        <p class="stat-label">Dokładność dla białych pacjentów</p>
+        <p class="stat-value">~90%</p>
+        <p class="stat-desc">wysoka ogólna skuteczność</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-label">Różnica dla czarnoskórych pacjentów</p>
+        <p class="stat-value">–20%</p>
+        <p class="stat-desc">istotnie niższa trafność</p>
+      </div>
+    </div>
+    <h3>Co to oznacza w praktyce?</h3>
+    <ul>
+      <li>Czarnoskóry pacjent z czerniakiem ma znacznie wyższą szansę, że algorytm go <strong>nie wykryje</strong> – wynik fałszywie negatywny <span class="en">(false negative)</span></li>
+      <li>Opóźnienie diagnozy może bezpośrednio zagrażać życiu</li>
+    </ul>
+    <h3>Prawdopodobna przyczyna</h3>
+    <p>Dane treningowe zawierały głównie zdjęcia skóry białych pacjentów – niedoreprezentowanie <span class="en">(underrepresentation)</span> ciemniejszych karnacji w zbiorze uczącym.</p>
+  </div>
+</section>
+
+<!-- SLIDE 6: PRZYKŁAD KLINICZNY 2 -->
+<section class="slide slide-case" id="slide-6">
+  <div class="container">
+    <span class="case-label">Przykład kliniczny nr 2</span>
+    <h2>Triaging i opieka intensywna – stronniczość płciowa</h2>
+    <p>Grote & Keeling opisują algorytm monitorujący ryzyko zdrowotne pacjentów i decydujący o skierowaniu na OIOM:</p>
+    <div class="concept-box">
+      <p class="concept-label">Odkrycie</p>
+      <p>Kobiety musiały być obiektywnie w gorszym stanie zdrowia niż mężczyźni, żeby algorytm przyznał im ten sam wynik ryzyka i skierował je do intensywnej opieki.</p>
+    </div>
+    <h3>Interpretacja</h3>
+    <ul>
+      <li>Przy identycznym wyniku ryzyka <span class="en">(risk score)</span> – kobiety były faktycznie bardziej chore niż mężczyźni</li>
+      <li>System systematycznie <strong>niedoszacowywał</strong> nasilenia choroby u kobiet</li>
+      <li>To klasyczny przykład stronniczości względem płci <span class="en">(gender bias)</span></li>
+    </ul>
+    <h3>Możliwa przyczyna</h3>
+    <p>Dane kliniczne historycznie zbierano głównie od mężczyzn; przez dekady kobiety były niedoreprezentowane w badaniach klinicznych <span class="en">(clinical trials)</span>, co odbija się w danych treningowych algorytmów.</p>
+  </div>
+</section>
+
+<!-- SLIDE 7: OBERMEYER INTRO -->
+<section class="slide slide-standard" id="slide-7">
+  <div class="container">
+    <p class="slide-number">Studium przypadku · 03</p>
+    <h2>Obermeyer i in. (2019) – przełomowe badanie</h2>
+    <div class="source-block">
+      <p class="source-type">Artykuł źródłowy</p>
+      <p class="source-ref">Obermeyer, Z., Powers, B., Vogeli, C. & Mullainathan, S. (2019). <em>Dissecting racial bias in an algorithm used to manage the health of populations.</em> Science, 366(6464), 447–453.</p>
+    </div>
+    <h3>Kontekst badania</h3>
+    <ul>
+      <li>USA: systemy opieki zdrowotnej używają komercyjnych algorytmów do identyfikowania pacjentów z złożonymi potrzebami zdrowotnymi</li>
+      <li>Autorzy przeanalizowali jeden z takich algorytmów – szeroko stosowany, typowy dla branży, obejmujący <strong>miliony pacjentów</strong></li>
+      <li>Algorytm miał decydować, kto kwalifikuje się do programów opieki koordynowanej <span class="en">(care management programs)</span></li>
+    </ul>
+    <h3>Kluczowe odkrycie</h3>
+    <p>Przy identycznym wyniku ryzyka algorytmu – czarnoskórzy pacjenci byli <strong>obiektywnie znacznie bardziej chorzy</strong> niż biali pacjenci, co potwierdzały wskaźniki niekontrolowanych chorób przewlekłych (cukrzyca, nadciśnienie, niewydolność nerek).</p>
+  </div>
+</section>
+
+<!-- SLIDE 8: OBERMEYER DANE -->
+<section class="slide slide-case" id="slide-8">
+  <div class="container">
+    <span class="case-label">Obermeyer i in. – wyniki</span>
+    <h2>Jak duży był problem? Liczby</h2>
+    <div class="stat-grid">
+      <div class="stat-card">
+        <p class="stat-label">Czarnoskórzy pacjenci kwalifikowani do dodatkowej opieki</p>
+        <p class="stat-value">17,7%</p>
+        <p class="stat-desc">przed korektą algorytmu</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-label">Czarnoskórzy pacjenci kwalifikowani po usunięciu stronniczości</p>
+        <p class="stat-value">46,5%</p>
+        <p class="stat-desc">po zmianie zmiennej predykcyjnej</p>
+      </div>
+    </div>
+    <h3>Co to oznacza?</h3>
+    <ul>
+      <li>Stronniczość algorytmu <strong>zmniejszała o ponad połowę</strong> liczbę czarnoskórych pacjentów kierowanych do dodatkowej opieki</li>
+      <li>Oznacza to realne, mierzalne pogorszenie opieki zdrowotnej dla całej grupy pacjentów</li>
+      <li>Nie był to marginalny efekt – to systemowa dysproporcja na dużą skalę</li>
+    </ul>
+    <div class="concept-box">
+      <p class="concept-label">Wniosek praktyczny</p>
+      <p>Algorytm, który technicznie „działa dobrze" i ma wysoką ogólną dokładność, może jednocześnie generować głęboką niesprawiedliwość dla określonych grup pacjentów.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 9: OBERMEYER DLACZEGO -->
+<section class="slide slide-standard" id="slide-9">
+  <div class="container">
+    <p class="slide-number">Studium przypadku – mechanizm · 04</p>
+    <h2>Skąd wzięła się stronniczość? Zły wskaźnik zastępczy</h2>
+    <div class="concept-box">
+      <p class="concept-label">Błąd projektowy – problem formulation bias</p>
+      <p>Algorytm przewidywał <strong>koszty leczenia</strong> jako proxy <span class="en">(wskaźnik zastępczy)</span> dla potrzeb zdrowotnych. Ale koszty leczenia ≠ stopień choroby.</p>
+    </div>
+    <h3>Łańcuch przyczynowy</h3>
+    <ul>
+      <li>Algorytm uczono na danych o <em>kosztach leczenia</em> – logika: „kto więcej kosztuje, jest bardziej chory"</li>
+      <li>Problem: czarnoskórzy pacjenci mają historycznie <strong>mniejszy dostęp do opieki zdrowotnej</strong> ze względów socjoekonomicznych</li>
+      <li>Mniejszy dostęp → mniej wizyt → niższe koszty → niższy wynik ryzyka w algorytmie</li>
+      <li>Ale ich rzeczywisty stan zdrowia był taki sam lub gorszy</li>
+    </ul>
+    <h3>Rodzaj stronniczości wg Grote & Keeling</h3>
+    <p>To przypadek <em>złego sformułowania problemu</em> <span class="en">(problem formulation bias)</span> – cel algorytmu zdefiniowano w sposób, który systemowo dyskryminuje grupę z ograniczonym dostępem do zasobów. Dyskryminacja jest <em>pośrednia</em> <span class="en">(indirect discrimination)</span> – algorytm nie używa rasy jako zmiennej, ale wybiera proxy, które jest z rasą skorelowane przez mechanizmy społeczne.</p>
+  </div>
+</section>
+
+<!-- SLIDE 10: TRZY ŹRÓDŁA -->
+<section class="slide slide-standard" id="slide-10">
+  <div class="container">
+    <p class="slide-number">Pojęcia podstawowe · 05</p>
+    <h2>Trzy źródła algorytmicznej stronniczości</h2>
+    <p>Grote & Keeling wskazują trzy mechanizmy powstawania stronniczości:</p>
+    <div class="cause-list">
+      <div class="cause-item">
+        <div class="cause-num">1</div>
+        <div class="cause-body">
+          <strong>Nierówność populacji w danych <span class="en">(population inequity)</span></strong>
+          <p>Pacjenci z cechą P są niedoreprezentowani w danych treningowych – model ich „nie widział" wystarczająco dużo. Przykład: nieliczne zdjęcia ciemnej karnacji w zbiorze treningowym algorytmu dermatologicznego.</p>
+        </div>
+      </div>
+      <div class="cause-item">
+        <div class="cause-num">2</div>
+        <div class="cause-body">
+          <strong>Ludzka stronniczość w danych <span class="en">(human bias)</span></strong>
+          <p>Lekarze i system medyczny historycznie traktowali niektóre grupy gorzej. Te uprzedzenia są zakodowane w danych historycznych, a algorytm je przejmuje i utrwala. Przykład: czarnoskórzy pacjenci są statystycznie niedoleczeni z bólu w porównaniu z białymi.</p>
+        </div>
+      </div>
+      <div class="cause-item">
+        <div class="cause-num">3</div>
+        <div class="cause-body">
+          <strong>Złe sformułowanie problemu <span class="en">(problem formulation bias)</span></strong>
+          <p>Twórcy algorytmu zdefiniowali cel w sposób systemowo dyskryminujący daną grupę – np. wybierając zły wskaźnik zastępczy. To właśnie błąd z badania Obermeyer: koszty leczenia zamiast stopień choroby.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 11: LUDZKA STRONNICZOŚĆ W DANYCH -->
+<section class="slide slide-standard" id="slide-11">
+  <div class="container">
+    <p class="slide-number">Ludzka stronniczość · 06</p>
+    <h2>Historyczne nierówności zakodowane w danych</h2>
+    <p>Ludzka stronniczość <span class="en">(human bias)</span> w danych medycznych to udokumentowany fakt, nie teoria:</p>
+    <h3>Stronniczość rasowa w diagnostyce bólu</h3>
+    <ul>
+      <li>Czarnoskórzy pacjenci są statystycznie <strong>niedodiagnozowani i niedoleczeni z bólu</strong> w porównaniu z białymi</li>
+      <li>Badania wykazują, że lekarze częściej podejrzewali „wyolbrzymianie" bólu u czarnoskórych pacjentów</li>
+      <li>Jeśli algorytm uczy się na tych danych – te uprzedzenia przejmuje jako „normę"</li>
+    </ul>
+    <h3>Niedoreprezentowanie kobiet w badaniach klinicznych</h3>
+    <ul>
+      <li>Przez dekady kobiety były rutynowo wykluczane z prób klinicznych <span class="en">(clinical trials)</span></li>
+      <li>Dane o skutkach leków, dawkowaniu i ryzyku działań niepożądanych opierają się głównie na mężczyznach</li>
+      <li>Ten sam problem dotyczy <strong>dzieci</strong> – wiele leków testowano wyłącznie na dorosłych</li>
+    </ul>
+    <div class="concept-box">
+      <p class="concept-label">Wniosek</p>
+      <p>Algorytm może być w pełni automatyczny i nie „wiedzieć" nic o rasie czy płci – a mimo to reprodukować i wzmacniać historyczne nierówności, bo te nierówności są wbudowane w dane.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 12: FORMALNA VS SUBSTANCJALNA -->
+<section class="slide slide-standard" id="slide-12">
+  <div class="container">
+    <p class="slide-number">Pojęcia filozoficzne · 07</p>
+    <h2>Stronniczość formalna vs. substancjalna</h2>
+    <div class="two-col">
+      <div class="col-card green">
+        <p class="col-label" style="color: var(--accent-dark);">Stronniczość formalna <span class="en">(formal bias)</span></p>
+        <p>Algorytm gorzej działa dla grupy z cechą P niż bez niej. To pojęcie <strong>opisowe</strong> i empiryczne – możemy je zmierzyć i zweryfikować statystycznie.</p>
+      </div>
+      <div class="col-card rust">
+        <p class="col-label" style="color: var(--rust);">Stronniczość substancjalna <span class="en">(substantive bias)</span></p>
+        <p>Pyta o moralne <em>dlaczego</em> – czy przyczyna stronniczości jest moralnie istotna? Pojęcie <strong>normatywne i wartościujące</strong>, nie tylko empiryczne.</p>
+      </div>
+    </div>
+    <h3>Pojęcie hiperintensjonalności <span class="en">(hyperintensionality)</span></h3>
+    <p>Wg Grote & Keeling stronniczość substancjalna jest <em>hiperintensjonalna</em>: algorytm może być stronniczy względem właściwości P, ale nie względem Q – nawet jeśli P i Q obejmują dokładnie tych samych pacjentów.</p>
+    <div class="concept-box">
+      <p class="concept-label">Przykład</p>
+      <p>P = „być czarnoskórym pacjentem" / Q = „być pacjentem, który historycznie wydawał mniej na opiekę medyczną ze względów socjoekonomicznych". W danym zbiorze danych P = Q co do zasięgu, ale przyczyny moralne są zupełnie inne – i to właśnie ma znaczenie dla oceny etycznej.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 13: SPRAWIEDLIWOŚĆ FORMALNA VS SUBSTANCJALNA -->
+<section class="slide slide-standard" id="slide-13">
+  <div class="container">
+    <p class="slide-number">Pojęcia filozoficzne · 08</p>
+    <h2>Sprawiedliwość formalna vs. substancjalna decyzji</h2>
+    <p>Rozróżnienie za Hookerem i Broomem, zastosowane przez Grote & Keeling do decyzji medycznych:</p>
+    <h3>Sprawiedliwość formalna <span class="en">(formal fairness)</span></h3>
+    <ul>
+      <li>Decyzja jest sprawiedliwa, jeśli reguły są stosowane <strong>bezstronnie i konsekwentnie</strong> – tak samo do każdego bez wyjątków</li>
+      <li>Problem: reguła może być stosowana konsekwentnie, ale sama w sobie być niesprawiedliwa</li>
+      <li>Przykład: algorytm systematycznie triage'uje białych pacjentów przed czarnoskórymi – jest <em>formalnie</em> sprawiedliwy, jeśli robi to zawsze, ale <em>substancjalnie</em> niesprawiedliwy, bo opiera się na moralnie nieistotnym kryterium</li>
+    </ul>
+    <h3>Sprawiedliwość substancjalna <span class="en">(substantive fairness)</span> – teoria Broome'a</h3>
+    <ul>
+      <li>Sprawiedliwość polega na <strong>proporcjonalnym zaspokojeniu roszczeń moralnych</strong> <span class="en">(proportional satisfaction of claims)</span> poszczególnych osób</li>
+      <li>Roszczenia <span class="en">(claims)</span> = moralne zobowiązania wobec danych osób wynikające z ich potrzeb, praw i godności</li>
+      <li>Kluczowe pytanie: czy zasoby medyczne są rozdzielane tak, by proporcjonalnie uwzględniać roszczenia moralne wszystkich grup pacjentów?</li>
+    </ul>
+  </div>
+</section>
+
+<!-- SLIDE 14: METRYKI SPRAWIEDLIWOŚCI -->
+<section class="slide slide-standard" id="slide-14">
+  <div class="container">
+    <p class="slide-number">Metryki · 09</p>
+    <h2>Jak mierzyć (nie)sprawiedliwość algorytmiczną?</h2>
+    <p>W badaniach nad sprawiedliwością w uczeniu maszynowym <span class="en">(fairness in machine learning)</span> wyróżnia się kilka standardów pomiaru:</p>
+    <h3>Równość szans <span class="en">(equal opportunity)</span></h3>
+    <p>Prawdopodobieństwo trafnego pozytywnego wyniku <span class="en">(true positive rate)</span> powinno być takie samo dla różnych grup. Przykład medyczny: szansa, że chory pacjent zostanie prawidłowo zidentyfikowany jako chory, powinna być równa dla kobiet i mężczyzn.</p>
+    <h3>Wyrównane szanse <span class="en">(equalized odds)</span></h3>
+    <p>Zarówno true positive rate jak i false positive rate muszą być równe między grupami. Bardziej rygorystyczny standard – wymaga wyrównania zarówno trafień jak i błędów.</p>
+    <h3>Parytet stosunku błędów <span class="en">(error ratio parity)</span> – Hellman (2020)</h3>
+    <p>Zdaniem Grote & Keeling najlepiej nadaje się do kontekstu medycznego. Nie zakłada identycznych wskaźników błędów – zakłada, że <strong>szkody wynikające z błędów są sprawiedliwie rozłożone</strong> między grupami. Przykład: algorytm może generować nieco więcej fałszywych negatywów u czarnoskórych i nieco więcej fałszywych pozytywów u białych – wynik jest sprawiedliwy, jeśli te szkody są proporcjonalne i podobnie poważne.</p>
+  </div>
+</section>
+
+<!-- SLIDE 15: DECYZJA ALGORYTMICZNA VS KLINICZNA -->
+<section class="slide slide-standard" id="slide-15">
+  <div class="container">
+    <p class="slide-number">Pojęcia analityczne · 10</p>
+    <h2>Decyzja algorytmiczna a decyzja kliniczna</h2>
+    <p>Grote & Keeling wprowadzają ważne rozróżnienie analityczne:</p>
+    <div class="two-col">
+      <div class="col-card green">
+        <p class="col-label" style="color: var(--accent-dark);">Decyzja algorytmiczna <span class="en">(algorithmic decision)</span></p>
+        <p>Wynik działania modelu – liczba, kategoria ryzyka, zalecenie. To wejście <span class="en">(input)</span> do procesu decyzyjnego lekarza lub systemu opieki.</p>
+      </div>
+      <div class="col-card rust">
+        <p class="col-label" style="color: var(--rust);">Decyzja końcowa <span class="en">(final decision)</span></p>
+        <p>Decyzja podjęta przez lekarza lub system – np. skierowanie na OIOM, przepisanie leku. Może uwzględniać wynik algorytmu lub go modyfikować.</p>
+      </div>
+    </div>
+    <h3>Dlaczego to rozróżnienie jest ważne?</h3>
+    <ul>
+      <li>Stronniczość algorytmu <span class="en">(algorithmic bias)</span> ≠ niesprawiedliwość decyzji <span class="en">(decisional unfairness)</span></li>
+      <li>Lekarz może <em>skorygować</em> błąd algorytmu – albo go bezkrytycznie wzmocnić</li>
+      <li>Pełna automatyzacja <span class="en">(fully automated decisions)</span> vs. człowiek w pętli <span class="en">(human in the loop)</span> tworzą różne ryzyka moralne</li>
+    </ul>
+    <div class="concept-box">
+      <p class="concept-label">Kluczowe pytanie</p>
+      <p>Jak stronniczość algorytmu przyczynia się do niesprawiedliwości decyzji końcowej – i co lekarz powinien w tej sytuacji robić?</p>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 16: SPRAWIEDLIWOŚĆ PROCEDURALNA -->
+<section class="slide slide-standard" id="slide-16">
+  <div class="container">
+    <p class="slide-number">Sprawiedliwość proceduralna · 11</p>
+    <h2>Sprawiedliwość proceduralna <span class="en">(procedural fairness)</span></h2>
+    <p>Grote & Keeling, za Wachter & Mittelstadt, wskazują trzy wymogi, które musi spełniać sprawiedliwy proceduralnie algorytm:</p>
+    <div class="cause-list">
+      <div class="cause-item">
+        <div class="cause-num">1</div>
+        <div class="cause-body">
+          <strong>Normatywna dopuszczalność danych</strong>
+          <p>Jakie dane stanowią etycznie dopuszczalną podstawę wnioskowania? Nie każde dane, których użycie jest technicznie możliwe, jest moralnie właściwe.</p>
+        </div>
+      </div>
+      <div class="cause-item">
+        <div class="cause-num">2</div>
+        <div class="cause-body">
+          <strong>Relewancja i uzasadnienie</strong>
+          <p>Dlaczego te dane są zarówno istotne, jak i dopuszczalne dla danego rodzaju przewidywania? Korelacja musi mieć uzasadnienie, które nie powiela niesprawiedliwości historycznej.</p>
+        </div>
+      </div>
+      <div class="cause-item">
+        <div class="cause-num">3</div>
+        <div class="cause-body">
+          <strong>Dokładność i wiarygodność statystyczna</strong>
+          <p>Czy dane i metody są rzetelne? Walidacja modelu powinna obejmować wyniki osobno dla różnych grup demograficznych <span class="en">(stratified reporting)</span>.</p>
+        </div>
+      </div>
+    </div>
+    <div class="concept-box">
+      <p class="concept-label">Wniosek</p>
+      <p>Sprawiedliwy algorytm to nie tylko taki, który „dobrze działa" w sensie ogólnej dokładności – to taki, który działa w oparciu o etycznie uzasadnione przesłanki i jest rzetelny dla wszystkich grup.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 17: CO ROBIĆ -->
+<section class="slide slide-standard" id="slide-17">
+  <div class="container">
+    <p class="slide-number">Rekomendacje · 12</p>
+    <h2>Co robić? Trzy poziomy odpowiedzi</h2>
+    <p>Grote & Keeling wskazują trzy obszary działania dla zapewnienia sprawiedliwości algorytmicznej w medycynie:</p>
+    <h3>Poziom techniczny</h3>
+    <ul>
+      <li>Rozwijać rzetelne metryki stronniczości algorytmicznej i stosować je systematycznie</li>
+      <li>Raportować wyniki osobno dla grup demograficznych <span class="en">(stratified reporting by race, sex, age)</span></li>
+      <li>Zbierać bardziej reprezentatywne dane – z uwzględnieniem ograniczeń etycznych i prawnych (ochrona danych osobowych, RODO)</li>
+    </ul>
+    <h3>Poziom kontekstu medycznego</h3>
+    <ul>
+      <li>Rozumieć sprawiedliwość algorytmiczną w szerszym kontekście sprawiedliwego rozdziału zasobów medycznych <span class="en">(fair resource allocation)</span></li>
+      <li>Identyfikować istniejące nierówności zdrowotne <span class="en">(health inequalities)</span> i ich strukturalne przyczyny</li>
+    </ul>
+    <h3>Poziom regulacyjny i projektowy</h3>
+    <ul>
+      <li>Włączać różne grupy interesariuszy <span class="en">(stakeholders)</span> – klinicystów, pacjentów, pielęgniarki, administratorów – w projektowanie algorytmów</li>
+      <li>Prowadzić szeroką i inkluzywną debatę publiczną o roli algorytmów w decyzjach medycznych</li>
+    </ul>
+  </div>
+</section>
+
+<!-- SLIDE 18: PODSUMOWANIE -->
+<section class="slide slide-summary" id="slide-18">
+  <div class="container">
+    <p class="slide-number">Podsumowanie</p>
+    <h2>Trzy idee z dzisiejszego wykładu</h2>
+    <div class="summary-item">
+      <div class="summary-num">1</div>
+      <div class="summary-text">
+        <strong>Algorytmy reprodukują historyczne nierówności</strong>
+        <p>Nie są neutralne. Uczą się na danych stworzonych przez ludzi w systemach pełnych nierówności. Stronniczość danych wejściowych staje się stronniczością wyjścia.</p>
+      </div>
+    </div>
+    <div class="summary-item">
+      <div class="summary-num">2</div>
+      <div class="summary-text">
+        <strong>Dokładność ≠ sprawiedliwość</strong>
+        <p>Algorytm może mieć wysoką ogólną skuteczność i jednocześnie generować głęboko niesprawiedliwe wyniki dla określonych grup. Przypadek Obermeyer pokazuje to dobitnie.</p>
+      </div>
+    </div>
+    <div class="summary-item">
+      <div class="summary-num">3</div>
+      <div class="summary-text">
+        <strong>Stronniczość ≠ niesprawiedliwość – ale jedno prowadzi do drugiego</strong>
+        <p>Zadaniem lekarzy, projektantów systemów i regulatorów jest świadome przerwanie tego łańcucha. Sprawiedliwość wymaga działania na poziomie technicznym, instytucjonalnym i politycznym jednocześnie.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 19: DYSKUSJA -->
+<section class="slide slide-discussion" id="slide-19">
+  <div class="container">
+    <p class="slide-number">Dyskusja · Pytania</p>
+    <h2>Pytania do dyskusji</h2>
+    <div class="discussion-q">
+      <div class="q-num">1</div>
+      <div class="q-text">
+        Czy algorytm, który „nie widzi rasy" <span class="en">(race-blind)</span>, jest z definicji sprawiedliwy?
+        <em>Co sądzisz o tzw. color-blindness w projektowaniu systemów? Czy ignorowanie rasy rozwiązuje problem, czy go maskuje?</em>
+      </div>
+    </div>
+    <div class="discussion-q">
+      <div class="q-num">2</div>
+      <div class="q-text">
+        Kto ponosi odpowiedzialność moralną za szkodę wyrządzoną przez stronniczy algorytm?
+        <em>Lekarz, który z niego korzysta? Firma, która go stworzyła? Szpital, który go wdrożył? Czy odpowiedzialność może być rozdzielona?</em>
+      </div>
+    </div>
+    <div class="discussion-q">
+      <div class="q-num">3</div>
+      <div class="q-text">
+        Czy gromadzenie danych demograficznych (rasa, płeć, etniczność) w celu trenowania sprawiedliwszych algorytmów jest etycznie uzasadnione?
+        <em>Jakie są granice? Czy zbieranie takich danych samo w sobie może być formą dyskryminacji lub naruszenia prywatności?</em>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 20: ŹRÓDŁA -->
+<section class="slide slide-standard" id="slide-20">
+  <div class="container">
+    <p class="slide-number">Literatura</p>
+    <h2>Źródła i literatura</h2>
+    <h3>Teksty główne</h3>
+    <div class="source-block">
+      <p class="source-type">Artykuł główny</p>
+      <p class="source-ref">Grote, T. & Keeling, G. (2022). <em>On Algorithmic Fairness in Medical Practice.</em> Cambridge Quarterly of Healthcare Ethics, 31(1), 83–94.</p>
+    </div>
+    <div class="source-block">
+      <p class="source-type">Studium przypadku</p>
+      <p class="source-ref">Obermeyer, Z., Powers, B., Vogeli, C. & Mullainathan, S. (2019). <em>Dissecting racial bias in an algorithm used to manage the health of populations.</em> Science, 366(6464), 447–453.</p>
+    </div>
+    <h3>Lektury uzupełniające</h3>
+    <div class="source-block">
+      <p class="source-type">Metryki sprawiedliwości</p>
+      <p class="source-ref">Hellman, D. (2020). <em>Measuring Algorithmic Fairness.</em> Virginia Law Review, 106(4), 811–866.</p>
+    </div>
+    <div class="source-block">
+      <p class="source-type">Teoria roszczeń</p>
+      <p class="source-ref">Broome, J. (1990). <em>Fairness.</em> Proceedings of the Aristotelian Society, 91(1), 87–101.</p>
+    </div>
+    <div class="source-block">
+      <p class="source-type">Sprawiedliwość proceduralna w AI</p>
+      <p class="source-ref">Wachter, S. & Mittelstadt, B. (2021). <em>A Right to Reasonable Inferences.</em> Columbia Business Law Review.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<div class="slide-nav">
+  <button class="slide-nav-btn" id="slidePrev" onclick="changeSlide(-1)" aria-label="Poprzedni slajd">&#8592;</button>
+  <button class="slide-nav-btn" id="slideNext" onclick="changeSlide(1)" aria-label="Następny slajd">&#8594;</button>
+</div>
+<div class="kbd-hint">← → lub klawisze strzałek</div>
+
+<script>
+  const totalSlides = 20;
+  let current = 1;
+
+  function showSlide(n) {
+    document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+    const target = document.getElementById('slide-' + n);
+    if (target) target.classList.add('active');
+    document.getElementById('counter').textContent = n + ' / ' + totalSlides;
+    const pct = ((n - 1) / (totalSlides - 1)) * 100;
+    document.getElementById('progressFill').style.width = pct + '%';
+    const isDark = target && (target.classList.contains('slide-title') || target.classList.contains('slide-summary'));
+    ['slidePrev','slideNext','prevBtn','nextBtn'].forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (isDark) {
+        el.style.background = 'rgba(255,255,255,0.12)';
+        el.style.borderColor = 'rgba(255,255,255,0.25)';
+        el.style.color = 'white';
+      } else {
+        el.style.background = '';
+        el.style.borderColor = '';
+        el.style.color = '';
+      }
+    });
+    document.getElementById('prevBtn').disabled = n === 1;
+    document.getElementById('nextBtn').disabled = n === totalSlides;
+    document.getElementById('slidePrev').disabled = n === 1;
+    document.getElementById('slideNext').disabled = n === totalSlides;
+    window.scrollTo(0, 0);
+  }
+
+  function changeSlide(dir) {
+    const next = Math.max(1, Math.min(totalSlides, current + dir));
+    if (next !== current) { current = next; showSlide(current); }
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') changeSlide(1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') changeSlide(-1);
+  });
+
+  showSlide(1);
+</script>
+</body>
+</html>
