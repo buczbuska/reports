@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Textual Compliance and Its Limits: A Behavioral Study</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root {
+  --navy:    #1a2744;
+  --steel:   #3D5A80;
+  --rust:    #A0501F;
+  --sage:    #4E8C7C;
+  --amber:   #8A620D;
+  --text:    #1a2744;
+  --muted:   #4e6080;
+  --border:  rgba(26,39,68,0.13);
+  --surface: #f6f8fc;
+  --white:   #ffffff;
+  --steel-lt:#e4edf8;
+  --rust-lt: #fbeee6;
+  --sage-lt: #e4f2ee;
+  --amber-lt:#f7edda;
+  --slide-w: min(960px, 96vw);
+  --slide-h: calc(var(--slide-w) * 9 / 16);
+  --fs-title:clamp(20px,3vw,32px);
+  --fs-head: clamp(14px,2vw,20px);
+  --fs-sub:  clamp(11.5px,1.5vw,15.5px);
+  --fs-body: clamp(10px,1.25vw,13.5px);
+  --fs-sm:   clamp(9px,1.1vw,12px);
+}
+
+html,body{height:100%;background:#1d2e4e;font-family:'DM Sans',sans-serif;color:var(--text);overflow-x:hidden}
+
+.shell{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:1.8rem 1rem 2.5rem;gap:1.2rem}
+
+.top-bar{width:var(--slide-w);display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.slide-counter{font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.42);letter-spacing:.08em}
+.slide-title-nav{font-size:11px;color:rgba(255,255,255,.32);font-weight:300;text-align:right;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.stage{width:var(--slide-w);height:var(--slide-h);position:relative;border-radius:10px;overflow:hidden;outline:1px solid rgba(255,255,255,.07);box-shadow:0 8px 40px rgba(0,0,0,.35)}
+
+.slide{position:absolute;inset:0;display:none;flex-direction:column}
+.slide.active{display:flex}
+
+.bottom-nav{width:var(--slide-w);display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.nav-btn{display:flex;align-items:center;gap:6px;padding:7px 16px;border-radius:40px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);color:rgba(255,255,255,.7);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;transition:background .15s,border-color .15s,color .15s}
+.nav-btn:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.28);color:#fff}
+.nav-btn:disabled{opacity:.22;pointer-events:none}
+.nav-btn svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+.dots{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center;max-width:62%}
+.dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.18);cursor:pointer;transition:background .2s,transform .2s;border:none}
+.dot.active{background:var(--rust);transform:scale(1.4)}
+
+.hint{font-size:10px;color:rgba(255,255,255,.18);font-family:'DM Mono',monospace;letter-spacing:.06em;text-align:center;margin-top:-.3rem}
+
+/* ── SLIDE 1 TITLE ── */
+.s1{background:var(--navy)}
+.s1-left{flex:1;display:flex;flex-direction:column;justify-content:center;padding:8% 6% 8% 7%}
+.s1-right{width:30%;background:rgba(61,90,128,.25);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.s1-bar{width:38px;height:3px;background:var(--rust);border-radius:2px;margin-bottom:7%}
+.s1-title{font-family:'Playfair Display',serif;font-size:var(--fs-title);font-weight:500;color:#fff;line-height:1.28;margin-bottom:3%}
+.s1-title em{color:var(--rust);font-style:normal}
+.s1-subtitle{font-size:var(--fs-sub);color:rgba(168,190,221,.78);line-height:1.55;margin-bottom:6%;font-weight:300}
+.s1-authors{font-size:var(--fs-sub);color:rgba(168,190,221,.75);line-height:1.8;margin-bottom:4%;font-weight:300}
+.s1-authors strong{color:rgba(168,190,221,.95);font-weight:500}
+.s1-date{font-family:'DM Mono',monospace;font-size:var(--fs-sm);color:rgba(168,190,221,.48);letter-spacing:.06em}
+
+/* ── SHARED CONTENT SLIDE WRAPPERS ── */
+.sw{flex-direction:column;padding:3.5% 4.5% 3%}
+.sw-white{background:var(--white)}
+.sw-surf {background:var(--surface)}
+.sw-navy {background:var(--navy)}
+
+.slide-head{font-family:'Playfair Display',serif;font-size:var(--fs-head);font-weight:500;color:var(--navy);margin-bottom:3%;padding-bottom:2%;border-bottom:1px solid var(--border);display:flex;align-items:baseline;justify-content:space-between;flex-shrink:0;line-height:1.3}
+.slide-head.lht{color:#fff;border-bottom-color:rgba(255,255,255,.14)}
+
+.sub-head{font-size:var(--fs-sm);font-weight:500;color:var(--muted);margin-bottom:5px;letter-spacing:.01em}
+
+/* ── LAYOUT ── */
+.cols2{display:grid;grid-template-columns:1fr 1fr;gap:3.5%;flex:1;min-height:0}
+.cols3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2.5%;flex:1;min-height:0}
+.vcol{display:flex;flex-direction:column;gap:6px}
+
+/* ── CALLOUTS ── */
+.co,.co-r,.co-s,.co-a{border-radius:0 6px 6px 0;padding:5px 9px;font-size:var(--fs-sm);line-height:1.5;margin-bottom:4px}
+.co  {background:var(--steel-lt);border-left:3px solid var(--steel)}
+.co-r{background:var(--rust-lt); border-left:3px solid var(--rust)}
+.co-s{background:var(--sage-lt); border-left:3px solid var(--sage)}
+.co-a{background:var(--amber-lt);border-left:3px solid var(--amber)}
+
+/* ── THEORY ITEMS ── */
+.ti{padding:4px 8px 4px 9px;border-left:2px solid;margin-bottom:4px;border-radius:0 5px 5px 0}
+.ti-h{font-size:var(--fs-sm);font-weight:500;color:var(--navy);margin-bottom:1px}
+.ti-b{font-size:var(--fs-sm);color:var(--muted);line-height:1.45}
+
+/* ── CARDS ── */
+.card{border:1px solid var(--border);border-radius:8px;padding:3.5% 3.5%;display:flex;flex-direction:column;gap:5px;border-top-width:3px;background:var(--white)}
+.card-h{font-size:var(--fs-body);font-weight:500;color:var(--navy)}
+.card-b{font-size:var(--fs-sm);color:var(--muted);line-height:1.5;flex:1}
+
+/* ── TABLES ── */
+.tbl{width:100%;border-collapse:collapse;font-size:var(--fs-sm)}
+.tbl th{background:var(--navy);color:#fff;padding:4px 7px;text-align:left;font-weight:500}
+.tbl td{padding:3px 7px;border-bottom:.5px solid var(--border)}
+.tbl tr:nth-child(even) td{background:#f2f5fa}
+.tbl .hl td{background:var(--steel-lt);font-weight:500}
+.tbl .hl-r td{background:var(--rust-lt);font-weight:500}
+
+/* ── STAT CARDS ── */
+.scard{background:var(--surface);border-radius:7px;padding:5px 9px;display:flex;flex-direction:column;justify-content:center}
+.scard-v{font-size:var(--fs-head);font-weight:500;color:var(--navy);line-height:1.1}
+.scard-l{font-size:var(--fs-sm);color:var(--muted);margin-top:2px}
+
+/* ── FINDINGS ── */
+.fi{border-radius:5px;padding:4px 8px;font-size:var(--fs-sm);line-height:1.45;margin-bottom:3px}
+.f1{background:var(--steel-lt);border-left:3px solid var(--steel)}
+.f2{background:var(--rust-lt); border-left:3px solid var(--rust)}
+.f3{background:var(--sage-lt); border-left:3px solid var(--sage)}
+.f4{background:#f0ece5;       border-left:3px solid #7A5C3A}
+.f5{background:#eee8f5;       border-left:3px solid #6B5E9E}
+
+/* ── BADGES ── */
+.badge{display:inline-block;background:var(--steel);color:#fff;border-radius:3px;padding:1px 6px;font-size:var(--fs-sm);font-family:'DM Mono',monospace}
+.badge-r{background:var(--rust)}
+.badge-s{background:var(--sage)}
+
+/* ── VERDICT ── */
+.vp{font-family:'DM Mono',monospace;font-size:var(--fs-sm);padding:2px 9px;border-radius:16px}
+.vp-rej {background:#fde8e8;color:#7a1515}
+.vp-part{background:#fdf3d8;color:#6e4f00}
+.vp-supp{background:#ddf5ee;color:#0a4e30}
+
+/* inline verdict text */
+.vi-r{color:var(--rust);font-weight:600}
+.vi-a{color:var(--amber);font-weight:600}
+.vi-s{color:var(--sage);font-weight:600}
+
+/* ── PROCESS BOXES ── */
+.proc-box{border-radius:8px;padding:4.5% 4%;flex:1;display:flex;flex-direction:column;gap:5px}
+
+/* ── BAR ROW ── */
+.bar-row{display:flex;align-items:center;gap:7px;margin-bottom:3px}
+.bar-label{font-size:var(--fs-sm);color:var(--navy);flex-shrink:0}
+.bar-track{flex:1;height:13px;border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px}
+.bar-val{font-family:'DM Mono',monospace;font-size:var(--fs-sm);color:var(--muted);flex-shrink:0;text-align:right;width:34px}
+
+/* ── MONO CHIP ── */
+.mchip{font-family:'DM Mono',monospace;font-size:var(--fs-sm);padding:2px 9px;border-radius:5px;display:inline-block}
+
+/* ── BOTTOM BANNER ── */
+.bb{background:var(--navy);border-radius:7px;padding:2% 3.5%;font-size:var(--fs-sm);color:rgba(168,190,221,.9);font-weight:500;text-align:center;flex-shrink:0;margin-top:auto}
+
+/* ── ROADMAP ── */
+.rm-wrap{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:3%}
+.rm-item{background:var(--white);border:1px solid var(--border);border-radius:4px;padding:3px 8px;font-size:var(--fs-sm);color:var(--steel);flex:1;min-width:55px;text-align:center}
+
+/* ── STEP ROWS ── */
+.step-r{display:flex;gap:7px;align-items:flex-start;margin-bottom:3px}
+.step-n{width:14px;height:14px;background:var(--navy);color:#fff;border-radius:50%;font-size:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.step-t{font-size:var(--fs-sm);color:var(--muted);line-height:1.5}
+.step-t strong{color:var(--navy)}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<div class="top-bar">
+  <div class="slide-counter" id="counter">01 / 33</div>
+  <div class="slide-title-nav" id="snav"></div>
+</div>
+
+<div class="stage" id="stage">
+
+<!-- ══════════════════════════════════════
+     SLIDE 01 — TITLE
+══════════════════════════════════════════ -->
+<div class="slide s1 active" data-title="Title">
+  <div style="display:flex;height:100%">
+    <div class="s1-left">
+      <div class="s1-bar"></div>
+      <div class="s1-title">Textual Compliance<br>and Its <em>Limits</em></div>
+      <div class="s1-subtitle">A Behavioral Study</div>
+      <div class="s1-authors"><strong>Bartosz Janik &amp; Leo Hoeft</strong></div>
+      <div class="s1-date">25 MAY 2026</div>
+    </div>
+    <div class="s1-right">
+      <svg width="80" height="120" viewBox="0 0 80 120">
+        <circle cx="40" cy="60" r="38" fill="none" stroke="rgba(160,80,31,.25)" stroke-width="1.5"/>
+        <circle cx="40" cy="60" r="26" fill="none" stroke="rgba(160,80,31,.4)" stroke-width="1.5"/>
+        <circle cx="40" cy="60" r="14" fill="none" stroke="rgba(160,80,31,.6)" stroke-width="1.5"/>
+        <circle cx="40" cy="60" r="5" fill="rgba(160,80,31,.85)"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 02 — TALK OVERVIEW
+══════════════════════════════════════════ -->
+<div class="slide sw sw-white" data-title="Talk overview">
+  <div class="slide-head">Talk overview</div>
+  <div class="rm-wrap">
+    <div class="rm-item">Background &amp; Theory</div>
+    <div class="rm-item">Design</div>
+    <div class="rm-item">Exp 1 &amp; 2 Behaviour</div>
+    <div class="rm-item">Exp 3 Judgments</div>
+    <div class="rm-item">LMM &amp; Roles</div>
+    <div class="rm-item">Synthesis</div>
+  </div>
+  <div class="cols2" style="flex:1">
+    <div class="vcol">
+      <div class="sub-head">The core question</div>
+      <div style="font-size:var(--fs-body);line-height:1.55;margin-bottom:6px">When the <strong>text</strong> of a rule and its <strong>purpose</strong> diverge — which do people follow? And which do observers expect, judge, and enforce?</div>
+      <div class="co"><strong>Textualism:</strong> follow E, the explicitly prescribed option.<br><strong>Purposivism:</strong> follow the outcome the rule aims to achieve (equal split).</div>
+      <div class="co-r" style="margin-top:4px">We ask this for <em>rule-followers</em> (Exp 1 &amp; 2) and for <em>third-party enforcers</em> (Exp 3) — and we dissociate two DVs: compliance concept vs. punitive enforcement.</div>
+    </div>
+    <div class="vcol">
+      <div class="sub-head">Why it matters</div>
+      <div class="ti" style="border-color:var(--steel);background:var(--steel-lt)"><div class="ti-h">Legal interpretation</div><div class="ti-b">Textualism vs. purposivism — a centuries-old jurisprudential debate (Scalia vs. Hart &amp; Sacks). Recent empirical work shows people lean textualist by default (Almeida et al., 2023), but the conditions under which purposivism emerges remain poorly mapped.</div></div>
+      <div class="ti" style="border-color:var(--amber);background:var(--amber-lt)"><div class="ti-h">Judgment vs. decision making</div><div class="ti-b">Does the same person apply the same interpretive logic when <em>acting</em> under a rule as when <em>judging</em> another's action? Prior work studies the two roles separately — we dissociate them in the same design.</div></div>
+      <div class="ti" style="border-color:var(--sage);background:var(--sage-lt)"><div class="ti-h">Empirical gap</div><div class="ti-b">No study has orthogonally manipulated text vs. purpose <em>while</em> measuring both a compliance judgment DV <em>and</em> a punishment DV across both actor roles. We do all four simultaneously.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 03 — THEORETICAL BACKGROUND
+══════════════════════════════════════════ -->
+<div class="slide sw sw-surf" data-title="Theoretical background">
+  <div class="slide-head">Theoretical background</div>
+  <div class="cols2" style="flex:1">
+    <div class="vcol">
+      <div class="sub-head" style="color:var(--steel);margin-bottom:5px">Rule interpretation: a behavioural black box</div>
+      <div style="font-size:var(--fs-sm);color:var(--muted);line-height:1.55;margin-bottom:6px">Legal interpretation — and rule interpretation in general — has long been debated in normative terms (textualism vs. purposivism), but the psychological question of <em>what people actually do</em> has remained surprisingly understudied.</div>
+      <div class="ti" style="border-color:var(--steel);background:var(--steel-lt)">
+        <div class="ti-h">Almeida et al. (2023)</div>
+        <div class="ti-b">Participants generally rely <strong>more on the textual meaning</strong> of a rule than on its purpose when both are available. The prescription label is the default anchor.</div>
+      </div>
+      <div class="ti" style="border-color:var(--steel);background:var(--steel-lt)" style="margin-top:3px">
+        <div class="ti-h">Hannikainen et al. (2022)</div>
+        <div class="ti-b">The textual bias is <strong>amplified in coordination contexts</strong> — when participants must align with others, the public salience of the rule's letter makes it the natural focal point.</div>
+      </div>
+      <div class="ti" style="border-color:var(--steel);background:var(--steel-lt)" style="margin-top:3px">
+        <div class="ti-h">Bystranowski et al. (2024)</div>
+        <div class="ti-b">Researchers link the textual dominance to <strong>public salience</strong>: the rule's written text is cognitively prominent and provides a coordination device that overrides purpose-reasoning.</div>
+      </div>
+    </div>
+    <div class="vcol">
+      <div class="sub-head" style="color:var(--rust);margin-bottom:5px">The judgment–decision gap &amp; our contribution</div>
+      <div class="co" style="margin-bottom:5px"><strong>Judgment vs. decision making:</strong> Interpreting a rule to evaluate someone else's behaviour (judgment) may recruit different processes than deciding how to act under the same rule. The compliance concept and punitive enforcement may follow different logics.</div>
+      <div class="co-r" style="margin-bottom:5px"><strong>Perspective matters:</strong> Which interpretive method feels natural may depend on whether you are the rule-follower (internalising purpose) or an outside evaluator (relying on the visible text).</div>
+      <div class="co-s" style="margin-bottom:5px"><strong>Consequences sharpen purposivism:</strong> When a decision is pointless or unjust, relying on textual meaning becomes harder to maintain — moral cost activates purpose-reasoning even for textualists.</div>
+      <div class="co-a"><strong>Our contribution:</strong> Orthogonal text/purpose manipulation · dual DVs (judgment + punishment) · three actor roles across three experiments. First design to dissociate text from purpose <em>empirically</em> at both levels simultaneously.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 04 — THE FUNDAMENTAL TENSION
+══════════════════════════════════════════ -->
+<div class="slide sw sw-white" data-title="The fundamental tension">
+  <div class="slide-head">The fundamental tension</div>
+  <div style="text-align:center;font-size:var(--fs-body);color:var(--muted);margin-bottom:3%">A rule says: <strong style="color:var(--navy)">"Choose option E."</strong> &nbsp; The stated purpose: <strong style="color:var(--navy)">"Achieve an equal split."</strong></div>
+  <div class="cols3" style="flex:1;max-height:55%">
+    <div style="background:var(--sage-lt);border:1px solid rgba(78,140,124,.3);border-radius:8px;padding:4% 4%;display:flex;flex-direction:column;gap:5px">
+      <div style="font-size:var(--fs-body);font-weight:500;color:var(--sage)">Text = Purpose</div>
+      <div style="font-size:var(--fs-sm);color:var(--muted);line-height:1.5">E = 50–50 · <strong>Normal</strong><br>No tension. Follow the rule, achieve the purpose. Unambiguous baseline.</div>
+    </div>
+    <div style="background:var(--steel-lt);border:1px solid rgba(61,90,128,.3);border-radius:8px;padding:4% 4%;display:flex;flex-direction:column;gap:5px">
+      <div style="font-size:var(--fs-body);font-weight:500;color:var(--steel)">Text ≠ Purpose</div>
+      <div style="font-size:var(--fs-sm);color:var(--muted);line-height:1.5">E = 30–70 · <strong>Underinclusion</strong><br>Prescription fails the goal. Text says E; purpose wants 50–50. They cannot both be satisfied.</div>
+    </div>
+    <div style="background:var(--rust-lt);border:1px solid rgba(160,80,31,.3);border-radius:8px;padding:4% 4%;display:flex;flex-direction:column;gap:5px">
+      <div style="font-size:var(--fs-body);font-weight:500;color:var(--rust)">Text ⊕ Purpose</div>
+      <div style="font-size:var(--fs-sm);color:var(--muted);line-height:1.5">E = 100–0 · <strong>Selfish</strong><br>Prescription is morally objectionable. Text says E; fairness norm demands otherwise.</div>
+    </div>
+  </div>
+  <div class="co" style="margin-top:3%"><strong>Key design move:</strong> We need conditions where the textually-compliant choice and the purpose-compliant choice are <em>different options</em> with <em>different payoffs</em> — so any C ≈ E result cannot be dismissed as outcome identity.</div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 05 — SIX CONDITIONS
+══════════════════════════════════════════ -->
+<div class="slide sw sw-surf" data-title="Six between-subjects conditions">
+  <div class="slide-head">Six between-subjects conditions</div>
+  <div style="font-size:var(--fs-sm);color:var(--muted);margin-bottom:2.5%">Payoffs: Self — Other &nbsp;·&nbsp; ★ = prescribed option E &nbsp;·&nbsp; † = purpose-achieving (50–50)</div>
+  <table class="tbl" style="flex-shrink:0">
+    <tr><th>Option</th><th>Normal</th><th>Over</th><th>Under</th><th>OverUnder</th><th>UnderSelfish</th><th>OUSelfish</th></tr>
+    <tr><td>A</td><td>100–0</td><td>100–0</td><td>100–0</td><td>100–0</td><td>70–30</td><td>70–30</td></tr>
+    <tr><td>B</td><td>90–10</td><td>90–10</td><td>90–10</td><td>90–10</td><td>90–10</td><td>90–10</td></tr>
+    <tr><td>C</td><td>80–20</td><td><strong>50–50 †</strong></td><td>80–20</td><td><strong>50–50 †</strong></td><td>80–20</td><td><strong>50–50 †</strong></td></tr>
+    <tr><td>D</td><td>70–30</td><td>70–30</td><td>60–40</td><td>80–20</td><td>60–40</td><td>80–20</td></tr>
+    <tr class="hl"><td><strong>E ★</strong></td><td><strong>50–50</strong></td><td><strong>50–50</strong></td><td><strong>30–70</strong></td><td><strong>30–70</strong></td><td><strong>100–0</strong></td><td><strong>100–0</strong></td></tr>
+    <tr><td>F</td><td>30–70</td><td>30–70</td><td>70–30</td><td>70–30</td><td>30–70</td><td>30–70</td></tr>
+    <tr><td>G–I</td><td>20–80…0–100</td><td>↓</td><td>↓</td><td>↓</td><td>↓</td><td>↓</td></tr>
+  </table>
+  <div class="cols2" style="margin-top:3%;flex:1">
+    <div class="co-r"><strong>OverUnder is the cleanest test:</strong> Text says E = 30–70; purpose says C = 50–50. Different payoffs, different compliance credentials — no payoff-identity confound possible.</div>
+    <div class="co-s"><strong>Selfish conditions:</strong> E = 100–0 maximises self at others' expense. The <em>prescribed</em> option is morally objectionable. Does the label still confer compliance status?</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 06 — CODING VARIABLES
+══════════════════════════════════════════ -->
+<div class="slide sw sw-white" data-title="Coding variables">
+  <div class="slide-head">Coding variables</div>
+  <div class="cols2" style="flex:1">
+    <div class="vcol">
+      <table class="tbl" style="flex-shrink:0">
+        <tr><th>Variable</th><th>= 1 when…</th><th>Conditions</th></tr>
+        <tr class="hl"><td><strong>TC</strong> TextCompliant</td><td>Option is "E" (prescribed letter)</td><td>All</td></tr>
+        <tr class="hl"><td><strong>PC</strong> PurposeCompliant</td><td>Option achieves 50–50 equal split</td><td>All</td></tr>
+        <tr><td><strong>IdenticalToE</strong></td><td>Option C in Over only (C = E = 50–50 payoff)</td><td>Over only</td></tr>
+      </table>
+      <div class="co" style="margin-top:5px"><strong>Key property:</strong> In Normal/Over, E is TC = 1 <em>and</em> PC = 1. In Under/OverUnder, E is TC = 1 but PC = 0. In selfish conditions, E is TC = 1, PC = 0, with a morally objectionable outcome.</div>
+    </div>
+    <div class="vcol">
+      <div class="sub-head">Why IdenticalToE?</div>
+      <div style="font-size:var(--fs-sm);color:var(--muted);line-height:1.5;margin-bottom:6px">In Over, C and E both pay 50–50. Any C = E result in deduction <em>might</em> reflect evaluators who cannot justify different punishment for identical outcomes — not genuine purpose-compliance leniency.</div>
+      <div style="font-size:var(--fs-sm);color:var(--muted);line-height:1.5;margin-bottom:6px">IdenticalToE isolates this <strong style="color:var(--navy)">payoff-identity confound</strong>.</div>
+      <div class="co-r">The OverUnder condition resolves it entirely: C = 50–50 ≠ E = 30–70 (different payoffs), yet C ≈ E in evaluation. If C ≈ E in OverUnder, the purpose-compliance effect is <em>real</em>.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 07 — THREE EXPERIMENTS
+══════════════════════════════════════════ -->
+<div class="slide sw sw-surf" data-title="Three experiments">
+  <div class="slide-head">Three experiments</div>
+  <div class="cols3" style="flex:1">
+    <div class="card" style="border-top-color:var(--steel)">
+      <div class="card-h">Experiment 1</div>
+      <div style="font-family:'DM Mono',monospace;font-size:var(--fs-sm);color:var(--steel);margin-bottom:3px">No consequences</div>
+      <div class="card-b">Participants choose A–I under a rule prescribing E. No third-party observer. No payoff stakes.</div>
+      <div style="font-size:var(--fs-sm);color:var(--muted);margin-bottom:5px">N = 290 · ~48/condition<br>DV: chose E (binary)</div>
+      <div class="co"><em>Baseline: what do people do when no one is watching?</em></div>
+    </div>
+    <div class="card" style="border-top-color:var(--rust)">
+      <div class="card-h">Experiment 2</div>
+      <div style="font-family:'DM Mono',monospace;font-size:var(--fs-sm);color:var(--rust);margin-bottom:3px">Anticipated punishment</div>
+      <div class="card-b">Same choice, but payoff-relevant and visible to a reviewer who may deduct tokens. Plus a belief task.</div>
+      <div style="font-size:var(--fs-sm);color:var(--muted);margin-bottom:5px">N = 302 · ~50/condition<br>DVs: DG choice; BT beliefs</div>
+      <div class="co-r"><em>Does scrutiny suppress purposivist deviation?</em></div>
+    </div>
+    <div class="card" style="border-top-color:var(--sage)">
+      <div class="card-h">Experiment 3</div>
+      <div style="font-family:'DM Mono',monospace;font-size:var(--fs-sm);color:var(--sage);margin-bottom:3px">Third-party enforcement</div>
+      <div class="card-b">Independent evaluators rate all nine options A–I on compliance (Likert) and deduction (0–50 pts).</div>
+      <div style="font-size:var(--fs-sm);color:var(--muted);margin-bottom:5px">N = 290 · ~48/condition<br>Within-subjects for options A–I<br>DVs: Likert (1–6); Deductions</div>
+      <div class="co-s"><em>How do observers interpret and enforce the rule?</em></div>
+    </div>
+  </div>
+  <div class="co" style="margin-top:3%"><strong>Dual-DV design (Exp 3):</strong> Compliance concept (Likert) = how you interpret what the rule requires. Deduction = how you exercise punitive power. These can — and do — dissociate.</div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 08 — PARTICIPANTS
+══════════════════════════════════════════ -->
+<div class="slide sw sw-white" data-title="Participants">
+  <div class="slide-head">Participants</div>
+  <div style="font-size:var(--fs-sm);color:var(--muted);margin-bottom:2.5%">All samples recruited on Prolific. SVO: Murphy et al. (2011) 6-item slider. IA index valid for Prosocials only.</div>
+  <table class="tbl" style="flex-shrink:0;margin-bottom:3%">
+    <tr><th>Sample</th><th>Role</th><th>N</th><th>Mean SVO</th><th>Prosocial %</th><th>Mean IA</th></tr>
+    <tr><td><strong>Exp 1</strong></td><td>Dictator Game (no consequences)</td><td>290</td><td>23.1° (SD 13.5)</td><td>56%</td><td>0.33</td></tr>
+    <tr><td><strong>Exp 2</strong></td><td>DG + anticipated punishment</td><td>302</td><td>23.1° (SD 13.7)</td><td>51%</td><td>0.37</td></tr>
+    <tr><td><strong>Exp 3</strong></td><td>Third-party evaluators</td><td>290</td><td>28.3° (SD 13.3)</td><td>70%</td><td>0.26</td></tr>
+  </table>
+  <div class="cols2" style="flex:1">
+    <div class="vcol">
+      <div class="co"><strong>Social preferences:</strong> SVO angle does not significantly predict behavioral adherence (Exp 1: χ²(1) = 0.34, p = .56; Exp 2 DG: χ²(1) = 0.06, p = .81). A marginal effect appears in Exp 2 belief expectations (BT: χ²(1) = 5.23, p = .022). Social preferences are largely orthogonal to the condition manipulation.</div>
+      <div class="co-a" style="margin-top:4px"><strong>General rule-following tendency (Ball task):</strong> A separate 90-trial behavioural measure of dispositional rule compliance was collected. The Ball task adherence rate <em>does</em> significantly predict whether rule subjects follow the prescription (Exp 1: χ²(1) = 20, p &lt; .001, OR = 1.58; Exp 2 DG: p = .034; Exp 2 BT: p = .005), but does <em>not</em> predict third-party Likert ratings or deduction points in Exp 3 (both ps ≥ .08).</div>
+    </div>
+    <div class="co-s"><strong>Exp 3 note:</strong> Third-party evaluators show notably higher prosocial prevalence (70% vs. ~51–56% in Exp 1/2) and lower IA (0.26 vs. 0.33–0.37), consistent with a fairness-oriented Prolific sample. SVO is reported for characterisation only; it does not confound condition assignments. Exp 3 participants are a distinct, independently-recruited sample — their social preferences are unrelated to the conditions they were randomised to.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 09 — SVO & BALL TASK
+══════════════════════════════════════════ -->
+<div class="slide sw sw-white" data-title="Individual differences: SVO &amp; rule-following task">
+  <div class="slide-head">Individual differences: SVO &amp; general rule-following tendency</div>
+  <div class="cols2" style="flex:1;min-height:0">
+    <div class="vcol" style="min-height:0;overflow:hidden">
+      <div class="sub-head" style="color:var(--steel)">Social Value Orientation (Murphy et al., 2011)</div>
+      <div style="font-size:var(--fs-sm);color:var(--muted);line-height:1.45;margin-bottom:6px">Angle from 6-item Slider Measure; ~51–70% prosocial across experiments (see Participants slide). Added as a covariate in LRTs alongside condition.</div>
+      <div class="co"><strong>LRT: SVO as predictor</strong>
+        <table class="tbl" style="margin:5px 0 4px">
+          <tr><th>Exp</th><th>Task</th><th>χ²(1)</th><th><em>p</em></th></tr>
+          <tr><td>1</td><td>DG</td><td>0.34</td><td>.56 ns</td></tr>
+          <tr><td>2</td><td>DG</td><td>0.06</td><td>.81 ns</td></tr>
+          <tr><td>2</td><td>BT</td><td>5.23</td><td>.022 *</td></tr>
+          <tr><td>3</td><td>—</td><td colspan="2">not extractable</td></tr>
+        </table>
+        SVO does not predict behavioral adherence (Exp 1 &amp; 2 DG both ns). A marginal effect in Exp 2 Belief Task suggests prosocials expect others to choose E more, but this does not translate to their own decisions.
+      </div>
+      <div class="co-s" style="margin-top:4px"><strong>Interpretation:</strong> Social preferences are orthogonal to the condition manipulation and do not drive textualist or purposivist choices.</div>
+    </div>
+    <div class="vcol" style="min-height:0;overflow:hidden">
+      <div class="sub-head" style="color:var(--rust)">Ball task — dispositional rule-following</div>
+      <div style="font-size:var(--fs-sm);color:var(--muted);line-height:1.45;margin-bottom:6px">90-trial pre-task: choose between coloured balls under a prescriptive rule. Adherence rate = % rule-compliant selections. Means: Exp 1 = 64.6%, Exp 2 = 65.6%, Exp 3 = 71.0%.</div>
+      <div class="co-r"><strong>LRT: Ball task as predictor</strong>
+        <table class="tbl" style="margin:5px 0 4px">
+          <tr><th>Exp</th><th>DV</th><th>χ²(1)</th><th><em>p</em></th><th>OR</th></tr>
+          <tr><td>1</td><td>DG</td><td>20.0</td><td>&lt;.001 ***</td><td>1.58</td></tr>
+          <tr><td>2</td><td>DG</td><td>4.52</td><td>.034 *</td><td>1.29</td></tr>
+          <tr><td>2</td><td>BT</td><td>8.07</td><td>.005 **</td><td>—</td></tr>
+          <tr><td>3</td><td>Likert</td><td>1.39</td><td>.24 ns</td><td>—</td></tr>
+          <tr><td>3</td><td>Deduction</td><td>3.06</td><td>.08 ·</td><td>—</td></tr>
+        </table>
+      </div>
+      <div class="co-s" style="margin-top:4px"><strong>Key dissociation:</strong> Ball task predicts <em>behavioral</em> compliance in Exp 1 &amp; 2 (OR = 1.58, p &lt; .001) but not third-party evaluations in Exp 3. Rule-following disposition shapes your own choices — not how you judge others.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 10 — BEHAVIOURAL ADHERENCE
+══════════════════════════════════════════ -->
+<div class="slide sw sw-surf" data-title="Behavioural adherence — Exp 1 &amp; 2">
+  <div class="slide-head">Behavioural adherence — Exp 1 &amp; 2</div>
+  <div style="font-size:var(--fs-sm);color:var(--muted);margin-bottom:2.5%">% chose option E (the prescribed letter)</div>
+  <table class="tbl" style="flex-shrink:0;margin-bottom:3%">
+    <tr><th>Condition</th><th>E prescribes</th><th>Exp 1 %</th><th>Exp 2 DG %</th><th>Δ lift</th></tr>
+    <tr class="hl"><td>Normal</td><td>50–50</td><td>88.7%</td><td>96.0%</td><td>+7.3 pp</td></tr>
+    <tr class="hl"><td>Over</td><td>50–50</td><td>85.4%</td><td>95.0%</td><td>+9.6 pp</td></tr>
+    <tr><td>Under</td><td>30–70</td><td>66.0%</td><td>82.2%</td><td>+16.2 pp</td></tr>
+    <tr><td>OverUnder</td><td>30–70</td><td>63.9%</td><td>77.0%</td><td>+13.1 pp</td></tr>
+    <tr><td>UnderSelfish</td><td>100–0</td><td>84.5%</td><td>91.0%</td><td>+6.5 pp</td></tr>
+    <tr><td>OverUnderSelfish</td><td>100–0</td><td>79.2%</td><td>79.2%</td><td>0 pp</td></tr>
+  </table>
+  <div class="cols2" style="flex:1">
+    <div class="co"><strong>Overinclusion (Over) = no deficit.</strong> Having a purpose-equivalent alternative (C) does not lure participants away from E. The prescription label holds behaviour at ≈86–96%.</div>
+    <div class="co-r"><strong>Underinclusion drops adherence by 20–25 pp.</strong> When E fails the purpose, a meaningful minority deviates — especially in OverUnder where a purpose-achieving C is explicitly available.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 10 — GLMM EXP 1
+══════════════════════════════════════════ -->
+<div class="slide sw sw-white" data-title="GLMM — Experiment 1">
+  <div class="slide-head">GLMM — Experiment 1</div>
+  <div class="cols2" style="flex:1">
+    <div class="vcol">
+      <div class="sub-head">Robust estimates (blme)</div>
+      <div style="font-size:var(--fs-sm);color:var(--muted);line-height:1.45;margin-bottom:5px">Adherence &gt;85% in Normal/Over causes quasi-complete separation. <strong style="color:var(--navy)">blme::bglmer</strong> with normal prior (SD = 3) stabilises estimates without distorting conclusions.</div>
+      <table class="tbl">
+        <tr><th>Condition vs. Normal</th><th>OR</th><th>p</th></tr>
+        <tr class="hl"><td>Over</td><td>2.13</td><td>.534 ns</td></tr>
+        <tr class="hl-r"><td>Under</td><td>0.027</td><td>&lt;.001 ***</td></tr>
+        <tr class="hl-r"><td>OverUnder</td><td>0.020</td><td>&lt;.001 ***</td></tr>
+        <tr><td>UnderSelfish</td><td>0.448</td><td>.458 ns</td></tr>
+        <tr><td>OverUnderSelfish</td><td>0.629</td><td>.673 ns</td></tr>
+      </table>
+      <div style="font-size:var(--fs-sm);color:var(--muted);margin-top:4px">SVO: Exp 1 χ²(1) = 0.34, p = .56 · Exp 2 DG χ²(1) = 0.06, p = .81 · Exp 2 BT χ²(1) = 5.23, p = .022 · Ball task: Exp 1 χ²(1) = 20, p &lt; .001, OR = 1.58 · Exp 2 DG p = .034 · Exp 2 BT p = .005 · Exp 3 both ns</div>
+    </div>
+    <div class="vcol">
+      <div class="sub-head">Interpreting the results</div>
+      <div class="co-r"><strong>OR = 0.020–0.027 (Under, OverUnder):</strong> Over 97% reduction in odds of choosing E. These are among the largest effect sizes achievable in a binary-choice paradigm — underinclusion devastates adherence.</div>
+      <div class="co" style="margin-top:4px"><strong>Over, UnderSelfish, and OverUnderSelfish all non-significant.</strong> The critical driver of deviation is specifically purpose-failure in underinclusion — not the mere presence of an alternative, not self-interest alone. Participants follow the letter even when selfishness would also justify E.</div>
+      <div class="co-s" style="margin-top:4px"><strong>Why blme?</strong> Adherence rates above 85% in Normal/Over create quasi-complete separation — standard <code>lme4</code> produces infinite or unstable log-ORs. <code>blme::bglmer()</code> with a weakly informative normal prior (SD = 3 on the log-OR scale) regularises estimates without changing the substantive conclusions.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 11 — CROSS-EXPERIMENT
+══════════════════════════════════════════ -->
+<div class="slide sw sw-surf" data-title="Cross-experiment: does anticipated punishment change behaviour?">
+  <div class="slide-head">Cross-experiment: anticipated punishment</div>
+  <div class="co-s" style="margin-bottom:2.5%;flex-shrink:0"><strong>Condition × Experiment interaction: χ²(5) = 17.19, p = .004**</strong> — the punishment lift is not uniform across conditions.</div>
+  <div class="cols2" style="flex:1">
+    <div class="vcol">
+      <div class="sub-head">Lift by condition</div>
+      <table class="tbl">
+        <tr><th>Condition</th><th>Exp 1 %</th><th>Exp 2 %</th><th>Lift</th></tr>
+        <tr class="hl"><td>Normal</td><td>88.7</td><td>96.0</td><td>+7 pp (near ceiling)</td></tr>
+        <tr class="hl"><td>Over</td><td>85.4</td><td>95.0</td><td>+10 pp (near ceiling)</td></tr>
+        <tr class="hl-r"><td>Under</td><td>66.0</td><td>82.2</td><td><strong>+16 pp</strong></td></tr>
+        <tr class="hl-r"><td>OverUnder</td><td>63.9</td><td>77.0</td><td><strong>+13 pp</strong></td></tr>
+        <tr><td>UnderSelfish</td><td>84.5</td><td>91.0</td><td>+6.5 pp</td></tr>
+        <tr><td>OUSelfish</td><td>79.2</td><td>79.2</td><td>0 pp</td></tr>
+      </table>
+    </div>
+    <div class="vcol">
+      <div class="sub-head">Interpretation</div>
+      <div class="co-r">Punishment is most effective <em>exactly where purposivist deviation was highest</em>. This is not a general deterrence story — it is selective suppression of purposivist reasoning.</div>
+      <div class="co" style="margin-top:4px">The mechanism that drives deviation in Under/OverUnder — "E doesn't achieve what the rule is for" — is the mechanism most suppressed by anticipated scrutiny.</div>
+      <div class="co-a" style="margin-top:4px">OUSelfish shows zero lift. When E is selfish, participants may resist for reputational as much as purposivist reasons — scrutiny provides no additional pressure.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 12 — THREE-SOURCE COMPARISON
+══════════════════════════════════════════ -->
+<div class="slide sw sw-white" data-title="Three-source comparison">
+  <div class="slide-head">Three-source comparison: behaviour, beliefs, punishment</div>
+  <div style="font-size:var(--fs-sm);color:var(--muted);margin-bottom:2%">Three data streams per condition: Exp 1 (no stakes) · Exp 2 BT (beliefs about others) · Exp 2 DG (under anticipated punishment)</div>
+  <table class="tbl" style="flex-shrink:0;margin-bottom:3%">
+    <tr><th>Condition</th><th>Exp 1 %</th><th>BT Beliefs %</th><th>Exp 2 DG %</th></tr>
+    <tr><td>Normal</td><td>88.7</td><td>90.0</td><td><strong>96.0</strong></td></tr>
+    <tr><td>Over</td><td>85.4</td><td>89.0</td><td><strong>95.0</strong></td></tr>
+    <tr><td>Under</td><td>66.0</td><td>60.4</td><td><strong>82.2</strong></td></tr>
+    <tr><td>OverUnder</td><td>63.9</td><td>59.4</td><td><strong>77.0</strong></td></tr>
+    <tr class="hl-r"><td>UnderSelfish</td><td>84.5</td><td>73.3</td><td><strong>91.0</strong></td></tr>
+    <tr class="hl-r"><td>OUSelfish</td><td>79.2</td><td>64.4</td><td><strong>79.2</strong></td></tr>
+  </table>
+  <div class="cols3" style="flex:1">
+    <div class="co"><strong>Beliefs ≈ Exp 1.</strong> People accurately predict what unconstrained others will do (OR = 1.89, p = .479). Normative social expectations and actual unconstrained behaviour are tightly aligned — consistent with accurate social projection rather than conformity pressure.</div>
+    <div class="co-r"><strong>DG far exceeds both baselines.</strong> Anticipated punishment drives compliance beyond what norms predict (OR_DG/BT = 12.66, p &lt; .001; OR_DG/Exp1 = 6.69, p = .002). The interaction Condition × Source χ²(5) = 17.19, p = .004 confirms the lift is largest in Under and OverUnder — exactly where purposivist deviation was greatest. Punishment selectively suppresses purpose-driven deviation.</div>
+    <div class="co-s"><strong>Selfish BT underestimates Exp 1.</strong> UnderSelfish: 73% belief vs. 85% actual; OUSelfish: 64% vs. 79%. Attribution bias — people project their own moral reluctance to follow a selfish rule onto others. They underestimate how often others will comply with a self-serving prescription.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 13 — EXP 3 DESIGN
+══════════════════════════════════════════ -->
+<div class="slide sw sw-surf" data-title="Experiment 3 — design">
+  <div class="slide-head">Experiment 3 — third-party judgment design</div>
+  <div class="cols2" style="flex:1">
+    <div class="vcol">
+      <div class="sub-head">Task</div>
+      <div style="font-size:var(--fs-sm);color:var(--muted);line-height:1.5;margin-bottom:5px">Independent evaluators (not involved in allocation) were shown all nine options A–I in their assigned condition and asked for each:</div>
+      <div class="step-r"><div class="step-n">1</div><div class="step-t"><strong>Likert:</strong> "How much does this choice comply with the rule?" (6-point: Definitely violates → Definitely complies)</div></div>
+      <div class="step-r"><div class="step-n">2</div><div class="step-t"><strong>Deduction:</strong> How many of 50 points would you deduct from this person?</div></div>
+      <div style="font-size:var(--fs-sm);color:var(--muted);margin-top:5px">Between-subjects for condition (N = 290 total; ~48/condition); <em>within-subjects</em> for all nine options A–I. Each evaluator provides 9 Likert ratings and 9 deduction amounts within their assigned condition.</div>
+      <div class="co" style="margin-top:5px">Both DVs for every option — so each evaluator gives 9 Likert ratings and 9 deduction amounts, enabling within-person correlation.</div>
+    </div>
+    <div class="vcol">
+      <div class="sub-head">Why two DVs?</div>
+      <div class="co" style="margin-bottom:4px"><strong>Likert</strong> = compliance <em>concept</em>. How does the evaluator interpret what the rule requires? This is a labelling judgment.</div>
+      <div class="co-r" style="margin-bottom:4px"><strong>Deduction</strong> = punitive <em>enforcement</em>. Is the evaluator willing to use their punishment power? This is a behavioural commitment.</div>
+      <div class="co-s">These two DVs can — and do — <em>dissociate</em>. A person can simultaneously say "they followed the rule" (high Likert) and "I will punish them" (high deduction). This occurs in 44% of evaluators in the most extreme condition (OverUnderSelfish) — a genuine within-person logical inversion that is invisible if you measure only one DV. Mean within-person r = 0.26 across the whole sample.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 14 — NORMAL CONDITION
+══════════════════════════════════════════ -->
+<div class="slide sw sw-white" data-title="Exp 3 — Normal condition">
+  <div class="slide-head">Exp 3 — Normal condition <span style="font-size:var(--fs-sm);font-weight:400;font-family:'DM Mono',monospace;color:var(--muted)">E = 50–50: text and purpose align</span></div>
+  <div class="cols2" style="flex:1">
+    <div class="vcol">
+      <div style="font-size:var(--fs-sm);color:var(--muted);line-height:1.5;margin-bottom:5px">The unambiguous baseline. E is the prescribed letter <em>and</em> the equal split. No other option satisfies either criterion.</div>
+      <table class="tbl">
+        <tr><th>Option</th><th>Ded M</th><th>Likert M</th></tr>
+        <tr class="hl"><td><strong>E (50–50)</strong></td><td><strong>4.5</strong></td><td><strong>5.42</strong></td></tr>
+        <tr><td>A (100–0)</td><td>24.7</td><td>1.25</td></tr>
+        <tr><td>F (30–70)</td><td>12.1</td><td>2.14</td></tr>
+        <tr><td>G (20–80)</td><td>9.1</td><td>2.78</td></tr>
+        <tr><td>I (0–100)</td><td>9.3</td><td>2.61</td></tr>
+      </table>
+      <div style="font-size:var(--fs-sm);color:var(--muted);margin-top:3px">All 8 non-E options: p ≤ .011 deduction, p = .000 Likert vs. E.</div>
+    </div>
+    <div class="vcol">
+      <div class="co-s">The paradigm works. Evaluators cleanly differentiate the prescribed, purpose-achieving option from every alternative. This is the anchor for all subsequent comparisons.</div>
+      <div style="margin-top:5px;font-size:var(--fs-sm);color:var(--muted)">Friedman test:</div>
+      <div class="mchip" style="background:var(--steel-lt);color:var(--steel);margin-bottom:3px">χ²(8) = 349.4, W = 0.303 (deduction)</div>
+      <div class="mchip" style="background:var(--steel-lt);color:var(--steel);margin-bottom:5px">χ²(8) = 440.6, W = 0.382 (Likert)</div>
+      <div style="font-size:var(--fs-sm);color:var(--muted);margin-bottom:5px">Both p &lt; .0001</div>
+      <div class="co"><strong>All six conditions</strong> show highly significant Friedman discrimination — evaluators are not responding randomly in any condition.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 15 — OVER: CENTRAL DISSOCIATION
+══════════════════════════════════════════ -->
+<div class="slide sw sw-surf" data-title="Exp 3 — Over condition (central dissociation)">
+  <div class="slide-head">Exp 3 — Over condition: the central dissociation</div>
+  <div style="font-size:var(--fs-sm);color:var(--muted);margin-bottom:2%">E = 50–50 (Text + Purpose) &nbsp;·&nbsp; C = 50–50 (Purpose-Only, identical payoff)</div>
+  <div class="cols2" style="flex:1">
+    <div class="vcol">
+      <div style="font-size:var(--fs-sm);color:var(--muted);margin-bottom:4px">When two options produce <em>identical outcomes</em>, does the prescription label matter?</div>
+      <table class="tbl">
+        <tr><th>Option</th><th>Payoff</th><th>Ded M</th><th>Likert M</th></tr>
+        <tr class="hl"><td><strong>E (prescribed)</strong></td><td>50–50</td><td><strong>4.3</strong></td><td><strong>5.63</strong></td></tr>
+        <tr class="hl-r"><td><strong>C (not prescribed)</strong></td><td>50–50</td><td><strong>4.8</strong></td><td><strong>3.93</strong></td></tr>
+      </table>
+      <div style="font-size:var(--fs-sm);color:var(--muted);margin-top:3px;margin-bottom:5px">C vs. E: Deduction p = 1.000 &nbsp;·&nbsp; Likert p = .000 (d = 1.02)</div>
+      <div class="mchip" style="background:var(--rust-lt);color:var(--rust)">Kendall's W = 0.503 for Likert — highest of all six conditions</div>
+    </div>
+    <div class="vcol">
+      <div class="co-r" style="margin-bottom:5px"><strong>Central dissociation:</strong> Same 50–50 payoff — yet C scores 1.7 compliance points below E (d = 1.02) while receiving <em>identical punishment</em>. The label inflates the compliance concept without affecting enforcement.</div>
+      <div style="margin-bottom:5px">
+        <span class="badge">Compliance concept</span> <span style="font-size:var(--fs-sm);color:var(--muted)">&nbsp;tracks the prescription label. E is named; E is compliant.</span>
+      </div>
+      <div style="margin-bottom:6px">
+        <span class="badge-r badge">Punishment</span> <span style="font-size:var(--fs-sm);color:var(--muted)">&nbsp;tracks outcomes. Same money = same punishment. Label is irrelevant.</span>
+      </div>
+      <div class="co-s">Evaluators maximally agree on the E &gt; C ranking (W = 0.503) precisely where the label effect is clearest. This is not noise — it is a highly consensual, highly reliable dissociation.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 16 — UNDER: ALTRUISM HEURISTIC
+══════════════════════════════════════════ -->
+<div class="slide sw sw-white" data-title="Exp 3 — Under condition (altruism heuristic)">
+  <div class="slide-head">Exp 3 — Under condition: the altruism heuristic</div>
+  <div style="font-size:var(--fs-sm);color:var(--muted);margin-bottom:2%">E = 30–70 (Text-Only) &nbsp;·&nbsp; No 50–50 option exists &nbsp;·&nbsp; Purpose is structurally absent</div>
+  <div class="cols2" style="flex:1">
+    <div>
+      <table class="tbl">
+        <tr><th>Option</th><th>Payoff</th><th>Ded M</th><th>Lk M</th><th>vs. E</th></tr>
+        <tr class="hl"><td><strong>E</strong></td><td>30–70</td><td><strong>6.6</strong></td><td><strong>4.14</strong></td><td>—</td></tr>
+        <tr><td>A</td><td>100–0</td><td>20.4</td><td>1.18</td><td>*** ***</td></tr>
+        <tr><td>F</td><td>70–30</td><td>11.4</td><td>2.05</td><td>** ***</td></tr>
+        <tr class="hl-r"><td>G</td><td>20–80</td><td>8.4</td><td>2.32</td><td>ns ***</td></tr>
+        <tr class="hl-r"><td>H</td><td>10–90</td><td>8.4</td><td>2.43</td><td>ns ***</td></tr>
+        <tr class="hl-r"><td>I</td><td>0–100</td><td>8.8</td><td>2.12</td><td>ns ***</td></tr>
+      </table>
+    </div>
+    <div class="vcol">
+      <div class="co-s"><strong>Altruism heuristic (deduction):</strong> G, H, I are neither text- nor purpose-compliant — yet receive no more punishment than E. Giving generously earns punishment immunity regardless of compliance status.</div>
+      <div class="co" style="margin-top:4px"><strong>Likert remains prescription-anchored:</strong> All 8 non-E options rated significantly less compliant than E (all p = .000). The text label governs the compliance concept even when purpose cannot be achieved.</div>
+      <div class="co-a" style="margin-top:4px">Deviators in Exp 1 (34%) chose self-favouring options, not purpose-following ones — purpose is simply absent from the choice set in this condition.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 17 — OVERUNDER: CLEANEST TEST
+══════════════════════════════════════════ -->
+<div class="slide sw sw-surf" data-title="Exp 3 — OverUnder (cleanest test)">
+  <div class="slide-head">Exp 3 — OverUnder: the cleanest test</div>
+  <div style="font-size:var(--fs-sm);color:var(--muted);margin-bottom:2%">E = 30–70 (Text-Only) &nbsp;·&nbsp; C = 50–50 (Purpose-Only) &nbsp;·&nbsp; <em>Different payoffs</em> — no identity confound</div>
+  <div class="cols2" style="flex:1">
+    <div class="vcol">
+      <div style="font-size:var(--fs-sm);color:var(--muted);margin-bottom:4px">Both options have clear but different compliance credentials. Payoff identity cannot explain any similarity.</div>
+      <table class="tbl">
+        <tr><th>Option</th><th>Payoff</th><th>Ded M</th><th>Lk M</th><th>vs. E</th></tr>
+        <tr class="hl"><td><strong>E (text)</strong></td><td>30–70</td><td>6.6</td><td>3.99</td><td>—</td></tr>
+        <tr class="hl"><td><strong>C (purpose)</strong></td><td>50–50</td><td>5.9</td><td>3.74</td><td><strong>ns / ns</strong></td></tr>
+        <tr><td>A</td><td>100–0</td><td>19.7</td><td>1.16</td><td>*** ***</td></tr>
+        <tr class="hl-r"><td>G</td><td>20–80</td><td>8.4</td><td>2.38</td><td>ns ***</td></tr>
+      </table>
+      <div style="font-size:var(--fs-sm);color:var(--muted);margin-top:3px">C vs. E: Deduction p = 1.000 &nbsp;·&nbsp; Likert p = 1.000</div>
+    </div>
+    <div class="vcol">
+      <div class="co-r"><strong>Strongest evidence:</strong> C (purpose-only, 50–50) = E (text-only, 30–70) on <em>both</em> DVs. Different payoffs. Different compliance credentials. Yet evaluatively indistinguishable.</div>
+      <div class="co" style="margin-top:4px">Purpose compliance <strong>fully substitutes</strong> for text compliance under combined rule ambiguity. Neither the letter nor the spirit dominates when they clearly diverge.</div>
+      <div class="co-s" style="margin-top:4px">Contrast with Over: there, C &lt; E on Likert (label inflates concept when payoffs match). In OverUnder, combined ambiguity dissolves the boundary between compliance pathways entirely.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 18 — SELFISH: REVERSAL
+══════════════════════════════════════════ -->
+<div class="slide sw sw-white" data-title="Exp 3 — selfish conditions (reversal)">
+  <div class="slide-head">Exp 3 — selfish conditions: the punishment reversal</div>
+  <div style="font-size:var(--fs-sm);color:var(--muted);margin-bottom:2%">E = 100–0 (prescribed selfish) &nbsp;·&nbsp; C = 50–50 (equal split, available in OUSelfish)</div>
+  <div class="cols2" style="flex:1">
+    <div class="vcol">
+      <div class="sub-head">UnderSelfish</div>
+      <table class="tbl">
+        <tr><th>Option</th><th>Payoff</th><th>Ded M</th><th>Lk M</th></tr>
+        <tr class="hl-r"><td><strong>E ★</strong></td><td>100–0</td><td><strong>18.2</strong></td><td>2.74</td></tr>
+        <tr><td>F</td><td>30–70</td><td>9.2</td><td>1.62</td></tr>
+        <tr><td>G</td><td>20–80</td><td>10.0</td><td>1.74</td></tr>
+        <tr><td>I</td><td>0–100</td><td>10.0</td><td>1.54</td></tr>
+      </table>
+      <div style="font-size:var(--fs-sm);color:var(--muted);margin-top:3px">F, G, H, I all punished less than E (all p &lt; .001). Complete inversion.</div>
+    </div>
+    <div class="vcol">
+      <div class="sub-head">OverUnderSelfish</div>
+      <table class="tbl">
+        <tr><th>Option</th><th>Payoff</th><th>Ded M</th><th>Lk M</th></tr>
+        <tr class="hl-r"><td><strong>E ★</strong></td><td>100–0</td><td><strong>20.0</strong></td><td>2.61</td></tr>
+        <tr class="hl-r"><td><strong>C</strong></td><td>50–50</td><td><strong>6.0 (!)</strong></td><td>3.42</td></tr>
+      </table>
+      <div style="font-size:var(--fs-sm);color:var(--muted);margin-top:3px">C vs. E: Deduction W = 729.5, p = .000 · Likert p = 1.000</div>
+      <div class="co-r" style="margin-top:4px"><strong>Selfish reversal:</strong> The fair option C is punished <em>more</em> than the selfish-but-prescribed E, while being rated equally compliant. Enforcement inverts; concept does not.</div>
+    </div>
+  </div>
+  <div class="co-s" style="margin-top:3%;flex-shrink:0"><strong>Same evaluators. Simultaneously:</strong> "C is as compliant as E" (Likert) + "we will punish C more" (deduction). Textualism for concept; moral consequentialism for punishment.</div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 19 — LMM: TEXT VS PURPOSE
+══════════════════════════════════════════ -->
+<div class="slide sw sw-surf" data-title="LMM — decomposing text vs. purpose">
+  <div class="slide-head">LMM — decomposing text vs. purpose effects</div>
+  <div style="font-size:var(--fs-sm);color:var(--muted);margin-bottom:2%">Model: DV ~ TextCompliant + PurposeCompliant + IdenticalToE + (1|participant) &nbsp;·&nbsp; Non-selfish conditions</div>
+  <div class="cols2" style="flex:1">
+    <div class="vcol">
+      <div class="sub-head">Deduction (punishment)</div>
+      <table class="tbl">
+        <tr><th>Term</th><th>β</th><th>p</th></tr>
+        <tr><td>Intercept (Neither)</td><td>13.25</td><td>&lt;.001</td></tr>
+        <tr class="hl"><td><strong>TextCompliant (E)</strong></td><td><strong>−5.20</strong></td><td>&lt;.001 ***</td></tr>
+        <tr class="hl"><td><strong>PurposeCompliant (50–50)</strong></td><td><strong>−5.06</strong></td><td>&lt;.001 ***</td></tr>
+        <tr><td>IdenticalToE (Over C)</td><td>−4.04</td><td>.002 **</td></tr>
+      </table>
+      <div class="co-s" style="margin-top:4px">β_Text (−5.20) ≈ β_Purpose (−5.06). Difference = 0.15 pts, within SE. <strong>No text–purpose asymmetry in punishment.</strong></div>
+    </div>
+    <div class="vcol">
+      <div class="sub-head">Likert (compliance concept)</div>
+      <table class="tbl">
+        <tr><th>Term</th><th>β</th><th>p</th></tr>
+        <tr><td>Intercept (Neither)</td><td>1.96</td><td>&lt;.001</td></tr>
+        <tr class="hl"><td><strong>TextCompliant (E)</strong></td><td><strong>+1.99</strong></td><td>&lt;.001 ***</td></tr>
+        <tr class="hl"><td><strong>PurposeCompliant (50–50)</strong></td><td><strong>+1.68</strong></td><td>&lt;.001 ***</td></tr>
+        <tr><td>IdenticalToE (Over C)</td><td>+0.35</td><td>.008 **</td></tr>
+      </table>
+      <div class="co-r" style="margin-top:4px">β_Text (1.99) &gt; β_Purpose (1.68) by 0.31 pts. A small but real compliance-concept premium for the prescription label — but the Role analysis reveals this gap is partly an artefact.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 20 — LMM: SELFISH REVERSAL
+══════════════════════════════════════════ -->
+<div class="slide sw sw-white" data-title="LMM — the selfish reversal">
+  <div class="slide-head">LMM — the selfish reversal</div>
+  <div style="font-size:var(--fs-sm);color:var(--muted);margin-bottom:2%">Selfish conditions (UnderSelfish, OverUnderSelfish): E = 100–0</div>
+  <div class="cols2" style="flex:1">
+    <div class="vcol">
+      <div class="sub-head">Deduction — sign flips</div>
+      <table class="tbl">
+        <tr><th>Term</th><th>β</th><th>p</th></tr>
+        <tr><td>Intercept (Neither)</td><td>12.07</td><td>&lt;.001</td></tr>
+        <tr class="hl-r"><td><strong>TextCompliant (E)</strong></td><td><strong>+6.95</strong></td><td>&lt;.001 ***</td></tr>
+        <tr class="hl"><td><strong>PurposeCompliant (50–50)</strong></td><td><strong>−6.01</strong></td><td>&lt;.001 ***</td></tr>
+      </table>
+      <div class="co-r" style="margin-top:4px">β_Text goes from −5.20 (non-selfish) to <strong>+6.95</strong> (selfish). Following the selfish rule earns ~7 <em>more</em> punishment points. Equal-split options still earn leniency (−6.01).</div>
+    </div>
+    <div class="vcol">
+      <div class="sub-head">Likert — no reversal</div>
+      <table class="tbl">
+        <tr><th>Term</th><th>β</th><th>p</th></tr>
+        <tr><td>Intercept (Neither)</td><td>1.99</td><td>&lt;.001</td></tr>
+        <tr class="hl"><td><strong>TextCompliant (E)</strong></td><td><strong>+1.97</strong></td><td>&lt;.001 ***</td></tr>
+        <tr class="hl"><td><strong>PurposeCompliant (50–50)</strong></td><td><strong>+1.72</strong></td><td>&lt;.001 ***</td></tr>
+      </table>
+      <div class="co-s" style="margin-top:4px">β_Text ≈ +1.97 — essentially identical to non-selfish (+1.99). The compliance concept is <em>stable</em>: evaluators still rate the prescribed E as most compliant even when E prescribes taking everything.</div>
+    </div>
+  </div>
+  <div class="co" style="margin-top:3%;flex-shrink:0"><strong>Full decoupling:</strong> Punishment is morally motivated (anti-E when E is selfish); compliance conceptualisation tracks the rule label regardless of moral content. Two evaluative logics, one evaluator.</div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 21 — E_ROLE FRAMEWORK
+══════════════════════════════════════════ -->
+<div class="slide sw sw-surf" data-title="E_Role framework">
+  <div class="slide-head">The E_Role framework — a cleaner decomposition</div>
+  <div class="cols2" style="flex:1">
+    <div class="vcol">
+      <div class="sub-head">Why Role coding?</div>
+      <div style="font-size:var(--fs-sm);color:var(--muted);line-height:1.5;margin-bottom:5px">The standard LMM assigns β_Text partly from Textual_Equal conditions (E in Normal/Over), where E is <em>both</em> TextCompliant <em>and</em> PurposeCompliant. This inflates β_Text by absorbing the combined bonus.</div>
+      <div style="font-size:var(--fs-sm);color:var(--muted);line-height:1.5;margin-bottom:5px">Role coding assigns each option one <em>mutually exclusive</em> credential — so we can ask directly: <strong style="color:var(--navy)">pure-text vs. pure-purpose</strong>.</div>
+      <div class="co-r">If Textual_Pure = Equal_Only on both DVs, there is no text–purpose asymmetry and the apparent gap in the standard LMM is an artefact.</div>
+    </div>
+    <div>
+      <table class="tbl">
+        <tr><th>Role</th><th>Definition</th><th>Conditions</th></tr>
+        <tr class="hl"><td>Textual_Equal</td><td>E = 50–50 (text + purpose)</td><td>Normal, Over</td></tr>
+        <tr><td>Textual_Pure</td><td>E ≠ 50–50 (text only)</td><td>Under, OverUnder</td></tr>
+        <tr class="hl-r"><td>Textual_Selfish</td><td>E = 100–0 (text, selfish)</td><td>Selfish conds.</td></tr>
+        <tr class="hl"><td>Equal_Only</td><td>C = 50–50, not E</td><td>Over, OU, OUS</td></tr>
+        <tr class="hl-r"><td>Selfish_Only</td><td>A = 100–0, not E</td><td>All conds.</td></tr>
+        <tr><td>Other</td><td>—</td><td>Reference</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 22 — ROLE LMM RESULTS
+══════════════════════════════════════════ -->
+<div class="slide sw sw-white" data-title="Role LMM — five key findings">
+  <div class="slide-head">Role LMM — five key findings</div>
+  <div class="cols2" style="flex:1">
+    <div>
+      <table class="tbl" style="margin-bottom:3px">
+        <tr><th>Role</th><th>Lk β</th><th>Ded β</th><th>Lk emm</th><th>Ded emm</th></tr>
+        <tr class="hl"><td>Textual_Equal</td><td>+3.56***</td><td>−8.28***</td><td>5.52</td><td>3.7</td></tr>
+        <tr><td>Textual_Pure</td><td>+1.99***</td><td>−4.57***</td><td>3.95</td><td>7.4</td></tr>
+        <tr class="hl-r"><td>Textual_Selfish</td><td>+1.98***</td><td>+6.94***</td><td>3.94</td><td>19.0</td></tr>
+        <tr class="hl"><td>Equal_Only</td><td>+1.85***</td><td>−6.16***</td><td>3.81</td><td>5.8</td></tr>
+        <tr class="hl-r"><td>Selfish_Only</td><td>−0.42***</td><td>+9.96***</td><td>1.54</td><td>22.0</td></tr>
+      </table>
+      <div style="font-size:var(--fs-sm);color:var(--muted)">Reference: Other (Lk ≈ 1.96, Ded ≈ 12)</div>
+    </div>
+    <div class="vcol">
+      <div class="fi f1"><strong>1.</strong> Textual_Pure = Equal_Only on both DVs (Δ_Lk = +0.14, p = .973; Δ_Ded = +1.59, p = .649). Pure text = pure purpose.</div>
+      <div class="fi f2"><strong>2.</strong> The β_Text &gt; β_Purpose gap disappears when text and purpose are cleanly separated. It was a Textual_Equal artefact.</div>
+      <div class="fi f3"><strong>3.</strong> Same 100–0 allocation: Selfish_Only Lk = 1.54 vs. Textual_Selfish Lk = 3.94. The label shifts perception by +2.4 pts.</div>
+      <div class="fi f4"><strong>4.</strong> Textual_Selfish Ded β = +6.94: prescribed selfish is actively punished. Label offers only −3 pts relief vs. Selfish_Only.</div>
+      <div class="fi f5"><strong>5.</strong> Textual_Equal β_Lk = +3.56 vs. Equal_Only +1.85: text + purpose together earn a synergistic premium not explained by either alone.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 23 — WITHIN-PERSON DISSOCIATION
+══════════════════════════════════════════ -->
+<div class="slide sw sw-surf" data-title="Within-person Likert–deduction dissociation">
+  <div class="slide-head">Within-person Likert–deduction dissociation</div>
+  <div style="font-size:var(--fs-sm);color:var(--muted);margin-bottom:2.5%">The aggregate dissociation could be a compositional artefact — textualists and purposivists each internally consistent. The within-person correlation rules this out.</div>
+  <div class="cols2" style="flex:1">
+    <div>
+      <table class="tbl">
+        <tr><th>Condition</th><th>Mean r</th><th>SD r</th><th>% neg. r</th></tr>
+        <tr class="hl"><td>Normal</td><td>0.396</td><td>0.370</td><td>12.7%</td></tr>
+        <tr class="hl"><td>Over</td><td>0.391</td><td>0.359</td><td>11.5%</td></tr>
+        <tr><td>Under</td><td>0.294</td><td>0.464</td><td>20.0%</td></tr>
+        <tr><td>OverUnder</td><td>0.253</td><td>0.407</td><td>21.6%</td></tr>
+        <tr><td>UnderSelfish</td><td>0.156</td><td>0.549</td><td>37.0%</td></tr>
+        <tr class="hl-r"><td><strong>OUSelfish</strong></td><td><strong>0.071</strong></td><td>0.615</td><td><strong>44.1%</strong></td></tr>
+      </table>
+      <div style="font-size:var(--fs-sm);color:var(--muted);margin-top:3px">Pooled mean r = 0.26 (SD = 0.47). All mean r values significantly &lt; 1 (all p &lt; .001).</div>
+    </div>
+    <div class="vcol">
+      <div class="co">Even in Normal, r = 0.40 — far from perfect agreement. The DVs are related but not interchangeable even in the unambiguous baseline.</div>
+      <div class="co-r" style="margin-top:4px">r declines monotonically as rule–purpose conflict intensifies. By OUSelfish (r = 0.07), 44% of individuals show a <em>negative</em> within-person r — their compliance ratings and deduction decisions are anti-correlated across the nine options they rated.</div>
+      <div class="co-s" style="margin-top:4px">This is not an aggregate artefact. It is a genuine within-person logical inversion: <em>"I think they followed the rule, and I am going to punish them for it."</em></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 25 — SYNTHESIS: FIVE FINDINGS
+══════════════════════════════════════════ -->
+<div class="slide sw sw-surf" data-title="Synthesis — five central findings">
+  <div class="slide-head">Synthesis — five central findings</div>
+  <div style="display:flex;flex-direction:column;gap:4px;flex:1">
+    <div class="fi f1"><strong>Finding 1 — Textualism dominates the compliance concept.</strong> Likert tracks the prescribed letter E across all six conditions — even when E prescribes a morally objectionable outcome. E rated 1.7 pts above C in Over despite identical payoffs (d = 1.02). β_Text = +1.99*** vs. β_Purpose = +1.68*** in non-selfish LMM. Role analysis shows Textual_Pure ≈ Equal_Only (Δ = 0.14, p = .97) — the apparent gap is a Textual_Equal artefact, not a universal text premium.</div>
+    <div class="fi f2"><strong>Finding 2 — Consequentialism governs punishment.</strong> Deduction tracks outcomes, not the rule label. β_Text (−5.20) ≈ β_Purpose (−5.06): text and purpose protect equally from punishment. Even non-compliant generous options (G/H/I) escape punishment in non-selfish conditions — an altruism heuristic not predicted by any prior model. No text &gt; purpose asymmetry in enforcement.</div>
+    <div class="fi f3"><strong>Finding 3 — Selfish reversal: enforcement inverts, concept does not.</strong> In selfish conditions (E = 100–0), β_Text flips to +6.95*** (prescribed selfish E now punished more); β_Purpose = −6.01*** (equal-split still protected). Simultaneously, Likert shows no reversal: evaluators still rate E as most compliant. Two opposite logics operate within the same evaluator in the same task.</div>
+    <div class="fi f4"><strong>Finding 4 — OverUnder equivalence: purpose fully substitutes for text.</strong> C (purpose-only, 50–50) = E (text-only, 30–70) on both DVs (both p = 1.000), despite different payoffs and different compliance credentials. Under combined rule ambiguity, the letter and the spirit are evaluatively interchangeable.</div>
+    <div class="fi f5"><strong>Finding 5 — Within-person dissociation is pervasive and individual.</strong> Pooled mean within-person r = 0.26 (SD = 0.47) between Likert and deduction across 9 options. In OverUnderSelfish, 44% of evaluators show a <em>negative</em> r — they personally rate E more compliant while giving E more deduction points. This is not an aggregate artefact; it is a genuine individual-level logical inversion.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 26 — HYPOTHESIS VERDICTS
+══════════════════════════════════════════ -->
+<div class="slide sw sw-white" data-title="Hypothesis verdicts">
+  <div class="slide-head">Hypothesis verdicts</div>
+  <table class="tbl" style="flex-shrink:0">
+    <tr><th>H</th><th>Statement</th><th>Behaviour</th><th>Likert</th><th>Deduction</th></tr>
+    <tr>
+      <td><strong>H0</strong></td><td>Only Text+Purpose options exempt from punishment</td>
+      <td><span class="vi-r">Rejected</span></td>
+      <td><span class="vi-r">Rejected</span></td>
+      <td><span class="vi-r">Rejected</span> — C (purpose-only) escapes equally</td>
+    </tr>
+    <tr>
+      <td><strong>H1</strong></td><td>Text only; purpose adds nothing</td>
+      <td>Not testable in Under</td>
+      <td><span class="vi-r">Rejected</span></td>
+      <td><span class="vi-r">Not supported</span> — β_Text ≈ β_Purpose</td>
+    </tr>
+    <tr>
+      <td><strong>H2</strong></td><td>Purpose only; text adds nothing</td>
+      <td><span class="vi-a">Partial</span></td>
+      <td><span class="vi-a">Partial</span> — E &gt; C on Likert</td>
+      <td><span class="vi-a">Partial</span> — C protected equally</td>
+    </tr>
+    <tr>
+      <td><strong>H3</strong></td><td>Both matter; text &gt; purpose</td>
+      <td>—</td>
+      <td><span class="vi-a">Partly</span> — but via Textual_Equal artefact</td>
+      <td><span class="vi-r">Not supported</span> — β_Text ≈ β_Purpose</td>
+    </tr>
+  </table>
+  <div class="co-s" style="margin-top:3%"><strong>Bottom line:</strong> None of H0–H3 is universally correct. The data support a differentiated account: textualism governs the compliance <em>concept</em>, consequentialism governs punitive <em>enforcement</em>.</div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 27 — DUAL-PROCESS ACCOUNT
+══════════════════════════════════════════ -->
+<div class="slide sw sw-surf" data-title="The dual-process account">
+  <div class="slide-head">The dual-process account</div>
+  <div class="cols2" style="flex:1">
+    <div>
+      <div class="proc-box" style="background:var(--steel-lt);border-top:4px solid var(--steel)">
+        <div style="font-size:var(--fs-body);font-weight:500;color:var(--steel);margin-bottom:5px">Process 1 — Prescriptive Identification</div>
+        <div style="font-size:var(--fs-sm);color:var(--muted);margin-bottom:4px">Governs the <strong style="color:var(--navy)">compliance concept</strong> (Likert).</div>
+        <div class="ti" style="border-color:var(--steel)"><div class="ti-b">Identifies the prescribed option E as the compliance anchor</div></div>
+        <div class="ti" style="border-color:var(--steel)"><div class="ti-b">Robust across all conditions — operates even when E is morally objectionable</div></div>
+        <div class="ti" style="border-color:var(--steel)"><div class="ti-b">Does not reverse under selfish prescriptions</div></div>
+        <div class="ti" style="border-color:var(--steel)"><div class="ti-b"><em>Default:</em> "What does the rule say? It says E."</div></div>
+      </div>
+    </div>
+    <div>
+      <div class="proc-box" style="background:var(--rust-lt);border-top:4px solid var(--rust)">
+        <div style="font-size:var(--fs-body);font-weight:500;color:var(--rust);margin-bottom:5px">Process 2 — Outcome / Moral Evaluation</div>
+        <div style="font-size:var(--fs-sm);color:var(--muted);margin-bottom:4px">Governs <strong style="color:var(--navy)">punitive enforcement</strong> (deduction).</div>
+        <div class="ti" style="border-color:var(--rust)"><div class="ti-b">Asks: what was the actual outcome? Was it fair?</div></div>
+        <div class="ti" style="border-color:var(--rust)"><div class="ti-b">Equal-split options consistently escape punishment</div></div>
+        <div class="ti" style="border-color:var(--rust)"><div class="ti-b">Reverses under selfish prescriptions: punishes E, protects C</div></div>
+        <div class="ti" style="border-color:var(--rust)"><div class="ti-b"><em>Active:</em> "What did they actually do to the other person?"</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="co-s" style="margin-top:3%;flex-shrink:0"><strong>These processes coexist within individuals.</strong> Mean within-person r = 0.26 — related but separable. Under competing normative pressures, they point in opposite directions and individuals apply both simultaneously.</div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 28 — RELATION TO LITERATURE
+══════════════════════════════════════════ -->
+<div class="slide sw sw-white" data-title="Relation to existing work">
+  <div class="slide-head">Relation to existing work</div>
+  <div class="cols2" style="flex:1">
+    <div class="vcol">
+      <div class="sub-head">Fehr &amp; Fischbacher (2004)</div>
+      <div style="font-size:var(--fs-sm);color:var(--muted);line-height:1.5;margin-bottom:4px">Third-party punishment anchored on equal-split norm. Does not dissociate rule text from outcomes.</div>
+      <div style="margin-bottom:3px"><span class="badge badge-s">Replicated</span> <span style="font-size:var(--fs-sm);color:var(--muted)">&nbsp;Equal-split options escape punishment in all non-selfish conditions</span></div>
+      <div style="margin-bottom:5px"><span class="badge-r badge">Extended</span> <span style="font-size:var(--fs-sm);color:var(--muted)">&nbsp;In Over: C and E both 50–50, yet Likert dissociates. F&amp;F predicts C = E everywhere; we find C &lt; E for concept.</span></div>
+      <div class="co-r" style="margin-bottom:5px">F&amp;F used a single DV. The within-person dissociation (r = 0.26) is invisible in single-DV designs.</div>
+      <div class="sub-head">Krupka &amp; Weber (2013)</div>
+      <div style="font-size:var(--fs-sm);color:var(--muted);line-height:1.5">Social norms as shared expectations. Our BT ≈ Exp 1 finding confirms this — but anticipated punishment creates compliance beyond what norms alone predict.</div>
+    </div>
+    <div class="vcol">
+      <div class="sub-head">Legal interpretation literature</div>
+      <div class="ti" style="border-color:var(--steel);background:var(--steel-lt)"><div class="ti-h">Almeida et al. (2023)</div><div class="ti-b">People default to textual interpretation when rule text and purpose are available. We confirm this in behaviour (Exp 1 &amp; 2) and compliance judgment (Exp 3 Likert) — and extend it by showing where and why purposivism emerges.</div></div>
+      <div class="ti" style="border-color:var(--steel);background:var(--steel-lt)"><div class="ti-h">Hannikainen et al. (2022) · Bystranowski et al. (2024)</div><div class="ti-b">Coordination and public salience amplify textual bias. Our Exp 2 (anticipated punishment = public scrutiny) raises adherence, consistent with text salience under observation.</div></div>
+      <div class="ti" style="border-color:var(--rust);background:var(--rust-lt)"><div class="ti-h">Judgment vs. decision making distinction</div><div class="ti-b">The dual-DV design confirms the judgment/decision split: compliance concept (Likert) is textualist; punishment (deduction) is consequentialist. The same person applies different logics to different domains of evaluation.</div></div>
+      <div class="co" style="margin-top:4px">Both interpretive orientations are psychologically real — not competing theories about what people <em>should</em> do, but descriptions of two separable cognitive processes operating simultaneously.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 29 — LIMITATIONS
+══════════════════════════════════════════ -->
+<div class="slide sw sw-surf" data-title="Limitations">
+  <div class="slide-head">Limitations</div>
+  <div class="cols2" style="flex:1">
+    <div class="vcol">
+      <div class="co" style="margin-bottom:4px"><strong>1. Payoff-identity confound (Over):</strong> C and E both = 50–50; deduction null may partly reflect outcome-identity leniency rather than pure purpose-compliance. OverUnder addresses this — same null with different payoffs.</div>
+      <div class="co" style="margin-bottom:4px"><strong>2. Altruism heuristic not pre-specified:</strong> G/H/I leniency in non-selfish conditions was not a primary hypothesis. Exploratory — future work should orthogonally manipulate generosity and compliance status.</div>
+      <div class="co"><strong>3. Self-interest confound (selfish conditions):</strong> E = 100–0 maximises personal gain. Elevated adherence may reflect self-interest, not rule-following per se. Cannot be cleanly separated in this design.</div>
+    </div>
+    <div class="vcol">
+      <div class="co" style="margin-bottom:4px"><strong>4. Order effects (Exp 3):</strong> Likert and deduction collected in the same session. Within-person item order not counterbalanced. Contrast or anchoring effects cannot be ruled out.</div>
+      <div class="co" style="margin-bottom:4px"><strong>5. Between-subjects design (Exp 1 &amp; 2):</strong> Each participant saw one condition only. Lower power for interaction effects; no within-person condition comparisons possible.</div>
+      <div class="co"><strong>6. IA subsample:</strong> Inequality Aversion index valid only for Prosocials (~55–70% of samples). IA covariate analyses based on self-selected subset; reduced external validity for that specific finding.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 30 — IMPLICATIONS
+══════════════════════════════════════════ -->
+<div class="slide sw sw-white" data-title="Implications &amp; future directions">
+  <div class="slide-head">Implications &amp; future directions</div>
+  <div class="cols2" style="flex:1">
+    <div class="vcol">
+      <div class="sub-head">Theoretical implications</div>
+      <div class="ti" style="border-color:var(--steel);background:var(--steel-lt)"><div class="ti-h">Dissociable processes</div><div class="ti-b">Rule interpretation and rule enforcement are separable cognitive processes — not a single "compliance" construct. Designing studies with only one DV will miss this split.</div></div>
+      <div class="ti" style="border-color:var(--rust);background:var(--rust-lt)"><div class="ti-h">Consequentialist enforcement</div><div class="ti-b">Punishment is morally consequentialist: people protect equal-split outcomes even when the rule prescribes selfishness. Enforcement is not mechanically rule-driven.</div></div>
+      <div class="ti" style="border-color:var(--sage);background:var(--sage-lt)"><div class="ti-h">Prescription label as independent cue</div><div class="ti-b">The label has evaluative power that cannot be reduced to outcomes or purposes. Naming matters.</div></div>
+    </div>
+    <div class="vcol">
+      <div class="sub-head">Future directions</div>
+      <div class="co-r" style="margin-bottom:4px"><strong>Within-subjects design:</strong> Can individuals consciously recognise that their compliance judgments and punishment decisions contradict each other? Confronting evaluators with their own inconsistency could test whether the dissociation is reflectively endorsed or driven by automatic processes.</div>
+      <div class="co-s" style="margin-bottom:4px"><strong>Institutional contexts:</strong> Do the same dual-process dynamics replicate with employment contracts, tax regulations, or real legal judgment tasks where participants have domain expertise? Expertise may amplify textualism (legal training) or purposivism (professional ethics).</div>
+      <div class="co"><strong>Motivated purposivism:</strong> Is purposivist deviation strategic (self-serving when purpose and self-interest happen to align) or genuinely normative (people care about the rule's goal)? Orthogonally varying whether the purpose-achieving option benefits oneself or a third party would cleanly disentangle these motives.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 31 — SUMMARY / THANK YOU
+══════════════════════════════════════════ -->
+<div class="slide sw sw-navy" data-title="Summary">
+  <div class="slide-head lht">Summary</div>
+  <div class="cols3" style="flex:1">
+    <div style="background:rgba(61,90,128,.25);border-radius:8px;padding:4% 4%;border-top:3px solid var(--steel);display:flex;flex-direction:column;gap:5px">
+      <div style="font-size:var(--fs-body);font-weight:500;color:rgba(168,190,221,.9)">Behaviour (Exp 1 &amp; 2)</div>
+      <div style="font-size:var(--fs-sm);color:rgba(168,190,221,.65);line-height:1.5">Rule-subjects are predominantly textualist — they follow E. Underinclusion erodes this; anticipated punishment restores it selectively in conditions where purposivist deviation was greatest. SVO &amp; IA: largely non-predictive. Ball task (general rule-following tendency): <em>significantly</em> predicts behavioral adherence in Exp 1 &amp; 2 (OR = 1.58 per SD, p &lt; .001) but not third-party judgments in Exp 3 — dispositional rule compliance shapes behavior, not evaluation.</div>
+    </div>
+    <div style="background:rgba(160,80,31,.2);border-radius:8px;padding:4% 4%;border-top:3px solid var(--rust);display:flex;flex-direction:column;gap:5px">
+      <div style="font-size:var(--fs-body);font-weight:500;color:rgba(220,160,130,.9)">Compliance concept (Likert)</div>
+      <div style="font-size:var(--fs-sm);color:rgba(220,160,130,.65);line-height:1.5">Third parties rate the prescribed E as most compliant across all conditions — even when E is morally objectionable. The prescription label governs the compliance concept.</div>
+    </div>
+    <div style="background:rgba(78,140,124,.2);border-radius:8px;padding:4% 4%;border-top:3px solid var(--sage);display:flex;flex-direction:column;gap:5px">
+      <div style="font-size:var(--fs-body);font-weight:500;color:rgba(140,210,195,.9)">Enforcement (Deduction)</div>
+      <div style="font-size:var(--fs-sm);color:rgba(140,210,195,.65);line-height:1.5">Punishment tracks outcomes and fairness, not the prescription label. Equal-split options escape punishment equally to E. Under selfish prescriptions, enforcement inverts entirely.</div>
+    </div>
+  </div>
+  <div style="background:rgba(255,255,255,.06);border-radius:8px;padding:2.5% 3.5%;margin-top:3%;text-align:center;flex-shrink:0">
+    <div style="font-size:var(--fs-body);font-weight:500;color:#fff;line-height:1.6">Textualism for the compliance concept. &nbsp; Purposivism for punishment.<br>The same evaluator. Simultaneously.</div>
+  </div>
+  <div style="text-align:center;margin-top:3%;flex-shrink:0">
+    <div style="font-size:var(--fs-sm);color:rgba(168,190,221,.5)">Thank you — data and code available on request</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 32 — BACKUP: OPTION-LEVEL MEANS
+══════════════════════════════════════════ -->
+<div class="slide sw sw-surf" data-title="Backup — critical option-level means (Exp 3)">
+  <div class="slide-head">Backup — critical option-level means (Exp 3)</div>
+  <div style="font-size:var(--fs-sm);color:var(--muted);margin-bottom:2%">Mean deduction (0–50) and Likert compliance (1–6) for focal options; N = 290 total (~48/condition); within-subjects for options A–I.</div>
+  <table class="tbl" style="flex:1">
+    <tr><th>Condition</th><th>Option</th><th>Ded M</th><th>Ded SD</th><th>Lk M</th><th>Lk SD</th><th>Role</th></tr>
+    <tr class="hl"><td>Normal</td><td>E</td><td>4.5</td><td>12.8</td><td>5.42</td><td>1.38</td><td>Textual_Equal</td></tr>
+    <tr class="hl"><td>Over</td><td>E</td><td>4.3</td><td>12.3</td><td>5.63</td><td>1.08</td><td>Textual_Equal</td></tr>
+    <tr><td>Over</td><td>C</td><td>4.8</td><td>12.0</td><td>3.93</td><td>2.11</td><td>Equal_Only</td></tr>
+    <tr><td>Under</td><td>E</td><td>6.6</td><td>14.1</td><td>4.14</td><td>1.93</td><td>Textual_Pure</td></tr>
+    <tr><td>Under</td><td>G</td><td>8.4</td><td>15.3</td><td>2.32</td><td>1.51</td><td>Other (generous)</td></tr>
+    <tr><td>OverUnder</td><td>E</td><td>6.6</td><td>13.5</td><td>3.99</td><td>2.01</td><td>Textual_Pure</td></tr>
+    <tr><td>OverUnder</td><td>C</td><td>5.9</td><td>13.6</td><td>3.74</td><td>2.12</td><td>Equal_Only</td></tr>
+    <tr class="hl-r"><td>UnderSelfish</td><td>E</td><td>18.2</td><td>21.5</td><td>2.74</td><td>1.66</td><td>Textual_Selfish</td></tr>
+    <tr class="hl-r"><td>OUSelfish</td><td>E</td><td>20.0</td><td>21.9</td><td>2.61</td><td>1.67</td><td>Textual_Selfish</td></tr>
+    <tr><td>OUSelfish</td><td>C</td><td>6.0</td><td>14.2</td><td>3.42</td><td>2.09</td><td>Equal_Only</td></tr>
+  </table>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 33 — BACKUP: BELIEFS & MEDIATION
+══════════════════════════════════════════ -->
+<div class="slide sw sw-white" data-title="Backup — beliefs &amp; mediation (Exp 2)">
+  <div class="slide-head">Backup — mediation: beliefs → compliance (Exp 2)</div>
+  <div class="cols2" style="flex:1">
+    <div class="vcol">
+      <div class="sub-head">Within-Exp 2: BT predicts DG</div>
+      <div style="font-size:var(--fs-sm);color:var(--muted);line-height:1.5;margin-bottom:5px">Pooled model: OR ≈ 8.97, p &lt; .001. Normative beliefs are a strong predictor of own choice — but not a full mediator.</div>
+      <div class="co">Condition effects remain significant after controlling for beliefs (partial mediation). Rule structure exerts influence beyond what social expectations explain.</div>
+    </div>
+    <div class="vcol">
+      <div class="sub-head">Bootstrapped mediation (5000 iter.)</div>
+      <div style="font-size:var(--fs-sm);color:var(--muted);line-height:1.5;margin-bottom:4px">For each condition vs. Normal:</div>
+      <div class="ti" style="border-color:var(--steel);background:var(--steel-lt)"><div class="ti-h">ACME (indirect: Condition → BT → DG)</div><div class="ti-b">Significant for Under and OverUnder — beliefs partially transmit the condition effect</div></div>
+      <div class="ti" style="border-color:var(--rust);background:var(--rust-lt)"><div class="ti-h">ADE (direct: Condition → DG, after BT)</div><div class="ti-b">Remains significant in Under, OverUnder — rule structure has an effect beyond normative expectations</div></div>
+      <div class="co-r" style="margin-top:4px"><strong>Partial mediation throughout.</strong> Beliefs about others' behaviour partially explain the condition → DG relationship, but rule structure has an independent effect on compliance.</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- stage -->
+
+<div class="bottom-nav">
+  <button class="nav-btn" id="prev-btn" disabled>
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    Prev
+  </button>
+  <div class="dots" id="dots"></div>
+  <button class="nav-btn" id="next-btn">
+    Next
+    <svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"></polyline></svg>
+  </button>
+</div>
+<div class="hint">← → arrow keys to navigate</div>
+
+</div><!-- shell -->
+
+<script>
+(function(){
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total  = slides.length;
+  let cur = 0;
+
+  const counter  = document.getElementById('counter');
+  const snav     = document.getElementById('snav');
+  const dotsWrap = document.getElementById('dots');
+  const prevBtn  = document.getElementById('prev-btn');
+  const nextBtn  = document.getElementById('next-btn');
+
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('button');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.title = slides[i].dataset.title || '';
+    d.addEventListener('click', () => goTo(i));
+    dotsWrap.appendChild(d);
+  }
+
+  function goTo(n) {
+    n = Math.max(0, Math.min(n, total - 1));
+    slides[cur].classList.remove('active');
+    dotsWrap.children[cur].classList.remove('active');
+    cur = n;
+    slides[cur].classList.add('active');
+    dotsWrap.children[cur].classList.add('active');
+    counter.textContent = String(cur + 1).padStart(2,'0') + ' / ' + String(total).padStart(2,'0');
+    snav.textContent    = slides[cur].dataset.title || '';
+    prevBtn.disabled    = cur === 0;
+    nextBtn.disabled    = cur === total - 1;
+  }
+
+  prevBtn.addEventListener('click', () => goTo(cur - 1));
+  nextBtn.addEventListener('click', () => goTo(cur + 1));
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(cur + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goTo(cur - 1);
+  });
+
+  goTo(0);
+})();
+</script>
+</body>
+</html>
